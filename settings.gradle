@@ -1,8 +1,1 @@
-rootProject.name = 'BE-02-Neoike'
-
-include 'member'
-include 'sneaker'
-include 'draw'
-include 'common'
-include 'neoike'
-
+rootProject.name = 'neoike'
