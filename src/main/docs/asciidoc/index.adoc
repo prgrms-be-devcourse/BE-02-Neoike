@@ -1,0 +1,12 @@
+ifndef::snippets[]
+:snippets: ../../../build/generated-snippets
+endif::[]
+:doctype: book
+:title: Neoike API
+:toc-title: Neoike API 목차
+:toc: left
+
+[[title]]
+= Neoike API v1
+
+== Overview
