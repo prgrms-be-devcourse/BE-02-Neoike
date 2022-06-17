@@ -4,11 +4,8 @@ import static javax.persistence.EnumType.STRING;
 import static lombok.AccessLevel.PROTECTED;
 
 import java.time.LocalDateTime;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,8 +23,8 @@ public class Sneaker extends BaseTimeEntity {
     @Column(name = "name", length = 50)
     private String name;
 
-    @Column(name = "code", length = 10)
-    private String code;
+    @Embedded
+    private SneakerCode sneakerCode;
 
     @Enumerated(value = STRING)
     private Category category;
@@ -48,7 +45,7 @@ public class Sneaker extends BaseTimeEntity {
     @Builder
     public Sneaker(
         String name,
-        String code,
+        SneakerCode sneakerCode,
         Category category,
         int price,
         String description,
@@ -56,7 +53,7 @@ public class Sneaker extends BaseTimeEntity {
         LocalDateTime releaseDate
     ) {
         this.name = name;
-        this.code = code;
+        this.sneakerCode = sneakerCode;
         this.category = category;
         this.price = price;
         this.description = description;
