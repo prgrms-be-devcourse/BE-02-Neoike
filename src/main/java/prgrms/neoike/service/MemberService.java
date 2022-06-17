@@ -1,4 +1,4 @@
-package prgrms.neoike.domain.service;
+package prgrms.neoike.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
