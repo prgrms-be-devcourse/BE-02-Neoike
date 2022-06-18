@@ -1,63 +1,97 @@
 package prgrms.neoike.domain.sneaker;
 
-import static javax.persistence.EnumType.STRING;
-import static lombok.AccessLevel.PROTECTED;
-
-import java.time.LocalDateTime;
-import javax.persistence.*;
-
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import prgrms.neoike.domain.BaseTimeEntity;
+
+import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
+
+import static javax.persistence.CascadeType.ALL;
+import static javax.persistence.EnumType.STRING;
+import static javax.persistence.GenerationType.AUTO;
+import static lombok.AccessLevel.PROTECTED;
+import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
 @Getter
 @Entity
 @NoArgsConstructor(access = PROTECTED)
+@Table(
+    uniqueConstraints = {
+        @UniqueConstraint(
+            name = "sneaker_id_name_code",
+            columnNames = {"sneaker_id", "name", "code"}
+        )
+    }
+)
 public class Sneaker extends BaseTimeEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = AUTO)
+    @Column(name = "sneaker_id", nullable = false, updatable = false)
     private Long id;
 
-    @Column(name = "name", length = 50)
+    @Enumerated(value = STRING)
+    @Column(name = "member_type", length = 10, nullable = false)
+    private MemberType memberType;
+
+    @Enumerated(value = STRING)
+    @Column(name = "category", length = 10, nullable = false)
+    private Category category;
+
+    @Column(name = "name", length = 50, nullable = false, updatable = false)
     private String name;
+
+    @Column(name = "price", nullable = false)
+    private int price;
+
+    @Lob
+    @Column(name = "description", nullable = false)
+    private String description;
 
     @Embedded
     private SneakerCode sneakerCode;
 
-    @Enumerated(value = STRING)
-    private Category category;
-
-    @Column(name = "price")
-    private int price;
-
-    @Column(name = "description")
-    private String description;
-
-    @Enumerated(value = STRING)
-    @Column(name = "member_type", length = 10)
-    private MemberType memberType;
-
-    @Column(name = "release_date")
+    @Column(name = "release_date", nullable = false)
     private LocalDateTime releaseDate;
+
+    @OneToMany(mappedBy = "sneaker", cascade = ALL)
+    private final Set<SneakerImage> sneakerImages = new HashSet<>();
 
     @Builder
     public Sneaker(
-        String name,
-        SneakerCode sneakerCode,
+        MemberType memberType,
         Category category,
+        String name,
         int price,
         String description,
-        MemberType memberType,
+        SneakerCode sneakerCode,
         LocalDateTime releaseDate
     ) {
-        this.name = name;
-        this.sneakerCode = sneakerCode;
+        this.memberType = memberType;
         this.category = category;
+        this.name = name;
         this.price = price;
         this.description = description;
-        this.memberType = memberType;
+        this.sneakerCode = sneakerCode;
         this.releaseDate = releaseDate;
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, SHORT_PREFIX_STYLE)
+            .append("id", id)
+            .append("memberType", memberType)
+            .append("category", category)
+            .append("name", name)
+            .append("price", price)
+            .append("description", description)
+            .append("sneakerCode", sneakerCode)
+            .append("releaseDate", releaseDate)
+            .toString();
     }
 }
