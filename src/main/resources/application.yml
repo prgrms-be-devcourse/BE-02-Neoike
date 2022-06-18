@@ -26,3 +26,13 @@ logging:
     org:
       hibernate:
         SQL: debug
+
+sneaker:
+  images:
+    dir: 'src/main/resources/sneaker/images/'
+
+image:
+  file:
+    maxSize: 3MB
+    mbUnit: 1000000
+    overHead: 1.3

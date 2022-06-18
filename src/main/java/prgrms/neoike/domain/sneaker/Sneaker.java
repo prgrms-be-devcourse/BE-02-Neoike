@@ -81,6 +81,12 @@ public class Sneaker extends BaseTimeEntity {
         this.releaseDate = releaseDate;
     }
 
+    public void uploadSneakerImages(Set<SneakerImage> sneakerImages) {
+        sneakerImages.forEach(
+            sneakerImage -> sneakerImage.uploadSneakerImage(this)
+        );
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, SHORT_PREFIX_STYLE)
