@@ -13,7 +13,7 @@ import java.util.Set;
 import static org.apache.commons.lang3.RandomStringUtils.*;
 import static org.apache.commons.lang3.math.NumberUtils.isDigits;
 import static org.assertj.core.api.Assertions.assertThat;
-import static prgrms.neoike.domain.sneaker.Category.*;
+import static prgrms.neoike.domain.sneaker.SneakerCategory.*;
 import static prgrms.neoike.domain.sneaker.SneakerCodeCreator.createSneakerCode;
 
 class SneakerCodeTest {
