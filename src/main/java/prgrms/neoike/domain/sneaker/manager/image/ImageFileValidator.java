@@ -4,7 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+import prgrms.neoike.common.exception.TooBigSizeImageFileException;
 import prgrms.neoike.common.exception.InvalidInputValueException;
+import prgrms.neoike.common.exception.NotSupportedFileFormatException;
 
 import java.util.List;
 import java.util.Set;
@@ -39,7 +41,7 @@ public class ImageFileValidator {
         String fileFormat = originName.substring(originName.lastIndexOf(".") + 1).toUpperCase();
 
         if (!supportFormatTypes.contains(fileFormat)) {
-            throw new InvalidInputValueException(
+            throw new NotSupportedFileFormatException(
                 format("지원하지 않는 이미지 파일 포맷입니다. (지원포맷: {0})",
                     join(", ", supportFormatTypes)
                 )
@@ -55,7 +57,7 @@ public class ImageFileValidator {
 
     private void validateSize(String encodedName) {
         if (encodedName.length() > toLength(maxSize)) {
-            throw new InvalidInputValueException(
+            throw new TooBigSizeImageFileException(
                 format(
                     "이미지 파일의 크기가 너무 큽니다. (이미지 크기: {0})", toMB(encodedName.length())
                 )
