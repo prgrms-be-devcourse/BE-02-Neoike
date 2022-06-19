@@ -3,7 +3,7 @@ package prgrms.neoike.domain.sneaker;
 import lombok.Getter;
 
 @Getter
-public enum Category {
+public enum SneakerCategory {
 
     LIFESTYLE("라이프스타일"),
     RUNNING("러닝"),
@@ -14,7 +14,7 @@ public enum Category {
 
     private final String description;
 
-    Category(String description) {
+    SneakerCategory(String description) {
         this.description = description;
     }
 }

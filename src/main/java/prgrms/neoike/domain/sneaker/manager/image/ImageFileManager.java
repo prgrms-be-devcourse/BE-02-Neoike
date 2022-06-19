@@ -82,7 +82,7 @@ public class ImageFileManager {
         ) {
             fileOutputStream.write(decodedBytes);
         } catch (IOException e) {
-            log.warn("Got IOException : {}", e.getMessage(), e);
+            log.warn("입출력 예외가 발생하였습니다. : {}", e.getMessage(), e);
 
             throw new FailedStoreImageException(
                 format(
