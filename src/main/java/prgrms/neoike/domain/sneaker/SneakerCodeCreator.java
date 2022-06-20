@@ -4,7 +4,6 @@ import lombok.NoArgsConstructor;
 
 import static java.text.MessageFormat.format;
 import static lombok.AccessLevel.PRIVATE;
-import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 
 @NoArgsConstructor(access = PRIVATE)
