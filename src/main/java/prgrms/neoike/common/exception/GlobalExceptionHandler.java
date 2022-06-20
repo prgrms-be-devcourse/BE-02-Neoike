@@ -29,8 +29,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(errorResponse);
     }
 
-    @ExceptionHandler(InvalidInputValueException.class)
-    protected ResponseEntity<Object> handleInvalidInputValueException (InvalidInputValueException ex) {
+    @ExceptionHandler(IllegalArgumentException.class)
+    protected ResponseEntity<Object> handleInvalidInputValueException (IllegalArgumentException ex) {
         log.error("입력값이 유효하지 않습니다. {}", ex.getMessage());
 
         final ErrorResponse errorResponse = ErrorResponse.of(INVALID_INPUT_VALUE, ex.getMessage());

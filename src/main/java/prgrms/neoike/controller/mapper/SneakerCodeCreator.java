@@ -1,4 +1,4 @@
-package prgrms.neoike.domain.sneaker.manager;
+package prgrms.neoike.controller.mapper;
 
 import lombok.NoArgsConstructor;
 import prgrms.neoike.domain.sneaker.SneakerCategory;
