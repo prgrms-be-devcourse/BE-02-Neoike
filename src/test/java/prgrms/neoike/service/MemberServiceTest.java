@@ -6,10 +6,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
-import prgrms.neoike.service.dto.memberdto.MemberDto;
-import prgrms.neoike.domain.member.*;
+import prgrms.neoike.domain.member.Address;
+import prgrms.neoike.domain.member.Email;
+import prgrms.neoike.domain.member.Gender;
+import prgrms.neoike.domain.member.Member;
 import prgrms.neoike.repository.MemberRepository;
+import prgrms.neoike.service.dto.memberdto.MemberDto;
 import prgrms.neoike.service.dto.memberdto.MemberResponse;
 
 import java.time.LocalDateTime;
@@ -19,6 +21,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class MemberServiceTest {
@@ -33,13 +37,15 @@ class MemberServiceTest {
     void joinTest() {
         //given
         MemberDto memberDto = addTestMemberDto();
-        Member member = addTestMember();
-        ReflectionTestUtils.setField(member, "id", 1L);
+        Member member = mock(Member.class);
 
-        given(memberRepository.save(any()))
-                .willReturn(member);
+        given(memberRepository.save(any())).willReturn(member);
+        when(member.getId()).thenReturn(1L);
+        when(member.getEmail()).thenReturn(new Email("test@gmail.com"));
+
         //when
         MemberResponse joinMemberResponse = memberService.join(memberDto);
+
         //then
         assertThat(joinMemberResponse.memberId()).isEqualTo(member.getId());
     }
@@ -49,27 +55,15 @@ class MemberServiceTest {
     void duplicateEmailJoinTest() {
         //given
         MemberDto memberDto = addTestMemberDto();
-        Member member = addTestMember();
-        ReflectionTestUtils.setField(member, "id", 1L);
+        Member member = mock(Member.class);
 
+        when(member.getEmail()).thenReturn(new Email("test@gmail.com"));
         given(memberRepository.findByEmail(member.getEmail().getEmail()))
                 .willReturn(Optional.of(member));
         //when
 
         //then
         assertThrows(IllegalArgumentException.class, () -> memberService.join(memberDto));
-    }
-
-    private Member addTestMember() {
-        return Member.builder()
-                .name("testUser")
-                .password(new Password("testPassword123!"))
-                .phoneNumber(new PhoneNumber(CountryType.KOR, "01012345678"))
-                .birthDay(LocalDateTime.now())
-                .email(new Email("test@gmail.com"))
-                .address(new Address("Seoul", "samsungro", "1234"))
-                .gender(Gender.FEMALE)
-                .build();
     }
 
     private MemberDto addTestMemberDto() {
