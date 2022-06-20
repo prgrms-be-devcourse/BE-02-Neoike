@@ -25,7 +25,7 @@ public class DrawTicketService {
 
     public DrawTicketResponse saveDrawTicket(Long memberId, Long drawId) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new EntityNotFoundException("Draw 엔티티를 id 로 찾을 수 없습니다. drawId : " + drawId));
+                .orElseThrow(() -> new EntityNotFoundException("Member 엔티티를 id 로 찾을 수 없습니다. memberId : " + drawId));
 
         Draw draw = drawRepository.findById(drawId)
                 .orElseThrow(() -> new EntityNotFoundException("Draw 엔티티를 id 로 찾을 수 없습니다. drawId : " + drawId));
