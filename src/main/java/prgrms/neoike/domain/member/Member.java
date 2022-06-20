@@ -4,12 +4,8 @@ import static javax.persistence.EnumType.STRING;
 import static lombok.AccessLevel.PROTECTED;
 
 import java.time.LocalDateTime;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,7 +17,7 @@ import prgrms.neoike.domain.BaseTimeEntity;
 public class Member extends BaseTimeEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Column(name = "name", length = 50, nullable = false)
@@ -33,7 +29,7 @@ public class Member extends BaseTimeEntity {
     @Embedded
     private PhoneNumber phoneNumber;
 
-    @Column(name = "birth_day", nullable = false)
+    @Column(name = "birthday", nullable = false)
     private LocalDateTime birthDay;
 
     @Embedded
