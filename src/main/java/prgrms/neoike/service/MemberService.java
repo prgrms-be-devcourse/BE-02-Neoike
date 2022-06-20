@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import prgrms.neoike.service.dto.memberdto.MemberDto;
 import prgrms.neoike.domain.member.Member;
 import prgrms.neoike.repository.MemberRepository;
+import prgrms.neoike.service.dto.memberdto.MemberResponse;
 import prgrms.neoike.service.mapper.MemberMapper;
 import prgrms.neoike.common.exception.EntityNotFoundException;
 
@@ -20,11 +21,11 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public Long join(MemberDto memberDto) {
+    public MemberResponse join(MemberDto memberDto) {
         validateDuplicatedMember(memberDto.email());
         Member member = MemberMapper.mapMember(memberDto);
         Member savedMember = memberRepository.save(member);
-        return savedMember.getId();
+        return MemberMapper.mapMemberResponse(savedMember.getId(), savedMember.getEmail().getEmail());
     }
 
     private void validateDuplicatedMember(String email) {

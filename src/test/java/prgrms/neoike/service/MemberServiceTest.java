@@ -10,6 +10,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import prgrms.neoike.service.dto.memberdto.MemberDto;
 import prgrms.neoike.domain.member.*;
 import prgrms.neoike.repository.MemberRepository;
+import prgrms.neoike.service.dto.memberdto.MemberResponse;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -38,9 +39,9 @@ class MemberServiceTest {
         given(memberRepository.save(any()))
                 .willReturn(member);
         //when
-        Long joinMemberId = memberService.join(memberDto);
+        MemberResponse joinMemberResponse = memberService.join(memberDto);
         //then
-        assertThat(joinMemberId).isEqualTo(member.getId());
+        assertThat(joinMemberResponse.memberId()).isEqualTo(member.getId());
     }
 
     @Test
