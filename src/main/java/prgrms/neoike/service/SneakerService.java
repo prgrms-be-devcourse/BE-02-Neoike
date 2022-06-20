@@ -7,6 +7,5 @@ import prgrms.neoike.repository.SneakerRepository;
 @Service
 @RequiredArgsConstructor
 public class SneakerService {
-
     private final SneakerRepository sneakerRepository;
 }

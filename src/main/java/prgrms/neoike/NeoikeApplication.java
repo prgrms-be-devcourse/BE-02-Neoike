@@ -7,9 +7,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @EnableJpaAuditing
 @SpringBootApplication
 public class NeoikeApplication {
-
-  public static void main(String[] args) {
-    SpringApplication.run(NeoikeApplication.class);
-  }
+    public static void main(String[] args) {
+        SpringApplication.run(NeoikeApplication.class);
+    }
 
 }
