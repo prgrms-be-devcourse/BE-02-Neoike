@@ -1,6 +1,7 @@
-package prgrms.neoike.controller.dto;
+package prgrms.neoike.service.dto.memberdto;
 
 import lombok.Builder;
+import prgrms.neoike.domain.member.Address;
 import prgrms.neoike.domain.member.CountryType;
 import prgrms.neoike.domain.member.Gender;
 
@@ -11,9 +12,7 @@ public record MemberDto(
         String password,
         String name,
         LocalDateTime birthday,
-        String city,
-        String street,
-        String zipcode,
+        Address address,
         CountryType countryCode,
         String phoneNumber,
         Gender gender

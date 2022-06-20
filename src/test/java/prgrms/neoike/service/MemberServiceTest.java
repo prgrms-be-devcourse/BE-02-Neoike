@@ -7,7 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
-import prgrms.neoike.controller.dto.MemberDto;
+import prgrms.neoike.service.dto.memberdto.MemberDto;
 import prgrms.neoike.domain.member.*;
 import prgrms.neoike.repository.MemberRepository;
 
@@ -78,9 +78,7 @@ class MemberServiceTest {
                 .phoneNumber("01023451234")
                 .birthday(LocalDateTime.now())
                 .email("test@gmail.com")
-                .city("seoul")
-                .street("samsungro")
-                .zipcode("12345")
+                .address(new Address("seoul", "samsungro", "12345"))
                 .gender(Gender.FEMALE)
                 .build();
     }

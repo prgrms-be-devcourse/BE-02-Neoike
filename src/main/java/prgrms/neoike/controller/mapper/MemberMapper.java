@@ -1,6 +1,7 @@
 package prgrms.neoike.controller.mapper;
 
-import prgrms.neoike.controller.dto.MemberDto;
+import prgrms.neoike.domain.member.Address;
+import prgrms.neoike.service.dto.memberdto.MemberDto;
 import prgrms.neoike.controller.dto.MemberRequest;
 
 public class MemberMapper {
@@ -12,9 +13,7 @@ public class MemberMapper {
                 .phoneNumber(memberRequest.phoneNumber())
                 .birthday(memberRequest.birthday())
                 .email(memberRequest.email())
-                .city(memberRequest.city())
-                .street(memberRequest.street())
-                .zipcode(memberRequest.zipcode())
+                .address(new Address(memberRequest.city(), memberRequest.street(), memberRequest.zipcode()))
                 .gender(memberRequest.gender())
                 .build();
     }
