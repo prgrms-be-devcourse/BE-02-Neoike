@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
@@ -14,6 +15,7 @@ import prgrms.neoike.controller.dto.MemberRequest;
 import prgrms.neoike.domain.member.CountryType;
 import prgrms.neoike.domain.member.Gender;
 import prgrms.neoike.service.MemberService;
+import prgrms.neoike.service.dto.memberdto.MemberResponse;
 
 import java.time.LocalDateTime;
 
@@ -24,6 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(MemberController.class)
+@MockBean(JpaMetamodelMappingContext.class)
 class MemberControllerTest {
 
     @Autowired
@@ -55,13 +58,13 @@ class MemberControllerTest {
                 ));
 
         given(memberService.join(any()))
-                .willReturn(1L);
+                .willReturn(new MemberResponse(1L, "test@gmail.com"));
 
 
         mockMvc.perform(post("/api/v1/members")
-                .content(content)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
+                        .content(content)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
                         .with(SecurityMockMvcRequestPostProcessors.csrf()))
                 .andExpect(status().isOk())
                 .andDo(print());
