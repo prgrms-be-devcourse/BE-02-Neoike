@@ -1,6 +1,6 @@
 package prgrms.neoike.domain.sneaker.validators.annotation;
 
-import prgrms.neoike.domain.sneaker.validators.validator.CodeCheckValidator;
+import prgrms.neoike.domain.sneaker.validators.validator.SneakerCodeValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -14,8 +14,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({ METHOD, FIELD, ANNOTATION_TYPE, PARAMETER, TYPE_USE })
 @Retention(RUNTIME)
 @Documented
-@Constraint(validatedBy = { CodeCheckValidator.class })
-public @interface CodeCheck {
+@Constraint(validatedBy = { SneakerCodeValidator.class })
+public @interface SneakerCode {
 
     String message() default "";
 
