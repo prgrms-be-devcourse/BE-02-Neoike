@@ -1,19 +1,15 @@
 package prgrms.neoike.domain.sneaker;
 
-import static javax.persistence.FetchType.LAZY;
-import static lombok.AccessLevel.PROTECTED;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import prgrms.neoike.domain.BaseTimeEntity;
+
+import javax.persistence.*;
+
+import static javax.persistence.FetchType.LAZY;
+import static javax.persistence.GenerationType.AUTO;
+import static lombok.AccessLevel.PROTECTED;
 
 @Getter
 @Entity
@@ -21,24 +17,27 @@ import prgrms.neoike.domain.BaseTimeEntity;
 public class SneakerStock extends BaseTimeEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = AUTO)
+    @Column(name = "sneaker_stock_id", unique = true, nullable = false, updatable = false)
     private Long id;
 
+    @Column(name = "size", nullable = false)
+    private int size;
+
+    @Embedded
+    private Stock stock;
+
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "sneaker_id")
+    @JoinColumn(name = "sneaker_id", nullable = false)
     private Sneaker sneaker;
 
-    @Enumerated
-    @Column(name = "size", nullable = false)
-    private Size size;
-
-    @Column(name = "quantity", nullable = false)
-    private int quantity;
-
     @Builder
-    public SneakerStock(Sneaker sneaker, Size size, int quantity) {
-        this.sneaker = sneaker;
+    public SneakerStock(int size, Stock stock) {
         this.size = size;
-        this.quantity = quantity;
+        this.stock = stock;
+    }
+
+    public void setSneaker(Sneaker sneaker) {
+        this.sneaker = sneaker;
     }
 }
