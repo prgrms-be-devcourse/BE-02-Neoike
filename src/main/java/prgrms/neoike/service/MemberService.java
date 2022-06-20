@@ -7,6 +7,10 @@ import prgrms.neoike.controller.dto.MemberDto;
 import prgrms.neoike.domain.member.Member;
 import prgrms.neoike.repository.MemberRepository;
 import prgrms.neoike.service.mapper.MemberMapper;
+import prgrms.neoike.common.exception.EntityNotFoundException;
+import prgrms.neoike.domain.member.Member;
+import prgrms.neoike.repository.MemberRepository;
+
 
 import java.util.Optional;
 
@@ -27,8 +31,13 @@ public class MemberService {
 
     private void validateDuplicatedMember(String email) {
         Optional<Member> foundMember = memberRepository.findByEmail(email);
-        if(foundMember.isPresent()) {
+        if (foundMember.isPresent()) {
             throw new IllegalArgumentException("이미 존재하는 회원입니다.");
         }
+    }
+
+    public Member findById(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException("Member 엔티티를 id 로 찾을 수 없습니다. memberID : " + memberId));
     }
 }

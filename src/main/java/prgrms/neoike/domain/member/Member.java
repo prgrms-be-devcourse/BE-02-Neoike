@@ -13,6 +13,7 @@ import prgrms.neoike.domain.BaseTimeEntity;
 
 @Getter
 @Entity
+@Table
 @NoArgsConstructor(access = PROTECTED)
 public class Member extends BaseTimeEntity {
 
@@ -44,13 +45,13 @@ public class Member extends BaseTimeEntity {
 
     @Builder
     public Member(
-        String name,
-        Password password,
-        PhoneNumber phoneNumber,
-        LocalDateTime birthDay,
-        Email email,
-        Address address,
-        Gender gender
+            String name,
+            Password password,
+            PhoneNumber phoneNumber,
+            LocalDateTime birthDay,
+            Email email,
+            Address address,
+            Gender gender
     ) {
         this.name = name;
         this.password = password;
