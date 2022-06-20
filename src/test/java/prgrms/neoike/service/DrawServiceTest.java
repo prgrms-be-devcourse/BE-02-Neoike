@@ -5,14 +5,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import prgrms.neoike.common.exception.TimeSequnceException;
-import prgrms.neoike.domain.draw.Draw;
-import prgrms.neoike.repository.DrawRepository;
+import prgrms.neoike.common.exception.InvalidInputValueException;
+import prgrms.neoike.service.dto.drawdto.DrawResponse;
+import prgrms.neoike.service.dto.drawdto.ServiceDrawSaveDto;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 
 @SpringBootTest
@@ -21,57 +22,45 @@ class DrawServiceTest {
     @Autowired
     DrawService drawService;
 
-    @Autowired
-    DrawRepository drawRepository;
-
     @Test
     @DisplayName("Draw 엔티티를 저장한다.")
-    void saveDraw () {
+    void saveDraw() {
         // given
-        LocalDateTime startDate = LocalDateTime.of(2022, 06, 12, 12, 00,00);
-        LocalDateTime endDate = LocalDateTime.of(2022, 06, 13, 12, 00,00);
-        LocalDateTime winningDate = LocalDateTime.of(2022, 06, 14, 12, 00,00);
+        LocalDateTime startDate = LocalDateTime.of(2022, 06, 12, 12, 00, 00);
+        LocalDateTime endDate = LocalDateTime.of(2022, 06, 13, 12, 00, 00);
+        LocalDateTime winningDate = LocalDateTime.of(2022, 06, 14, 12, 00, 00);
 
-        Draw draw = Draw.builder()
-                .startDate(startDate)
-                .endDate(endDate)
-                .winningDate(winningDate)
-                .quantity(50)
-                .build();
+        ServiceDrawSaveDto drawSaveDto = new ServiceDrawSaveDto(
+                1L, startDate, endDate, winningDate, 50, new ArrayList<>()
+        );
 
         // when
-        Long drawId = drawService.save(draw);
+        DrawResponse save = drawService.save(drawSaveDto);
 
         // then
-        assertThat(drawId).isEqualTo(1L);
+        assertThat(save.drawId()).isEqualTo(1L);
     }
 
     @Test
     @DisplayName("등록 순서가 잘못된 Draw 엔티티를 저장할때 오류 발생")
-    void invalidSaveDraw () {
+    void invalidSaveDraw() {
         // given
-        LocalDateTime fastDate = LocalDateTime.of(2022, 06, 12, 12, 00,00);
-        LocalDateTime middleDate = LocalDateTime.of(2022, 06, 13, 12, 00,00);
-        LocalDateTime lateDate = LocalDateTime.of(2022, 06, 14, 12, 00,00);
+        LocalDateTime fastDate = LocalDateTime.of(2022, 06, 12, 12, 00, 00);
+        LocalDateTime middleDate = LocalDateTime.of(2022, 06, 13, 12, 00, 00);
+        LocalDateTime lateDate = LocalDateTime.of(2022, 06, 14, 12, 00, 00);
 
         // when // then
         assertThatThrownBy(() -> drawService.save(
-                Draw.builder()
-                        .startDate(lateDate)
-                        .endDate(fastDate)
-                        .winningDate(middleDate)
-                        .quantity(50)
-                        .build()
-        )).isInstanceOf(TimeSequnceException.class);
+                new ServiceDrawSaveDto(
+                        1L, lateDate, fastDate, middleDate, 50, new ArrayList<>()
+                )
+        )).isInstanceOf(InvalidInputValueException.class);
 
         assertThatThrownBy(() -> drawService.save(
-                Draw.builder()
-                        .startDate(middleDate)
-                        .endDate(lateDate)
-                        .winningDate(fastDate)
-                        .quantity(50)
-                        .build()
-        )).isInstanceOf(TimeSequnceException.class);
+                new ServiceDrawSaveDto(
+                        1L, middleDate, lateDate, fastDate, 50, new ArrayList<>()
+                )
+        )).isInstanceOf(InvalidInputValueException.class);
     }
 
 }
