@@ -3,13 +3,11 @@ package prgrms.neoike.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import prgrms.neoike.controller.dto.MemberDto;
+import prgrms.neoike.service.dto.memberdto.MemberDto;
 import prgrms.neoike.domain.member.Member;
 import prgrms.neoike.repository.MemberRepository;
 import prgrms.neoike.service.mapper.MemberMapper;
 import prgrms.neoike.common.exception.EntityNotFoundException;
-import prgrms.neoike.domain.member.Member;
-import prgrms.neoike.repository.MemberRepository;
 
 
 import java.util.Optional;
