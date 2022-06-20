@@ -1,4 +1,4 @@
-package prgrms.neoike.controller.dto.drawticketdto;
+package prgrms.neoike.service.dto.drawticketdto;
 
 public record DrawTicketResponse(
         Long drawTicketId

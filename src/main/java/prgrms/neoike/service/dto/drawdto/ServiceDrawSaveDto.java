@@ -1,11 +1,13 @@
-package prgrms.neoike.controller.dto.drawdto;
+package prgrms.neoike.service.dto.drawdto;
+
+import prgrms.neoike.controller.dto.drawdto.DrawItem;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-public record DrawSaveRequest(
+public record ServiceDrawSaveDto(
         @NotNull
         Long sneakerId,
 
