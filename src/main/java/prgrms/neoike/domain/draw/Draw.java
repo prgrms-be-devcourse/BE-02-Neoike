@@ -5,11 +5,12 @@ import static lombok.AccessLevel.PROTECTED;
 import java.time.LocalDateTime;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import prgrms.neoike.common.exception.TimeSequnceException;
+import prgrms.neoike.common.exception.InvalidInputValueException;
 import prgrms.neoike.domain.BaseTimeEntity;
 
 @Getter
@@ -35,6 +36,7 @@ public class Draw extends BaseTimeEntity {
 
     @Column(name = "quantity")
     @NotNull
+    @Positive
     private int quantity;
 
     @Builder
@@ -45,22 +47,29 @@ public class Draw extends BaseTimeEntity {
             int quantity
     ) {
         validateTimeOrder(startDate, endDate, winningDate);
+        validateQuantity(quantity);
         this.startDate = startDate;
         this.endDate = endDate;
         this.winningDate = winningDate;
         this.quantity = quantity;
     }
 
-    private void validateTimeOrder(LocalDateTime startDate, LocalDateTime endDate, LocalDateTime winningDate) {
-        boolean startAndEndCompare = startDate.isBefore(endDate);
-        boolean endAndWinningCompare = endDate.isBefore(winningDate);
-
-        if (!(startAndEndCompare && endAndWinningCompare)) {
-            throw new TimeSequnceException("입력된 Date 날짜의 순서가 맞지 않습니다.");
+    private void validateQuantity(int quantity) {
+        if (quantity < 0) {
+            throw new InvalidInputValueException("입력된 quantity 가 음수 입니다.");
         }
     }
 
-    public boolean checkPossibility() {
+    private void validateTimeOrder(LocalDateTime startDate, LocalDateTime endDate, LocalDateTime winningDate) {
+        boolean isStartBeforeEnd = startDate.isBefore(endDate);
+        boolean isEndBeforeWinning = endDate.isBefore(winningDate);
+
+        if (!(isStartBeforeEnd && isEndBeforeWinning)) {
+            throw new InvalidInputValueException("입력된 Date 날짜의 순서가 맞지 않습니다.");
+        }
+    }
+
+    public boolean drawAndCheckSpare() {
         if (quantity > 0) {
             quantity--;
             return true;

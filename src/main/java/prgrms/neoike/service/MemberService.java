@@ -13,6 +13,6 @@ public class MemberService {
 
     public Member findById(Long memberId) {
         return memberRepository.findById(memberId)
-                .orElseThrow(() -> new EntityNotFoundException("Member 엔티티를 id 로 찾을 수 없습니다 : memberID : " + memberId));
+                .orElseThrow(() -> new EntityNotFoundException("Member 엔티티를 id 로 찾을 수 없습니다. memberID : " + memberId));
     }
 }
