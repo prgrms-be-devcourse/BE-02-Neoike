@@ -53,9 +53,9 @@ class DrawControllerTest {
     @DisplayName("/api/v1/draws 에서 draws 저장")
     void saveDrawTest() throws Exception {
         // given
-        LocalDateTime fastDate = LocalDateTime.of(2022, 06, 12, 12, 00, 00);
-        LocalDateTime middleDate = LocalDateTime.of(2022, 06, 13, 12, 00, 00);
-        LocalDateTime lateDate = LocalDateTime.of(2022, 06, 15, 12, 00, 00);
+        LocalDateTime fastDate = LocalDateTime.of(2025, 06, 12, 12, 00, 00);
+        LocalDateTime middleDate = LocalDateTime.of(2025, 06, 13, 12, 00, 00);
+        LocalDateTime lateDate = LocalDateTime.of(2025, 06, 15, 12, 00, 00);
 
         DrawSaveRequest drawSaveRequest = DrawSaveRequest.builder()
                 .sneakerId(1L)
@@ -92,7 +92,7 @@ class DrawControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(drawSaveRequest))
                 )
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andDo(print())
                 .andDo(document("save-draw",
                         requestFields(
@@ -123,7 +123,7 @@ class DrawControllerTest {
                         .param("memberId", String.valueOf(1L))
                         .param("drawId", String.valueOf(2L))
                 )
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andDo(print())
                 .andDo(document("save-draw-ticket",
                         responseFields(

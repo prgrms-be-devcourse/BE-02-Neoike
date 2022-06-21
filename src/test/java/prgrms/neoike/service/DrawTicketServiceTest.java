@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 class DrawTicketServiceTest {
@@ -44,21 +44,20 @@ class DrawTicketServiceTest {
     @DisplayName("DrawTicket 을 저장한다.")
     void saveDrwaTicket() {
         // given
-        Draw drawMock = org.mockito.Mockito.mock(Draw.class);
-        Member memberMock = org.mockito.Mockito.mock(Member.class);
-        DrawTicket drawTicketMock = org.mockito.Mockito.mock(DrawTicket.class);
-        Draw reducedDrawMock = org.mockito.Mockito.mock(Draw.class);
+        Draw drawMock = mock(Draw.class);
+        Member memberMock = mock(Member.class);
+        DrawTicket drawTicketMock = mock(DrawTicket.class);
+        Draw reducedDrawMock = mock(Draw.class);
         DrawTicketResponse drawTicketResponse = new DrawTicketResponse(1L);
 
-        when(drawMock.getId()).thenReturn(1L);
-        when(drawMock.getId()).thenReturn(1L);
-        when(reducedDrawMock.getQuantity()).thenReturn(49);
-        when(drawMock.drawAndCheckSpare()).thenReturn(true);
+        given(drawMock.getId()).willReturn(1L);
+        given(reducedDrawMock.getQuantity()).willReturn(49);
+        given(drawMock.drawAndCheckSpare()).willReturn(true);
 
         given(memberRepository.findById(any())).willReturn(Optional.of(memberMock));
         given(drawRepository.findById(any())).willReturn(Optional.of(drawMock));
         given(drawTicketRepository.save(any(DrawTicket.class))).willReturn(drawTicketMock);
-        given(drawConverter.toDrawTicketResponse(any())).willReturn(drawTicketResponse);
+        given(drawConverter.toDrawTicketResponse(drawTicketMock.getId())).willReturn(drawTicketResponse);
 
         // when
         DrawTicketResponse drawTicketResponse1 = drawTicketService.saveDrawTicket(memberMock.getId(), drawMock.getId());
@@ -72,18 +71,15 @@ class DrawTicketServiceTest {
     @DisplayName("Draw 의 재고가 0 이어서 DrawTicket 을 저장하지 못한다.")
     void invalidSaveDrwaTicket() {
         // given
-        Draw drawMock = org.mockito.Mockito.mock(Draw.class);
-        Member memberMock = org.mockito.Mockito.mock(Member.class);
-        DrawTicket drawTicketMock = org.mockito.Mockito.mock(DrawTicket.class);
-        DrawTicketResponse drawTicketResponse = new DrawTicketResponse(1L);
+        Draw drawMock = mock(Draw.class);
+        Member memberMock = mock(Member.class);
 
-        when(drawMock.getId()).thenReturn(1L);
-        when(drawMock.getId()).thenReturn(1L);
-        when(drawMock.getQuantity()).thenReturn(0);
-        when(drawMock.drawAndCheckSpare()).thenThrow(IllegalStateException.class);
+        given(drawMock.getId()).willReturn(1L);
+        given(drawMock.getQuantity()).willReturn(0);
 
         given(memberRepository.findById(any())).willReturn(Optional.of(memberMock));
         given(drawRepository.findById(any())).willReturn(Optional.of(drawMock));
+        given(drawMock.drawAndCheckSpare()).willThrow(IllegalStateException.class);
 
         // when // then
         assertThat(drawMock.getQuantity()).isZero();

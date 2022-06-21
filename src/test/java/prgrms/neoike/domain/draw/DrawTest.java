@@ -83,7 +83,7 @@ class DrawTest {
     }
 
     @Test
-    @DisplayName("해당 응모 남은개수가 0일때 응모권을 생성할 수 없다.")
+    @DisplayName("해당 응모 남은개수가 0일때 응모권을 생성할 수 없다")
     void invalidCreateDrawTicketTest () {
         // given
         LocalDateTime fastDate = LocalDateTime.of(2022, 06, 12, 12, 00, 00);
