@@ -36,12 +36,12 @@ public class Sneaker extends BaseTimeEntity {
     private Long id;
 
     @Enumerated(value = STRING)
-    @Column(name = "member_type", length = 10, nullable = false)
-    private MemberType memberType;
+    @Column(name = "member_category", length = 10, nullable = false)
+    private MemberCategory memberCategory;
 
     @Enumerated(value = STRING)
-    @Column(name = "category", length = 10, nullable = false)
-    private Category category;
+    @Column(name = "sneaker_category", length = 10, nullable = false)
+    private SneakerCategory sneakerCategory;
 
     @Column(name = "name", length = 50, nullable = false, updatable = false)
     private String name;
@@ -53,8 +53,8 @@ public class Sneaker extends BaseTimeEntity {
     @Column(name = "description", nullable = false)
     private String description;
 
-    @Embedded
-    private SneakerCode sneakerCode;
+    @Column(name = "code", nullable = false)
+    private String code;
 
     @Column(name = "release_date", nullable = false)
     private LocalDateTime releaseDate;
@@ -64,20 +64,20 @@ public class Sneaker extends BaseTimeEntity {
 
     @Builder
     public Sneaker(
-        MemberType memberType,
-        Category category,
+        MemberCategory memberCategory,
+        SneakerCategory sneakerCategory,
         String name,
         int price,
         String description,
-        SneakerCode sneakerCode,
+        String code,
         LocalDateTime releaseDate
     ) {
-        this.memberType = memberType;
-        this.category = category;
+        this.memberCategory = memberCategory;
+        this.sneakerCategory = sneakerCategory;
         this.name = name;
         this.price = price;
         this.description = description;
-        this.sneakerCode = sneakerCode;
+        this.code = code;
         this.releaseDate = releaseDate;
     }
 
@@ -91,12 +91,12 @@ public class Sneaker extends BaseTimeEntity {
     public String toString() {
         return new ToStringBuilder(this, SHORT_PREFIX_STYLE)
             .append("id", id)
-            .append("memberType", memberType)
-            .append("category", category)
+            .append("memberType", memberCategory)
+            .append("category", sneakerCategory)
             .append("name", name)
             .append("price", price)
             .append("description", description)
-            .append("sneakerCode", sneakerCode)
+            .append("code", code)
             .append("releaseDate", releaseDate)
             .toString();
     }
