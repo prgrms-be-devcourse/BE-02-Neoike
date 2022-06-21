@@ -11,13 +11,13 @@ import prgrms.neoike.repository.DrawRepository;
 import prgrms.neoike.repository.DrawTicketRepository;
 import prgrms.neoike.repository.MemberRepository;
 import prgrms.neoike.service.dto.drawticketdto.DrawTicketResponse;
-import prgrms.neoike.service.mapper.ServiceDrawMapper;
+import prgrms.neoike.service.converter.DrawConverter;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class DrawTicketService {
-    private final ServiceDrawMapper serviceDrawMapper;
+    private final DrawConverter drawConverter;
     private final DrawTicketRepository drawTicketRepository;
     private final DrawRepository drawRepository;
     private final MemberRepository memberRepository;
@@ -29,16 +29,15 @@ public class DrawTicketService {
         Draw draw = drawRepository.findById(drawId)
                 .orElseThrow(() -> new EntityNotFoundException("Draw 엔티티를 id 로 찾을 수 없습니다. drawId : " + drawId));
 
-        if (draw.drawAndCheckSpare()) {
-            DrawTicket drawTicket = DrawTicket.builder()
-                    .member(member)
-                    .draw(draw)
-                    .build();
-            DrawTicket save = drawTicketRepository.save(drawTicket);
+        draw.drawAndCheckSpare();
+        DrawTicket save = drawTicketRepository.save(
+                DrawTicket.builder()
+                .member(member)
+                .draw(draw)
+                .build()
+        );
 
-            return serviceDrawMapper.convertToDrawTicketResponse(save.getId());
-        }
-        throw new IllegalStateException("draw 의 quantity 가 0 이어서 더이상 ticket 발행이 안됩니다. drawId : " + draw.getId());
+        return drawConverter.toDrawTicketResponse(save.getId());
     }
 
 }

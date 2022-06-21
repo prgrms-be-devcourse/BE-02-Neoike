@@ -73,6 +73,6 @@ public class Draw extends BaseTimeEntity {
             quantity--;
             return true;
         }
-        return false;
+        throw new IllegalStateException("draw 의 quantity 가 0 이어서 더이상 ticket 발행이 안됩니다. drawId : " + id);
     }
 }

@@ -11,7 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import prgrms.neoike.controller.dto.drawdto.DrawItem;
 import prgrms.neoike.controller.dto.drawdto.DrawSaveRequest;
-import prgrms.neoike.controller.mapper.ControllerDrawMapper;
+import prgrms.neoike.controller.mapper.DrawMapper;
 import prgrms.neoike.service.DrawService;
 import prgrms.neoike.service.DrawTicketService;
 import prgrms.neoike.service.dto.drawdto.DrawResponse;
@@ -47,7 +47,7 @@ class DrawControllerTest {
     DrawTicketService drawTicketService;
 
     @MockBean
-    ControllerDrawMapper controllerDrawMapper;
+    DrawMapper drawMapper;
 
     @Test
     @DisplayName("/api/v1/draws 에서 draws 저장")
@@ -83,7 +83,7 @@ class DrawControllerTest {
 
         DrawResponse drawResponse = new DrawResponse(3L);
 
-        doReturn(serviceDrawSaveDto).when(controllerDrawMapper).convertToServiceDrawSaveDto(any(DrawSaveRequest.class));
+        doReturn(serviceDrawSaveDto).when(drawMapper).toDrawSaveDto(any(DrawSaveRequest.class));
         doReturn(drawResponse).when(drawService).save(any(ServiceDrawSaveDto.class));
 
 

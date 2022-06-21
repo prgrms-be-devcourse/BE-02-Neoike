@@ -2,24 +2,36 @@ package prgrms.neoike.service;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import prgrms.neoike.controller.dto.drawdto.DrawItem;
+import prgrms.neoike.domain.draw.Draw;
+import prgrms.neoike.repository.DrawRepository;
 import prgrms.neoike.service.dto.drawdto.DrawResponse;
 import prgrms.neoike.service.dto.drawdto.ServiceDrawSaveDto;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import prgrms.neoike.service.converter.DrawConverter;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 
-@SpringBootTest
-@Transactional
+@ExtendWith(MockitoExtension.class)
 class DrawServiceTest {
-    @Autowired
+    @InjectMocks
     DrawService drawService;
+
+    @Mock
+    DrawRepository drawRepository;
+
+    @Mock
+    DrawConverter drawConverter;
 
     @Test
     @DisplayName("Draw 엔티티를 저장한다.")
@@ -29,9 +41,24 @@ class DrawServiceTest {
         LocalDateTime endDate = LocalDateTime.of(2022, 06, 13, 12, 00, 00);
         LocalDateTime winningDate = LocalDateTime.of(2022, 06, 14, 12, 00, 00);
 
-        ServiceDrawSaveDto drawSaveDto = new ServiceDrawSaveDto(
-                1L, startDate, endDate, winningDate, 50, new ArrayList<>()
-        );
+        ServiceDrawSaveDto drawSaveDto = ServiceDrawSaveDto.builder()
+                .sneakerId(1L)
+                .startDate(startDate)
+                .endDate(endDate)
+                .winningDate(winningDate)
+                .quantity(50)
+                .sneakerItems(new ArrayList<DrawItem>() {{
+                    add(new DrawItem(1L, 10));
+                    add(new DrawItem(2L, 20));
+                }})
+                .build();
+
+        Draw draw = new Draw(startDate, endDate, winningDate, 50);
+        DrawResponse drawResponse = new DrawResponse(1L);
+
+        given(drawConverter.toDraw(any(ServiceDrawSaveDto.class))).willReturn(draw);
+        given(drawRepository.save(any(Draw.class))).willReturn(draw);
+        given(drawConverter.toDrawResponseDto(any())).willReturn(drawResponse);
 
         // when
         DrawResponse save = drawService.save(drawSaveDto);
@@ -48,18 +75,40 @@ class DrawServiceTest {
         LocalDateTime middleDate = LocalDateTime.of(2022, 06, 13, 12, 00, 00);
         LocalDateTime lateDate = LocalDateTime.of(2022, 06, 14, 12, 00, 00);
 
+        ServiceDrawSaveDto serviceDrawSaveDtoCase1 = ServiceDrawSaveDto.builder()
+                .sneakerId(1L)
+                .startDate(lateDate)
+                .endDate(fastDate)
+                .winningDate(middleDate)
+                .quantity(50)
+                .sneakerItems(new ArrayList<DrawItem>() {{
+                    add(new DrawItem(1L, 10));
+                    add(new DrawItem(2L, 20));
+                }})
+                .build();
+
+        ServiceDrawSaveDto serviceDrawSaveDtoCase2 = ServiceDrawSaveDto.builder()
+                .sneakerId(1L)
+                .startDate(middleDate)
+                .endDate(lateDate)
+                .winningDate(fastDate)
+                .quantity(50)
+                .sneakerItems(new ArrayList<DrawItem>() {{
+                    add(new DrawItem(1L, 10));
+                    add(new DrawItem(2L, 20));
+                }})
+                .build();
+
+        when(drawConverter.toDraw(serviceDrawSaveDtoCase1)).thenThrow(IllegalArgumentException.class);
+        when(drawConverter.toDraw(serviceDrawSaveDtoCase2)).thenThrow(IllegalArgumentException.class);
+
         // when // then
         assertThatThrownBy(() -> drawService.save(
-                new ServiceDrawSaveDto(
-                        1L, lateDate, fastDate, middleDate, 50, new ArrayList<>()
-                )
+                serviceDrawSaveDtoCase1
         )).isInstanceOf(IllegalArgumentException.class);
 
         assertThatThrownBy(() -> drawService.save(
-                new ServiceDrawSaveDto(
-                        1L, middleDate, lateDate, fastDate, 50, new ArrayList<>()
-                )
+                serviceDrawSaveDtoCase2
         )).isInstanceOf(IllegalArgumentException.class);
     }
-
 }
