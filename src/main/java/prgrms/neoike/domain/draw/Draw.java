@@ -10,7 +10,6 @@ import javax.validation.constraints.Positive;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import prgrms.neoike.common.exception.InvalidInputValueException;
 import prgrms.neoike.domain.BaseTimeEntity;
 
 @Getter
@@ -56,7 +55,7 @@ public class Draw extends BaseTimeEntity {
 
     private void validateQuantity(int quantity) {
         if (quantity < 0) {
-            throw new InvalidInputValueException("입력된 quantity 가 음수 입니다.");
+            throw new IllegalArgumentException("입력된 quantity 가 음수 입니다.");
         }
     }
 
@@ -65,7 +64,7 @@ public class Draw extends BaseTimeEntity {
         boolean isEndBeforeWinning = endDate.isBefore(winningDate);
 
         if (!(isStartBeforeEnd && isEndBeforeWinning)) {
-            throw new InvalidInputValueException("입력된 Date 날짜의 순서가 맞지 않습니다.");
+            throw new IllegalArgumentException("입력된 Date 날짜의 순서가 맞지 않습니다.");
         }
     }
 

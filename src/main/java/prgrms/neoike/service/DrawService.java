@@ -25,8 +25,10 @@ public class DrawService {
     }
 
     @Transactional(readOnly = true)
-    public Draw findById(Long drawId) {
-        return drawRepository.findById(drawId)
+    public DrawResponse findById(Long drawId) {
+        Draw draw = drawRepository.findById(drawId)
                 .orElseThrow(() -> new EntityNotFoundException("Draw 엔티티를 id 로 찾을 수 없습니다. drawId : " + drawId));
+        Draw savedDraw = drawRepository.save(draw);
+        return serviceDrawMapper.convertToDrawResponseDto(savedDraw.getId());
     }
 }

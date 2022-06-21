@@ -1,5 +1,7 @@
 package prgrms.neoike.controller.dto.drawdto;
 
+import lombok.Builder;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.time.LocalDateTime;
@@ -25,4 +27,7 @@ public record DrawSaveRequest(
         @NotNull
         ArrayList<DrawItem> sneakerItems
 ) {
+    @Builder
+    public DrawSaveRequest {
+    }
 }

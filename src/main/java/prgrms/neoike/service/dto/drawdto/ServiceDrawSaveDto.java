@@ -1,5 +1,6 @@
 package prgrms.neoike.service.dto.drawdto;
 
+import lombok.Builder;
 import prgrms.neoike.controller.dto.drawdto.DrawItem;
 
 import javax.validation.constraints.NotNull;
@@ -27,4 +28,7 @@ public record ServiceDrawSaveDto(
         @NotNull
         ArrayList<DrawItem> sneakerItems
 ) {
+    @Builder
+    public ServiceDrawSaveDto {
+    }
 }
