@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import prgrms.neoike.controller.dto.drawdto.DrawSaveRequest;
 import prgrms.neoike.service.dto.drawticketdto.DrawTicketResponse;
-import prgrms.neoike.controller.mapper.ControllerDrawMapper;
+import prgrms.neoike.controller.mapper.DrawMapper;
 import prgrms.neoike.service.DrawService;
 import prgrms.neoike.service.DrawTicketService;
 import prgrms.neoike.service.dto.drawdto.DrawResponse;
@@ -20,13 +20,13 @@ import javax.validation.Valid;
 public class DrawController {
     private final DrawService drawService;
     private final DrawTicketService drawTicketService;
-    private final ControllerDrawMapper controllerDrawMapper;
+    private final DrawMapper drawMapper;
 
     @PostMapping("/draws")
     public ResponseEntity<DrawResponse> saveDraw(
             @Valid @RequestBody DrawSaveRequest saveRequest
     ) {
-        ServiceDrawSaveDto serviceDrawSaveDto = controllerDrawMapper.convertToServiceDrawSaveDto(saveRequest);
+        ServiceDrawSaveDto serviceDrawSaveDto = drawMapper.toDrawSaveDto(saveRequest);
         DrawResponse drawResponse = drawService.save(serviceDrawSaveDto);
 
         // Sneaker Item 등록

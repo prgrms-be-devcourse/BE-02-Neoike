@@ -1,4 +1,4 @@
-package prgrms.neoike.service.mapper;
+package prgrms.neoike.service.converter;
 
 import org.springframework.stereotype.Component;
 import prgrms.neoike.domain.draw.Draw;
@@ -7,8 +7,8 @@ import prgrms.neoike.service.dto.drawdto.ServiceDrawSaveDto;
 import prgrms.neoike.service.dto.drawticketdto.DrawTicketResponse;
 
 @Component
-public class ServiceDrawMapper {
-    public Draw convertoDraw(ServiceDrawSaveDto drawSaveRequest) {
+public class DrawConverter {
+    public Draw toDraw(ServiceDrawSaveDto drawSaveRequest) {
         return Draw.builder()
                 .startDate(drawSaveRequest.startDate())
                 .endDate(drawSaveRequest.endDate())
@@ -17,11 +17,11 @@ public class ServiceDrawMapper {
                 .build();
     }
 
-    public DrawResponse convertToDrawResponseDto(Long id) {
+    public DrawResponse toDrawResponseDto(Long id) {
         return new DrawResponse(id);
     }
 
-    public DrawTicketResponse convertToDrawTicketResponse(Long id) {
+    public DrawTicketResponse toDrawTicketResponse(Long id) {
         return new DrawTicketResponse(id);
     }
 }
