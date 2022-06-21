@@ -40,3 +40,7 @@ image:
       - PNG
       - JPG
       - JPEG
+jwt:
+  header: Authorization
+  secret: cHJncm1zLWJlLWRldmNvdXJzZS1CRS0wMi1OZW9pa2Utc3ByaW5nLWJvb3QtYmFja2VuZC1wcm9qZWN0LWp3dC10b2tlbi1wcmdybXMtYmUtZGV2Y291cnNlLUJFLTAyLU5lb2lrZS1zcHJpbmctYm9vdC1iYWNrZW5kLXByb2plY3Qtand0LXRva2Vu
+  token-validity-in-seconds: 86400
