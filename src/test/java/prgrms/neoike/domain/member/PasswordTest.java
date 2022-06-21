@@ -4,9 +4,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PasswordTest {
 
@@ -21,7 +22,9 @@ class PasswordTest {
     @DisplayName("유효한 패스워드 등록시 정상적으로 패스워드가 생성된다")
     void createPasswordTest() {
         String password = "123abcAB!!";
+        String encodedPassword  = new Password(password).getPassword();
 
-        assertThat(new Password(password).getPassword()).isEqualTo("123abcAB!!");
+        assertTrue(new BCryptPasswordEncoder().matches("123abcAB!!", encodedPassword));
+
     }
 }
