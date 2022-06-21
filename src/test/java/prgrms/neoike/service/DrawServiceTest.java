@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import prgrms.neoike.common.exception.InvalidInputValueException;
 import prgrms.neoike.service.dto.drawdto.DrawResponse;
 import prgrms.neoike.service.dto.drawdto.ServiceDrawSaveDto;
 
@@ -54,13 +53,13 @@ class DrawServiceTest {
                 new ServiceDrawSaveDto(
                         1L, lateDate, fastDate, middleDate, 50, new ArrayList<>()
                 )
-        )).isInstanceOf(InvalidInputValueException.class);
+        )).isInstanceOf(IllegalArgumentException.class);
 
         assertThatThrownBy(() -> drawService.save(
                 new ServiceDrawSaveDto(
                         1L, middleDate, lateDate, fastDate, 50, new ArrayList<>()
                 )
-        )).isInstanceOf(InvalidInputValueException.class);
+        )).isInstanceOf(IllegalArgumentException.class);
     }
 
 }

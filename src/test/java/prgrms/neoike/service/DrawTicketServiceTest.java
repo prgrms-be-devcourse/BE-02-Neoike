@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import prgrms.neoike.common.exception.InvalidDrawQuantityException;
 import prgrms.neoike.domain.draw.Draw;
 import prgrms.neoike.domain.member.Member;
 import prgrms.neoike.repository.DrawRepository;
@@ -81,7 +80,7 @@ class DrawTicketServiceTest {
         // when // then
         assertThatThrownBy(() ->
                 drawTicketService.saveDrawTicket(member.getId(), draw.getId())
-        ).isInstanceOf(InvalidDrawQuantityException.class);
+        ).isInstanceOf(IllegalStateException.class);
     }
 
 }
