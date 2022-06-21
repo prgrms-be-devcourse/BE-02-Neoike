@@ -13,6 +13,9 @@ import prgrms.neoike.repository.MemberRepository;
 import prgrms.neoike.service.dto.drawticketdto.DrawTicketResponse;
 import prgrms.neoike.service.converter.DrawConverter;
 
+import static java.text.MessageFormat.format;
+
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -24,17 +27,17 @@ public class DrawTicketService {
 
     public DrawTicketResponse saveDrawTicket(Long memberId, Long drawId) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new EntityNotFoundException("Member 엔티티를 id 로 찾을 수 없습니다. memberId : " + drawId));
+                .orElseThrow(() -> new EntityNotFoundException(format("Member 엔티티를 id 로 찾을 수 없습니다. memberId : {0}", drawId)));
 
         Draw draw = drawRepository.findById(drawId)
-                .orElseThrow(() -> new EntityNotFoundException("Draw 엔티티를 id 로 찾을 수 없습니다. drawId : " + drawId));
+                .orElseThrow(() -> new EntityNotFoundException(format("Draw 엔티티를 id 로 찾을 수 없습니다. drawId : {0}", drawId)));
 
         draw.drawAndCheckSpare();
         DrawTicket save = drawTicketRepository.save(
                 DrawTicket.builder()
-                .member(member)
-                .draw(draw)
-                .build()
+                        .member(member)
+                        .draw(draw)
+                        .build()
         );
 
         return drawConverter.toDrawTicketResponse(save.getId());

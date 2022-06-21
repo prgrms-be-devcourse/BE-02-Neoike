@@ -10,6 +10,9 @@ import prgrms.neoike.service.dto.drawdto.DrawResponse;
 import prgrms.neoike.service.dto.drawdto.ServiceDrawSaveDto;
 import prgrms.neoike.service.converter.DrawConverter;
 
+import static java.text.MessageFormat.format;
+
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -26,7 +29,7 @@ public class DrawService {
     @Transactional(readOnly = true)
     public DrawResponse findById(Long drawId) {
         Draw draw = drawRepository.findById(drawId)
-                .orElseThrow(() -> new EntityNotFoundException("Draw 엔티티를 id 로 찾을 수 없습니다. drawId : " + drawId));
+                .orElseThrow(() -> new EntityNotFoundException(format("Draw 엔티티를 id 로 찾을 수 없습니다. drawId : {0}", drawId)));
         Draw savedDraw = drawRepository.save(draw);
         return drawConverter.toDrawResponseDto(savedDraw.getId());
     }

@@ -12,6 +12,9 @@ import prgrms.neoike.service.dto.drawdto.DrawResponse;
 import prgrms.neoike.service.dto.drawdto.ServiceDrawSaveDto;
 
 import javax.validation.Valid;
+import java.net.URI;
+
+import static java.text.MessageFormat.format;
 
 
 @RestController
@@ -34,8 +37,9 @@ public class DrawController {
         // ArrayList<DrawItem> drawItems = saveRequest.sneakerItems();
         // sneakerService.itemRegistration(sneakerId, drawItems);
 
+        URI location = URI.create(format("/api/v1/draws/{0}", drawResponse.drawId()));
         return ResponseEntity
-                .ok()
+                .created(location)
                 .body(drawResponse);
     }
 
@@ -45,8 +49,10 @@ public class DrawController {
             @RequestParam Long drawId
     ) {
         DrawTicketResponse drawTicketResponse = drawTicketService.saveDrawTicket(memberId, drawId);
+        URI location = URI.create(format("/api/v1/draw-sneakers/{0}", drawTicketResponse.drawTicketId()));
+
         return ResponseEntity
-                .ok()
+                .created(location)
                 .body(drawTicketResponse);
     }
 }
