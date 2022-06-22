@@ -3,7 +3,7 @@ package prgrms.neoike.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import prgrms.neoike.controller.dto.drawdto.DrawSaveRequest
+import prgrms.neoike.controller.dto.drawdto.DrawSaveRequest;
 import prgrms.neoike.controller.mapper.DrawMapper;
 import prgrms.neoike.service.DrawService;
 import prgrms.neoike.service.dto.drawdto.DrawResponse;
