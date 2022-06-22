@@ -36,9 +36,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(MemberController.class)
+@WebMvcTest(
+        controllers = MemberController.class,
+        excludeAutoConfiguration = SecurityAutoConfiguration.class,
+        excludeFilters = {
+                @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,
+                        classes = SecurityConfig.class)
+        })
 @MockBean(JpaMetamodelMappingContext.class)
-@ComponentScan(basePackages = {"prgrms/neoike/common/jwt", "prgrms/neoike/common/config"})
 class MemberControllerTest {
 
     @Autowired
