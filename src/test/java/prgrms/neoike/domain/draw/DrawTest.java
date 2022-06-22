@@ -100,7 +100,7 @@ class DrawTest {
 
         // when // then
         assertThrows(IllegalStateException.class, () -> {
-            draw.drawAndCheckSpare();
+            draw.validateSpare();
         });
     }
 }

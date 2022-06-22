@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
@@ -42,9 +43,6 @@ class DrawControllerTest {
 
     @MockBean
     DrawService drawService;
-
-    @MockBean
-    DrawTicketService drawTicketService;
 
     @MockBean
     DrawMapper drawMapper;
@@ -83,9 +81,8 @@ class DrawControllerTest {
 
         DrawResponse drawResponse = new DrawResponse(3L);
 
-        doReturn(serviceDrawSaveDto).when(drawMapper).toDrawSaveDto(any(DrawSaveRequest.class));
-        doReturn(drawResponse).when(drawService).save(any(ServiceDrawSaveDto.class));
-
+        given(drawMapper.toDrawSaveDto(any(DrawSaveRequest.class))).willReturn(serviceDrawSaveDto);
+        given(drawService.save(any(ServiceDrawSaveDto.class))).willReturn(drawResponse);
 
         // when // then
         mockMvc.perform(post("/api/v1/draws")
@@ -107,27 +104,6 @@ class DrawControllerTest {
                         ),
                         responseFields(
                                 fieldWithPath("drawId").type(NUMBER).description("생성된 응모 id")
-                        )));
-    }
-
-    @Test
-    @DisplayName("/api/v1/draw-sneakers 에서 응모권 저장")
-    void saveDrawTicketTest() throws Exception {
-        // given
-        DrawTicketResponse drawTicketResponse = new DrawTicketResponse(3L);
-
-        doReturn(drawTicketResponse).when(drawTicketService).saveDrawTicket(1L, 2L);
-
-        // when // then
-        mockMvc.perform(post("/api/v1//draw-sneakers")
-                        .param("memberId", String.valueOf(1L))
-                        .param("drawId", String.valueOf(2L))
-                )
-                .andExpect(status().isCreated())
-                .andDo(print())
-                .andDo(document("save-draw-ticket",
-                        responseFields(
-                                fieldWithPath("drawTicketId").type(NUMBER).description("발행된 응모권 id")
                         )));
     }
 }

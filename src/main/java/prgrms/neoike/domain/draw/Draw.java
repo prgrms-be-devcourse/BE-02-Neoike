@@ -6,7 +6,7 @@ import static lombok.AccessLevel.PROTECTED;
 import java.time.LocalDateTime;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -36,7 +36,7 @@ public class Draw extends BaseTimeEntity {
 
     @Column(name = "quantity")
     @NotNull
-    @Positive
+    @PositiveOrZero
     private int quantity;
 
     @Builder
@@ -72,7 +72,7 @@ public class Draw extends BaseTimeEntity {
         }
     }
 
-    public boolean drawAndCheckSpare() {
+    public boolean validateSpare() {
         if (quantity > 0) {
             quantity--;
             return true;

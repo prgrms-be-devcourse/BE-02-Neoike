@@ -24,4 +24,5 @@ public class DrawConverter {
     public DrawTicketResponse toDrawTicketResponse(Long id) {
         return new DrawTicketResponse(id);
     }
+
 }
