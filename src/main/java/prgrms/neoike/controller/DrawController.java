@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import prgrms.neoike.controller.dto.drawdto.DrawSaveRequest;
 import prgrms.neoike.controller.mapper.DrawMapper;
 import prgrms.neoike.service.DrawService;
+import prgrms.neoike.service.DrawTicketService;
 import prgrms.neoike.service.dto.drawdto.DrawResponse;
 import prgrms.neoike.service.dto.drawdto.ServiceDrawSaveDto;
 
@@ -20,6 +21,7 @@ import static java.text.MessageFormat.format;
 @RequiredArgsConstructor
 public class DrawController {
     private final DrawService drawService;
+    private final DrawTicketService drawTicketService;
     private final DrawMapper drawMapper;
 
     @PostMapping
