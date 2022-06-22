@@ -5,7 +5,7 @@ import lombok.Builder;
 
 import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -29,7 +29,7 @@ public record DrawSaveRequest(
         LocalDateTime winningDate,
 
         @NotNull
-        @Positive
+        @PositiveOrZero
         int quantity,
 
         @NotNull
