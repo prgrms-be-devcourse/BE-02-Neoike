@@ -40,7 +40,7 @@ public class Sneaker extends BaseTimeEntity {
     private MemberCategory memberCategory;
 
     @Enumerated(value = STRING)
-    @Column(name = "sneaker_category", length = 10, nullable = false)
+    @Column(name = "sneaker_category", length = 20, nullable = false)
     private SneakerCategory sneakerCategory;
 
     @Column(name = "name", length = 50, nullable = false, updatable = false)
@@ -79,12 +79,6 @@ public class Sneaker extends BaseTimeEntity {
         this.description = description;
         this.code = code;
         this.releaseDate = releaseDate;
-    }
-
-    public void uploadSneakerImages(Set<SneakerImage> sneakerImages) {
-        sneakerImages.forEach(
-            sneakerImage -> sneakerImage.uploadSneakerImage(this)
-        );
     }
 
     @Override

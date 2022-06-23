@@ -1,4 +1,4 @@
-package prgrms.neoike.service.mapper;
+package prgrms.neoike.service.converter;
 
 import prgrms.neoike.domain.member.Email;
 import prgrms.neoike.domain.member.Member;

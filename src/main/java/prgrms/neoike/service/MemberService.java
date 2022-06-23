@@ -10,10 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 import prgrms.neoike.common.jwt.TokenProvider;
 import prgrms.neoike.domain.member.Member;
 import prgrms.neoike.repository.MemberRepository;
+import prgrms.neoike.service.converter.MemberConverter;
 import prgrms.neoike.service.dto.memberdto.LoginDto;
 import prgrms.neoike.service.dto.memberdto.MemberDto;
 import prgrms.neoike.service.dto.memberdto.MemberResponse;
-import prgrms.neoike.service.mapper.MemberConverter;
+
 
 import java.util.Optional;
 

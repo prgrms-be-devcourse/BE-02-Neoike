@@ -22,6 +22,10 @@ public class SneakerCodeValidator implements ConstraintValidator<SneakerCode, St
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
+        if (value.isBlank()) {
+            return true;
+        }
+
         return isSameWithLength(value)
             && validatePrefix(value)
             && isContainsHyphen(value)
@@ -29,10 +33,6 @@ public class SneakerCodeValidator implements ConstraintValidator<SneakerCode, St
     }
 
     private boolean isSameWithLength(String value) {
-        if (value.isBlank()) {
-            return true;
-        }
-
         return value.length() == length;
     }
 

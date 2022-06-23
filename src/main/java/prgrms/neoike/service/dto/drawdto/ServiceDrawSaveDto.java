@@ -1,9 +1,10 @@
 package prgrms.neoike.service.dto.drawdto;
 
+import lombok.Builder;
 import prgrms.neoike.controller.dto.drawdto.DrawItem;
 
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -21,10 +22,13 @@ public record ServiceDrawSaveDto(
         LocalDateTime winningDate,
 
         @NotNull
-        @Positive
+        @PositiveOrZero
         int quantity,
 
         @NotNull
         ArrayList<DrawItem> sneakerItems
 ) {
+    @Builder
+    public ServiceDrawSaveDto {
+    }
 }

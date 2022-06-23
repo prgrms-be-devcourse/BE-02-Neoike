@@ -1,8 +1,9 @@
-package prgrms.neoike.domain.sneaker;
+package prgrms.neoike.domain.sneaker.validators.validator;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import prgrms.neoike.controller.dto.sneaker.request.SneakerRequest;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -10,13 +11,15 @@ import javax.validation.Validator;
 import java.util.List;
 import java.util.Set;
 
+import static java.time.LocalDateTime.now;
 import static org.apache.commons.lang3.RandomStringUtils.*;
 import static org.apache.commons.lang3.math.NumberUtils.isDigits;
 import static org.assertj.core.api.Assertions.assertThat;
+import static prgrms.neoike.domain.sneaker.MemberCategory.MEN;
 import static prgrms.neoike.domain.sneaker.SneakerCategory.*;
-import static prgrms.neoike.domain.sneaker.manager.SneakerCodeCreator.createSneakerCode;
+import static prgrms.neoike.controller.mapper.SneakerCodeCreator.createSneakerCode;
 
-class SneakerCodeTest {
+class SneakerCodeValidatorTest {
 
     Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
@@ -51,7 +54,12 @@ class SneakerCodeTest {
     @ParameterizedTest(name = "잘못된 신발 코드 {index}")
     @MethodSource("testInvalidSneakerCodeSource")
     void testInvalidSneakerCode(String sneakerCode) {
-        Set<ConstraintViolation<String>> validate = validator.validate(sneakerCode);
+        Set<ConstraintViolation<SneakerRequest>> validate = validator
+            .validate(
+                new SneakerRequest(
+                    MEN, JORDAN, "jordan", 10000, "description", sneakerCode, now()
+                )
+            );
 
         assertThat(validate.size()).isNotZero();
     }

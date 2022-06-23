@@ -1,13 +1,12 @@
-package prgrms.neoike.domain.sneaker.manager.image;
+package prgrms.neoike.service.image;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import prgrms.neoike.common.exception.FailedStoreImageException;
 import prgrms.neoike.domain.sneaker.Image;
-import prgrms.neoike.domain.sneaker.SneakerImage;
+import prgrms.neoike.service.dto.sneaker.SneakerImageDto;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -35,31 +34,31 @@ public class ImageFileManager {
 
     private final ImageFileValidator imageFileValidator;
 
-    public Set<SneakerImage>  storeImageFileToLocal(List<ImageFile> imageFiles) {
-        imageFileValidator.validateImageFiles(imageFiles);
+    public Set<Image> storeImages(List<SneakerImageDto> sneakerImageDtos) {
+        imageFileValidator.validateImageFiles(sneakerImageDtos);
 
-        Set<SneakerImage> sneakerImages = new HashSet<>();
+        Set<Image> images = new HashSet<>();
 
-        imageFiles
+        sneakerImageDtos
             .forEach(
-                imageFile -> {
-                    imageFileValidator.validateEncodedImageFile(imageFile.encodedName());
-                    imageFileValidator.validateImageFileFormat(imageFile.originName());
+                dtos -> {
+                    imageFileValidator.validateEncodedImageFile(dtos.encodedName());
+                    imageFileValidator.validateImageFileFormat(dtos.originName());
 
-                    String newImageFileName = createNewImageFileName(imageFile.originName());
+                    String newImageFileName = createNewImageFileName(dtos.originName());
                     File createdImageFile = createImageFile(newImageFileName);
-                    byte[] decodedBytes = decode64(imageFile.encodedName());
+                    byte[] decodedBytes = decode64(dtos.encodedName());
                     storeImageFile(createdImageFile, decodedBytes);
 
-                    sneakerImages.add(
-                        new SneakerImage(
-                            new Image(dir, imageFile.originName(), newImageFileName)
+                    images.add(
+                        new Image(
+                            dir, dtos.originName(), newImageFileName
                         )
                     );
                 }
             );
 
-        return sneakerImages;
+        return images;
     }
 
     private File createImageFile(String newImageFileName) {
@@ -84,7 +83,7 @@ public class ImageFileManager {
         } catch (IOException e) {
             log.warn("입출력 예외가 발생하였습니다. : {}", e.getMessage(), e);
 
-            throw new FailedStoreImageException(
+            throw new IllegalStateException(
                 format(
                     "이미지 파일을 저장하는데 실패하였습니다. (URI: {0})", file.toURI()
                 )

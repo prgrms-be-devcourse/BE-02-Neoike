@@ -1,4 +1,4 @@
-package prgrms.neoike.domain.sneaker.manager.image;
+package prgrms.neoike.service.image;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -7,7 +7,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.util.Base64Utils;
-import prgrms.neoike.common.exception.InvalidInputValueException;
+import prgrms.neoike.service.dto.sneaker.SneakerImageDto;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -28,16 +28,16 @@ class ImageFileValidatorTest {
     @Test
     @DisplayName("비어있는 이미지 파일 리스트가 업로드 되면 예외가 발생한다.")
     void testEmptyImageFiles() {
-        List<ImageFile> imageFiles = new ArrayList<>();
+        List<SneakerImageDto> imageFiles = new ArrayList<>();
 
-        assertThrows(InvalidInputValueException.class, () -> imageFileValidator.validateImageFiles(imageFiles));
+        assertThrows(IllegalArgumentException.class, () -> imageFileValidator.validateImageFiles(imageFiles));
     }
 
     @DisplayName("인코딩 된 이미지 파일의 이름이 비어있으면 예외가 발생한다.")
     @ParameterizedTest(name = "인코딩 파일 이름 테스트 {index}")
     @MethodSource("testBlankImageFileNameSource")
     void testBlankImageFileName(String encodedName) {
-        assertThrows(InvalidInputValueException.class, () -> imageFileValidator.validateEncodedImageFile(encodedName));
+        assertThrows(IllegalArgumentException.class, () -> imageFileValidator.validateEncodedImageFile(encodedName));
     }
 
     static List<String> testBlankImageFileNameSource() {
@@ -52,7 +52,7 @@ class ImageFileValidatorTest {
     @ParameterizedTest(name = "이미지 파일 포맷 테스트 {index}")
     @MethodSource("testNotSupportedImageFileSource")
     void testNotSupportedImageFile(String originName) {
-        assertThrows(InvalidInputValueException.class, () -> imageFileValidator.validateImageFileFormat(originName));
+        assertThrows(IllegalArgumentException.class, () -> imageFileValidator.validateImageFileFormat(originName));
     }
 
     static List<String> testNotSupportedImageFileSource() {
@@ -74,7 +74,7 @@ class ImageFileValidatorTest {
         String encodedName = new String(baseBytes);
 
         assertThrows(
-            InvalidInputValueException.class,
+            IllegalStateException.class,
             () -> imageFileValidator.validateEncodedImageFile(encodedName)
         );
     }
