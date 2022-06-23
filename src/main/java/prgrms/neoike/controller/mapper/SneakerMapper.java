@@ -1,14 +1,14 @@
 package prgrms.neoike.controller.mapper;
 
 import lombok.NoArgsConstructor;
-import prgrms.neoike.controller.dto.sneaker.request.SneakerImageRequest;
 import prgrms.neoike.controller.dto.sneaker.request.SneakerRegisterRequest;
 import prgrms.neoike.controller.dto.sneaker.request.SneakerRequest;
 import prgrms.neoike.controller.dto.sneaker.request.SneakerStockRequest;
 import prgrms.neoike.service.dto.sneaker.SneakerDto;
-import prgrms.neoike.service.dto.sneaker.SneakerImageDto;
 import prgrms.neoike.service.dto.sneaker.SneakerRegisterDto;
 import prgrms.neoike.service.dto.sneaker.SneakerStockDto;
+
+import java.util.List;
 
 import static lombok.AccessLevel.PRIVATE;
 
@@ -16,16 +16,11 @@ import static lombok.AccessLevel.PRIVATE;
 public class SneakerMapper {
 
     public static SneakerRegisterDto toDto(SneakerRegisterRequest registerRequest) {
-        return SneakerRegisterDto
-            .builder()
-            .imageDtos(registerRequest.sneakerImages().stream().map(SneakerMapper::toDto).toList())
-            .sneakerDto(toDto(registerRequest.sneaker()))
-            .stockDtos(registerRequest.sneakerStocks().stream().map(SneakerMapper::toDto).toList())
-            .build();
-    }
-
-    public static SneakerImageDto toDto(SneakerImageRequest imageRequest) {
-        return new SneakerImageDto(imageRequest.originName(), imageRequest.encodedName());
+        return new SneakerRegisterDto(
+            registerRequest.imagePaths(),
+            toDto(registerRequest.sneaker()),
+            toDto(registerRequest.sneakerStocks())
+        );
     }
 
     public static SneakerDto toDto(SneakerRequest sneakerRequest) {
@@ -45,7 +40,10 @@ public class SneakerMapper {
             .build();
     }
 
-    public static SneakerStockDto toDto(SneakerStockRequest stockRequest) {
-        return new SneakerStockDto(stockRequest.size(), stockRequest.quantity());
+    public static List<SneakerStockDto> toDto(List<SneakerStockRequest> sneakerStockRequests) {
+        return sneakerStockRequests
+            .stream()
+            .map(i -> new SneakerStockDto(i.size(), i.quantity()))
+            .toList();
     }
 }
