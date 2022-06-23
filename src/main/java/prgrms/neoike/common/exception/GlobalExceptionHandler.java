@@ -12,20 +12,11 @@ import static prgrms.neoike.common.api.ErrorCode.*;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
     @ExceptionHandler(EntityNotFoundException.class)
     protected ResponseEntity<Object> handleEntityNotFound(EntityNotFoundException ex) {
         log.error("엔티티를 찾을 수 없습니다. {}", ex.getMessage());
 
         final ErrorResponse errorResponse = ErrorResponse.of(ENTITY_NOT_FOUND, ex.getMessage());
-        return ResponseEntity.badRequest().body(errorResponse);
-    }
-
-    @ExceptionHandler(InvalidDrawQuantityException.class)
-    protected ResponseEntity<Object> handleInvalidDrawQuantityException (InvalidDrawQuantityException ex) {
-        log.error("당첨에 실패하였습니다. {}", ex.getMessage());
-
-        final ErrorResponse errorResponse = ErrorResponse.of(SERVER_ERROR, ex.getMessage());
         return ResponseEntity.badRequest().body(errorResponse);
     }
 

@@ -8,6 +8,7 @@ import prgrms.neoike.controller.mapper.DrawMapper;
 import prgrms.neoike.service.DrawService;
 import prgrms.neoike.service.dto.drawdto.DrawResponse;
 import prgrms.neoike.service.dto.drawdto.ServiceDrawSaveDto;
+import prgrms.neoike.service.dto.drawticketdto.DrawTicketListResponse;
 
 import javax.validation.Valid;
 import java.net.URI;
@@ -38,5 +39,16 @@ public class DrawController {
         return ResponseEntity
                 .created(location)
                 .body(drawResponse);
+    }
+
+    @GetMapping("/win/{drawId}")
+    public ResponseEntity<DrawTicketListResponse> winDraw(
+        @PathVariable Long drawId
+    ){
+        DrawTicketListResponse winningTicketListResponse = drawService.drawWinner(drawId);
+
+        return ResponseEntity
+                .ok()
+                .body(winningTicketListResponse);
     }
 }
