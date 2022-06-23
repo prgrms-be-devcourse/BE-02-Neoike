@@ -29,7 +29,7 @@ public class MemberController {
 
     @PostMapping
     public ResponseEntity<MemberResponse> joinMember(@Valid @RequestBody MemberSaveRequest memberSaveRequest) {
-        MemberDto memberDto = MemberMapper.mapMemberDto(memberSaveRequest);
+        MemberDto memberDto = MemberMapper.toMemberDto(memberSaveRequest);
         MemberResponse joinMemberResponse = memberService.join(memberDto);
 
         return ResponseEntity.created(

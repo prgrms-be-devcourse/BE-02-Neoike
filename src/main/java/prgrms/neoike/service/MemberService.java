@@ -31,9 +31,9 @@ public class MemberService {
     @Transactional
     public MemberResponse join(MemberDto memberDto) {
         validateDuplicatedMember(memberDto.email());
-        Member member = MemberConverter.mapMember(memberDto);
+        Member member = MemberConverter.toMember(memberDto);
         Member savedMember = memberRepository.save(member);
-        return MemberConverter.mapMemberResponse(savedMember.getId(), savedMember.getEmail().getEmail());
+        return MemberConverter.toMemberResponse(savedMember.getId(), savedMember.getEmail().getEmail());
     }
 
     @Transactional

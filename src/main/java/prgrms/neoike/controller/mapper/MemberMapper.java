@@ -8,7 +8,7 @@ import prgrms.neoike.controller.dto.memberdto.MemberSaveRequest;
 
 public class MemberMapper {
 
-    public static MemberDto mapMemberDto(MemberSaveRequest memberSaveRequest) {
+    public static MemberDto toMemberDto(MemberSaveRequest memberSaveRequest) {
         return MemberDto.builder()
                 .name(memberSaveRequest.name())
                 .password(memberSaveRequest.password())

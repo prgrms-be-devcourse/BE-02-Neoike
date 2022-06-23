@@ -9,7 +9,7 @@ import prgrms.neoike.service.dto.memberdto.MemberResponse;
 
 public class MemberConverter {
 
-    public static Member mapMember(MemberDto memberDto) {
+    public static Member toMember(MemberDto memberDto) {
         return Member.builder()
                 .name(memberDto.name())
                 .password(new Password(memberDto.password()))
@@ -21,7 +21,7 @@ public class MemberConverter {
                 .build();
     }
 
-    public static MemberResponse mapMemberResponse(Long memberId, String email) {
+    public static MemberResponse toMemberResponse(Long memberId, String email) {
         return new MemberResponse(memberId, email);
     }
 }
