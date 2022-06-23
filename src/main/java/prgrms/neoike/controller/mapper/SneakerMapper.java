@@ -31,11 +31,7 @@ public class SneakerMapper {
             .name(sneakerRequest.name())
             .price(sneakerRequest.price())
             .description(sneakerRequest.description())
-            .code(
-                sneakerRequest.code().isBlank() ?
-                    SneakerCodeCreator.createSneakerCode(sneakerRequest.sneakerCategory())
-                    : sneakerRequest.code()
-            )
+            .code(sneakerRequest.code())
             .releaseDate(sneakerRequest.releaseDate())
             .build();
     }
