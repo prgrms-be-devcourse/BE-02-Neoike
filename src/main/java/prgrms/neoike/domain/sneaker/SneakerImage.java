@@ -6,32 +6,38 @@ import lombok.NoArgsConstructor;
 import prgrms.neoike.domain.BaseTimeEntity;
 
 import javax.persistence.*;
-import javax.validation.Valid;
 
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.AUTO;
 import static lombok.AccessLevel.PROTECTED;
 
-@Entity
 @Getter
+@Entity
 @NoArgsConstructor(access = PROTECTED)
+@Table(
+    uniqueConstraints = {
+        @UniqueConstraint(
+            name = "sneaker_image_id_path",
+            columnNames = {"sneaker_image_id", "path"}
+        )
+    }
+)
 public class SneakerImage extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = AUTO)
-    @Column(name = "sneaker_image_id", unique = true, nullable = false, updatable = false)
+    @Column(name = "sneaker_image_id", nullable = false, updatable = false)
     private Long id;
 
-    @Valid
-    @Embedded
-    private Image image;
+    @Column(name = "path", nullable = false)
+    String path;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "sneaker_id", nullable = false)
+    @JoinColumn(name = "sneaker_id")
     private Sneaker sneaker;
 
-    public SneakerImage(Image image) {
-        this.image = image;
+    public SneakerImage(String path) {
+        this.path = path;
     }
 
     public void uploadSneakerImage(Sneaker sneaker) {
