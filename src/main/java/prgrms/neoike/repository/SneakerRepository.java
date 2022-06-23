@@ -7,5 +7,5 @@ import java.util.Optional;
 
 public interface SneakerRepository extends JpaRepository<Sneaker, Long> {
 
-    Optional<Sneaker> findByCodeOrName(String code, String name);
+    Optional<Sneaker> findByCode(String code);
 }
