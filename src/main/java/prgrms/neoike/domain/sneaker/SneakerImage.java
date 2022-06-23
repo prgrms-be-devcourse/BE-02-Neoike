@@ -3,6 +3,8 @@ package prgrms.neoike.domain.sneaker;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import prgrms.neoike.domain.BaseTimeEntity;
 
 import javax.persistence.*;
@@ -10,6 +12,7 @@ import javax.persistence.*;
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.AUTO;
 import static lombok.AccessLevel.PROTECTED;
+import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
 @Getter
 @Entity
@@ -40,8 +43,15 @@ public class SneakerImage extends BaseTimeEntity {
         this.path = path;
     }
 
-    public void uploadSneakerImage(Sneaker sneaker) {
+    public void setSneaker(Sneaker sneaker) {
         this.sneaker = sneaker;
-        sneaker.getSneakerImages().add(this);
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, SHORT_PREFIX_STYLE)
+            .append("id", id)
+            .append("path", path)
+            .toString();
     }
 }
