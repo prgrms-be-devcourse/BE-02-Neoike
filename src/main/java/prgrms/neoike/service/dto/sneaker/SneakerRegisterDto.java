@@ -1,16 +1,11 @@
 package prgrms.neoike.service.dto.sneaker;
 
-import lombok.Builder;
-
 import java.util.List;
 
 public record SneakerRegisterDto(
-    List<SneakerImageDto> imageDtos,
+    List<String> imageDto,
     SneakerDto sneakerDto,
-    List<SneakerStockDto> stockDtos
+    List<SneakerStockDto> stockDto
 ) {
 
-    @Builder
-    public SneakerRegisterDto {
-    }
 }
