@@ -5,8 +5,7 @@ import prgrms.neoike.domain.sneaker.validators.annotation.SneakerCode;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-import static org.apache.commons.lang3.StringUtils.isAllUpperCase;
-import static org.apache.commons.lang3.StringUtils.isAlpha;
+import static org.apache.commons.lang3.StringUtils.*;
 import static org.apache.commons.lang3.math.NumberUtils.isDigits;
 
 public class SneakerCodeValidator implements ConstraintValidator<SneakerCode, String> {
@@ -22,11 +21,8 @@ public class SneakerCodeValidator implements ConstraintValidator<SneakerCode, St
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
-        if (value.isBlank()) {
-            return true;
-        }
-
-        return isSameWithLength(value)
+        return isNotBlank(value)
+            && isSameWithLength(value)
             && validatePrefix(value)
             && isContainsHyphen(value)
             && validatePostfix(value);
