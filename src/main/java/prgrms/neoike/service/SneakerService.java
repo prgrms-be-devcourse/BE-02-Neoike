@@ -13,7 +13,6 @@ import prgrms.neoike.service.dto.sneaker.SneakerResponse;
 import prgrms.neoike.service.mapper.SneakerConverter;
 
 import javax.persistence.EntityExistsException;
-
 import java.util.List;
 
 import static java.text.MessageFormat.format;
@@ -29,7 +28,7 @@ public class SneakerService {
 
     @Transactional
     public SneakerResponse registerSneaker(SneakerRegisterDto registerDto) {
-        validateDuplicatedSneaker(registerDto.sneakerDto().code(), registerDto.sneakerDto().name());
+        validateDuplicatedSneaker(registerDto.sneakerDto().code());
 
         List<SneakerImage> sneakerImages = toEntity(registerDto.imageDto());
         Sneaker sneaker = toEntity(registerDto.sneakerDto());
@@ -43,13 +42,13 @@ public class SneakerService {
         return toResponse(retrievedSneaker.getId(), retrievedSneaker.getCode());
     }
 
-    private void validateDuplicatedSneaker(String code, String name) {
+    private void validateDuplicatedSneaker(String code) {
         sneakerRepository
-            .findByCodeOrName(code, name)
+            .findByCode(code)
             .ifPresent(
             sneaker -> {
                 throw new EntityExistsException(
-                    format("동일한 신발이 이미 존재합니다. (코드: {0}, 이름: {1})", code, name)
+                    format("동일한 신발이 이미 존재합니다. (코드: {0})", code)
                 );
             }
         );
