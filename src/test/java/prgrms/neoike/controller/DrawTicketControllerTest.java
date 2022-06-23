@@ -15,9 +15,7 @@ import prgrms.neoike.service.dto.drawticketdto.DrawTicketListResponse;
 
 import java.util.Arrays;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doReturn;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
@@ -74,7 +72,8 @@ class DrawTicketControllerTest {
                         new DrawTicketResponse(3L)
                 )
         );
-        doReturn(drawTicketResponses).when(drawTicketService).findByMember(1L);
+
+        given(drawTicketService.findByMember(1L)).willReturn(drawTicketResponses);
 
         // when // then
         mockMvc.perform(get("/api/v1/draw-sneakers/{memberId}", 1L))
@@ -85,7 +84,5 @@ class DrawTicketControllerTest {
                                 fieldWithPath("drawTicketResponses").type(ARRAY).description("응모권 배열"),
                                 fieldWithPath("drawTicketResponses[].drawTicketId").type(NUMBER).description("응모권 아이디")
                         )));
-
     }
-
 }
