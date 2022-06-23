@@ -1,4 +1,4 @@
-package prgrms.neoike.service.mapper;
+package prgrms.neoike.service.converter;
 
 import prgrms.neoike.service.dto.memberdto.MemberDto;
 import prgrms.neoike.domain.member.*;

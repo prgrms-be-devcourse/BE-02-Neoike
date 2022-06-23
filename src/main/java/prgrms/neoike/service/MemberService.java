@@ -7,8 +7,7 @@ import prgrms.neoike.service.dto.memberdto.MemberDto;
 import prgrms.neoike.domain.member.Member;
 import prgrms.neoike.repository.MemberRepository;
 import prgrms.neoike.service.dto.memberdto.MemberResponse;
-import prgrms.neoike.service.mapper.MemberMapper;
-import prgrms.neoike.common.exception.EntityNotFoundException;
+import prgrms.neoike.service.converter.MemberMapper;
 
 
 import java.util.Optional;
@@ -33,10 +32,5 @@ public class MemberService {
         if (foundMember.isPresent()) {
             throw new IllegalArgumentException("이미 존재하는 회원입니다.");
         }
-    }
-
-    public Member findById(Long memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new EntityNotFoundException("Member 엔티티를 id 로 찾을 수 없습니다. memberID : " + memberId));
     }
 }
