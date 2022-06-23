@@ -83,7 +83,7 @@ class MemberControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .with(SecurityMockMvcRequestPostProcessors.csrf()))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andDo(print());
     }
 

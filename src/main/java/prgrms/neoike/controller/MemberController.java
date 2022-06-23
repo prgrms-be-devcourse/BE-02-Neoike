@@ -2,7 +2,6 @@ package prgrms.neoike.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +18,7 @@ import prgrms.neoike.service.dto.memberdto.MemberDto;
 import prgrms.neoike.service.dto.memberdto.MemberResponse;
 
 import javax.validation.Valid;
+import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,7 +31,10 @@ public class MemberController {
     public ResponseEntity<MemberResponse> joinMember(@Valid @RequestBody MemberSaveRequest memberSaveRequest) {
         MemberDto memberDto = MemberMapper.mapMemberDto(memberSaveRequest);
         MemberResponse joinMemberResponse = memberService.join(memberDto);
-        return ResponseEntity.ok(joinMemberResponse);
+
+        return ResponseEntity.created(
+                URI.create("/api/v1/loginHome")
+        ).body(joinMemberResponse);
     }
 
     @PostMapping("/login")
@@ -42,6 +45,8 @@ public class MemberController {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
 
-        return new ResponseEntity<>(new TokenResponse(jwt), httpHeaders, HttpStatus.OK);
+        return ResponseEntity.ok()
+                .headers(httpHeaders)
+                .body(new TokenResponse(jwt));
     }
 }
