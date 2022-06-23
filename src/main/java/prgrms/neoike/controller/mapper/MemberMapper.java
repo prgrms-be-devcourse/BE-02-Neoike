@@ -4,7 +4,7 @@ import prgrms.neoike.controller.dto.memberdto.LoginRequest;
 import prgrms.neoike.domain.member.Address;
 import prgrms.neoike.service.dto.memberdto.LoginDto;
 import prgrms.neoike.service.dto.memberdto.MemberDto;
-import prgrms.neoike.controller.dto.MemberRequest;
+import prgrms.neoike.controller.dto.memberdto.MemberRequest;
 
 public class MemberMapper {
 

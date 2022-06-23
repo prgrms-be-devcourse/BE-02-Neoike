@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import prgrms.neoike.common.jwt.JwtFilter;
 import prgrms.neoike.controller.dto.memberdto.LoginRequest;
-import prgrms.neoike.controller.dto.MemberRequest;
+import prgrms.neoike.controller.dto.memberdto.MemberRequest;
 import prgrms.neoike.controller.dto.memberdto.TokenResponse;
 import prgrms.neoike.controller.mapper.MemberMapper;
 import prgrms.neoike.service.MemberService;

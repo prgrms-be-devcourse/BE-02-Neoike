@@ -1,5 +1,6 @@
-package prgrms.neoike.controller.dto;
+package prgrms.neoike.controller.dto.memberdto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import prgrms.neoike.domain.member.CountryType;
 import prgrms.neoike.domain.member.Gender;
 
@@ -17,6 +18,7 @@ public record MemberRequest(
         String name,
 
         @NotNull
+        @JsonFormat(shape =JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
         LocalDateTime birthday,
 
         @NotNull

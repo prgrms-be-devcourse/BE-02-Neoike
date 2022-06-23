@@ -19,7 +19,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
 import prgrms.neoike.common.config.SecurityConfig;
-import prgrms.neoike.controller.dto.MemberRequest;
+import prgrms.neoike.controller.dto.memberdto.MemberRequest;
 import prgrms.neoike.controller.dto.memberdto.LoginRequest;
 import prgrms.neoike.domain.member.CountryType;
 import prgrms.neoike.domain.member.Gender;
