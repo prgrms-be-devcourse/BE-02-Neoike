@@ -1,91 +1,73 @@
 package prgrms.neoike.service;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import prgrms.neoike.domain.sneaker.Sneaker;
-import prgrms.neoike.repository.SneakerRepository;
-import prgrms.neoike.repository.SneakerStockRepository;
-import prgrms.neoike.service.dto.sneaker.*;
-import prgrms.neoike.service.image.ImageFileManager;
+import prgrms.neoike.service.dto.sneaker.SneakerDto;
+import prgrms.neoike.service.dto.sneaker.SneakerRegisterDto;
+import prgrms.neoike.service.dto.sneaker.SneakerResponse;
+import prgrms.neoike.service.dto.sneaker.SneakerStockDto;
 
+import javax.persistence.EntityExistsException;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static prgrms.neoike.domain.sneaker.MemberCategory.MEN;
 import static prgrms.neoike.domain.sneaker.SneakerCategory.JORDAN;
 
 @Transactional
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
 class SneakerServiceTest {
 
-    @InjectMocks
-    SneakerService sneakerService;
-
-    @Mock
-    SneakerRepository sneakerRepository;
-
-    @Mock
-    SneakerStockRepository sneakerStockRepository;
-
-    @Mock
-    ImageFileManager imageFileManager;
-
+    @Autowired
+    private SneakerService sneakerService;
 
     @Test
     @DisplayName("새로운 신발을 정상적으로 등록한다.")
-    void testRegisterNewSneaker() {
-        Sneaker sneaker = createSneaker();
+    void testRegisterSneaker() {
+        SneakerRegisterDto sneakerRegisterDto = registerServiceDto();
+        SneakerResponse sneakerResponse = sneakerService.registerSneaker(sneakerRegisterDto);
 
-        given(sneakerRepository.save(any())).willReturn(sneaker);
+        Assertions.assertAll(
+            () -> assertThat(sneakerResponse).isNotNull(),
+            () -> assertThat(sneakerResponse.sneakerId()).isNotNull().isNotNegative(),
+            () -> assertThat(sneakerResponse.code()).isEqualTo(sneakerRegisterDto.sneakerDto().code())
+        );
+    }
 
-        SneakerResponse response = sneakerService.registerSneaker(registerServiceDto());
+    @Test
+    @DisplayName("이미 같은 코드를 가진 신발이 등록되어 있다면 예외가 발생한다.")
+    void testRegisterDuplicatedSneaker() {
+        SneakerRegisterDto sneakerRegisterDto = registerServiceDto();
+        SneakerResponse sneakerResponse = sneakerService.registerSneaker(sneakerRegisterDto);
 
-        assertThat(sneaker.getCode()).isEqualTo(response.code());
-        assertThat(sneaker.getName()).isEqualTo(response.name());
+        assertThatThrownBy(
+            () -> { sneakerService.registerSneaker(sneakerRegisterDto); })
+            .hasMessageContaining("동일한 신발이 이미 존재합니다.")
+            .isInstanceOf(EntityExistsException.class);
     }
 
     static SneakerRegisterDto registerServiceDto() {
-        return SneakerRegisterDto
-            .builder()
-            .sneakerDto(
-                SneakerDto
-                    .builder()
-                    .memberCategory(MEN)
-                    .sneakerCategory(JORDAN)
-                    .name("test-sneaker")
-                    .price(100000)
-                    .code("DS-1000000")
-                    .description("this is test.")
-                    .releaseDate(LocalDateTime.now())
-                    .build())
-            .imageDtos(
-                List.of(
-                    new SneakerImageDto("test.PNG", "")))
-            .stockDtos(
-                List.of(
-                    new SneakerStockDto(150, 10),
-                    new SneakerStockDto(200, 10)))
-            .build();
-    }
-
-    static Sneaker createSneaker() {
-        return Sneaker
-            .builder()
-            .memberCategory(MEN)
-            .sneakerCategory(JORDAN)
-            .name("test-sneaker")
-            .price(100000)
-            .code("DS-1000000")
-            .description("this is test.")
-            .releaseDate(LocalDateTime.now())
-            .build();
+        return new SneakerRegisterDto(
+            List.of("/src/main/~~~"),
+            SneakerDto
+                .builder()
+                .memberCategory(MEN)
+                .sneakerCategory(JORDAN)
+                .name("test-sneaker")
+                .price(100000)
+                .code("DS-1000000")
+                .description("this is test.")
+                .releaseDate(LocalDateTime.now())
+                .build(),
+            List.of(
+                new SneakerStockDto(150, 10),
+                new SneakerStockDto(200, 10))
+        );
     }
 }
