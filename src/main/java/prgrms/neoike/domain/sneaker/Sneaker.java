@@ -9,6 +9,7 @@ import prgrms.neoike.domain.BaseTimeEntity;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static javax.persistence.CascadeType.ALL;
@@ -79,6 +80,15 @@ public class Sneaker extends BaseTimeEntity {
         this.description = description;
         this.code = code;
         this.releaseDate = releaseDate;
+    }
+
+    public void attachImages(List<SneakerImage> images) {
+        images.forEach(
+            image -> {
+                image.setSneaker(this);
+                this.sneakerImages.add(image);
+            }
+        );
     }
 
     @Override
