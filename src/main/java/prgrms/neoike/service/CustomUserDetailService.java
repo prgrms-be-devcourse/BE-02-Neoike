@@ -1,7 +1,5 @@
 package prgrms.neoike.service;
 
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -13,7 +11,6 @@ import prgrms.neoike.domain.member.Member;
 import prgrms.neoike.repository.MemberRepository;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component("userDetailsService")
 public class CustomUserDetailService implements UserDetailsService {
@@ -27,16 +24,12 @@ public class CustomUserDetailService implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
-        return memberRepository.findOneWithAuthoritiesByEmail(username)
-                .map(member -> createUser(username, member))
+        return memberRepository.findOneByEmail(username)
+                .map(this::createUser)
                 .orElseThrow(() -> new EntityNotFoundException("회원을 찾을 수 없습니다."));
     }
 
-    private User createUser(String username, Member member) {
-        List<GrantedAuthority> grantedAuthorities = member.getAuthorities().stream()
-                .map(authority -> new SimpleGrantedAuthority(authority.getAuthorityName()))
-                .collect(Collectors.toList());
-
-        return new User(member.getEmail().getEmail(), member.getPassword().getPassword(), grantedAuthorities);
+    private User createUser(Member member) {
+        return new User(member.getEmail().getEmail(), member.getPassword().getPassword(), List.of());
     }
 }

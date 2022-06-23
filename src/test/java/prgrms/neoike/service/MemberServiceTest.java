@@ -58,7 +58,7 @@ class MemberServiceTest {
         Member member = mock(Member.class);
 
         when(member.getEmail()).thenReturn(new Email("test@gmail.com"));
-        given(memberRepository.findByEmail(member.getEmail().getEmail()))
+        given(memberRepository.findOneByEmail(member.getEmail().getEmail()))
                 .willReturn(Optional.of(member));
         //when
 

@@ -1,16 +1,15 @@
 package prgrms.neoike.domain.member;
 
-import static javax.persistence.EnumType.STRING;
-import static lombok.AccessLevel.PROTECTED;
-
-import java.time.LocalDateTime;
-import java.util.Set;
-import javax.persistence.*;
-
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import prgrms.neoike.domain.BaseTimeEntity;
+
+import javax.persistence.*;
+import java.time.LocalDateTime;
+
+import static javax.persistence.EnumType.STRING;
+import static lombok.AccessLevel.PROTECTED;
 
 @Getter
 @Entity
@@ -43,14 +42,6 @@ public class Member extends BaseTimeEntity {
     @Enumerated(value = STRING)
     @Column(name = "gender", length = 10, nullable = false)
     private Gender gender;
-
-    @ManyToMany
-    @JoinTable(
-            name = "user_authority",
-            joinColumns = {@JoinColumn(name = "id", referencedColumnName = "id")},
-            inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "authority_name")}
-    )
-    private Set<Authority> authorities;
 
     @Builder
     public Member(
