@@ -40,29 +40,25 @@ public class DrawService {
                 .orElseThrow(() -> new EntityNotFoundException(format("Draw 엔티티를 id 로 찾을 수 없습니다. drawId : {0}", drawId)));
 
         // 신발 재고 가져오기
-        // SneakerItem sneakerItem =  SneakerItemRepository.findByDraw(draw);
+        // SneakerItem sneakerItem = SneakerItemRepository.findByDraw(draw);
         // int sneakerItemQuantity = sneakerItem.getQuantity();
         int sneakerItemQuantity = 3; // 임의 설정
 
-        List<DrawTicket> draws = drawTicketRepository.findByDraw(draw);
-        List<DrawTicketResponse> successDraws = new ArrayList<>();
-        int[] randomArray = RandomCreator.makeRandomArray(sneakerItemQuantity, draws.size());
+        List<DrawTicket> drawTickets = drawTicketRepository.findByDraw(draw);
+        List<DrawTicketResponse> successDrawTickets = new ArrayList<>();
+        Set<Integer> randomSet = RandomCreator.makeRandoms(sneakerItemQuantity, drawTickets.size());
 
-        for (int winId : randomArray) {
-            DrawTicket winTicket = draws.get(winId);
-            winTicket.changeToWinner();
-            draws.set(winId, winTicket);
-            successDraws.add(drawConverter.toDrawTicketResponse(winTicket.getId()));
+        randomSet.stream().forEach(
+                (id)->{
+                    DrawTicket winTicket = drawTickets.get(id);
+                    winTicket.changeToWinner();
+                    successDrawTickets.add(drawConverter.toDrawTicketResponse(winTicket.getId()));
+                    // 당첨자에게 당첨되었다는 알람 전송
+                    // 로직구현
+                }
+        );
+        drawTickets.forEach(DrawTicket::drawQuit);
 
-            // 당첨자에게 당첨되었다는 알람 전송
-            // 로직구현
-        }
-
-        // 나머지 인원들의 당첨 대기를 당첨 실패로 변경한다.
-        for (DrawTicket drawTicket : draws) {
-            drawTicket.drawQuit();
-        }
-
-        return new DrawTicketListResponse(successDraws);
+        return new DrawTicketListResponse(successDrawTickets);
     }
 }

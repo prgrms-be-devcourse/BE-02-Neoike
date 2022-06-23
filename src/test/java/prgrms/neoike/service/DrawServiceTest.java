@@ -24,6 +24,8 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 @SpringBootTest
@@ -97,44 +99,26 @@ class DrawServiceTest {
         ServiceDrawSaveDto drawSaveDto = getDrawSaveDto();
         DrawResponse save = drawService.save(drawSaveDto);
 
-        Member member1 = memberRepository.save(sampleMember());
-        Member member2 = memberRepository.save(sampleMember());
-        Member member3 = memberRepository.save(sampleMember());
-        Member member4 = memberRepository.save(sampleMember());
-        Member member5 = memberRepository.save(sampleMember());
+        List<Member> members = Stream.generate(() -> memberRepository.save(sampleMember()))
+                .limit(5)
+                .toList();
 
-        drawTicketService.save(member1.getId(), save.drawId());
-        drawTicketService.save(member2.getId(), save.drawId());
-        drawTicketService.save(member3.getId(), save.drawId());
-        drawTicketService.save(member4.getId(), save.drawId());
-        drawTicketService.save(member5.getId(), save.drawId());
+        members.stream().forEach(
+                (member) -> drawTicketService.save(member.getId(), save.drawId())
+        );
+
 
         // when
-        DrawTicketListResponse drawTicketListResponse = drawService.drawWinner(save.drawId());
+        drawService.drawWinner(save.drawId());
 
         // then
-        List<DrawTicket> drawTicketByMember1 = drawTicketRepository.findByMember(member1);
-        List<DrawTicket> drawTicketByMember2 = drawTicketRepository.findByMember(member2);
-        List<DrawTicket> drawTicketByMember3 = drawTicketRepository.findByMember(member3);
-        List<DrawTicket> drawTicketByMember4 = drawTicketRepository.findByMember(member4);
-        List<DrawTicket> drawTicketByMember5 = drawTicketRepository.findByMember(member5);
+        long count = members.stream().map(
+                        (member) -> drawTicketRepository.findByMember(member).get(0).getDrawStatus()
+                )
+                .filter((status) -> status == DrawStatus.WINNING)
+                .count();
 
-        int result = 0;
-
-        result = findWinning(drawTicketByMember1.get(0).getDrawStatus(), result);
-        result = findWinning(drawTicketByMember2.get(0).getDrawStatus(), result);
-        result = findWinning(drawTicketByMember3.get(0).getDrawStatus(), result);
-        result = findWinning(drawTicketByMember4.get(0).getDrawStatus(), result);
-        result = findWinning(drawTicketByMember5.get(0).getDrawStatus(), result);
-
-        Assertions.assertThat(result).isEqualTo(3); // 3(현재 설정값) 에는 sneaker 의 재고가 들어가야 된다. 추후 수정예정
-    }
-
-    private int findWinning(DrawStatus drawStatus, int result){
-        if(drawStatus==DrawStatus.WINNING){
-            return ++result;
-        }
-        return result;
+        Assertions.assertThat(count).isEqualTo(3); // 3(현재 설정값) 에는 sneaker 의 재고가 들어가야 된다. 추후 수정예정
     }
 
     private ServiceDrawSaveDto getDrawSaveDto() {

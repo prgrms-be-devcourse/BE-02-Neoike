@@ -113,7 +113,7 @@ class DrawControllerTest {
     }
 
     @Test
-    @DisplayName("/api/v1/draws/win/{drawId} 에서 추첨을 진행한다")
+    @DisplayName("/api/v1/draws/win 에서 추첨을 진행한다")
     void winDrawIdTest() throws Exception {
         // given
         DrawTicketListResponse drawTicketResponses = new DrawTicketListResponse(
@@ -127,7 +127,9 @@ class DrawControllerTest {
         given(drawService.drawWinner(1L)).willReturn(drawTicketResponses);
 
         // when // then
-        mockMvc.perform(get("/api/v1/draws/win/{drawId}", 1L))
+        mockMvc.perform(post("/api/v1/draws/win")
+                        .param("drawId", String.valueOf(1L))
+                )
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andDo(document("win-draw",

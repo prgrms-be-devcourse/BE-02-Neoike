@@ -41,14 +41,14 @@ public class DrawController {
                 .body(drawResponse);
     }
 
-    @GetMapping("/win/{drawId}")
+    @PostMapping("/win")
     public ResponseEntity<DrawTicketListResponse> winDraw(
-        @PathVariable Long drawId
+        @RequestParam Long drawId
     ){
-        DrawTicketListResponse winningTicketListResponse = drawService.drawWinner(drawId);
+        DrawTicketListResponse winningTicketsResponse = drawService.drawWinner(drawId);
 
         return ResponseEntity
                 .ok()
-                .body(winningTicketListResponse);
+                .body(winningTicketsResponse);
     }
 }
