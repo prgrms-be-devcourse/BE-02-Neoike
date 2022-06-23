@@ -21,10 +21,7 @@ public class MemberMapper {
     }
 
     public static LoginDto toLoginDto(MemberLoginRequest memberLoginRequest) {
-        return LoginDto.builder()
-                .email(memberLoginRequest.email())
-                .password(memberLoginRequest.password())
-                .build();
+        return new LoginDto(memberLoginRequest.email(), memberLoginRequest.password());
     }
 
 }
