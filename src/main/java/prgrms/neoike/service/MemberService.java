@@ -13,7 +13,7 @@ import prgrms.neoike.service.dto.memberdto.MemberDto;
 import prgrms.neoike.domain.member.Member;
 import prgrms.neoike.repository.MemberRepository;
 import prgrms.neoike.service.dto.memberdto.MemberResponse;
-import prgrms.neoike.service.mapper.MemberMapper;
+import prgrms.neoike.service.mapper.MemberConverter;
 import prgrms.neoike.common.exception.EntityNotFoundException;
 
 
@@ -33,9 +33,9 @@ public class MemberService {
     @Transactional
     public MemberResponse join(MemberDto memberDto) {
         validateDuplicatedMember(memberDto.email());
-        Member member = MemberMapper.mapMember(memberDto);
+        Member member = MemberConverter.mapMember(memberDto);
         Member savedMember = memberRepository.save(member);
-        return MemberMapper.mapMemberResponse(savedMember.getId(), savedMember.getEmail().getEmail());
+        return MemberConverter.mapMemberResponse(savedMember.getId(), savedMember.getEmail().getEmail());
     }
 
     @Transactional

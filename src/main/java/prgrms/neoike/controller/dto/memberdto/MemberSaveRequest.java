@@ -7,7 +7,7 @@ import prgrms.neoike.domain.member.Gender;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
-public record MemberRequest(
+public record MemberSaveRequest(
         @NotNull
         String email,
 

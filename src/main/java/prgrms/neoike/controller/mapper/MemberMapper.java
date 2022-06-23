@@ -1,29 +1,29 @@
 package prgrms.neoike.controller.mapper;
 
-import prgrms.neoike.controller.dto.memberdto.LoginRequest;
+import prgrms.neoike.controller.dto.memberdto.MemberLoginRequest;
 import prgrms.neoike.domain.member.Address;
 import prgrms.neoike.service.dto.memberdto.LoginDto;
 import prgrms.neoike.service.dto.memberdto.MemberDto;
-import prgrms.neoike.controller.dto.memberdto.MemberRequest;
+import prgrms.neoike.controller.dto.memberdto.MemberSaveRequest;
 
 public class MemberMapper {
 
-    public static MemberDto mapMemberDto(MemberRequest memberRequest) {
+    public static MemberDto mapMemberDto(MemberSaveRequest memberSaveRequest) {
         return MemberDto.builder()
-                .name(memberRequest.name())
-                .password(memberRequest.password())
-                .phoneNumber(memberRequest.phoneNumber())
-                .birthday(memberRequest.birthday())
-                .email(memberRequest.email())
-                .address(new Address(memberRequest.city(), memberRequest.street(), memberRequest.zipcode()))
-                .gender(memberRequest.gender())
+                .name(memberSaveRequest.name())
+                .password(memberSaveRequest.password())
+                .phoneNumber(memberSaveRequest.phoneNumber())
+                .birthday(memberSaveRequest.birthday())
+                .email(memberSaveRequest.email())
+                .address(new Address(memberSaveRequest.city(), memberSaveRequest.street(), memberSaveRequest.zipcode()))
+                .gender(memberSaveRequest.gender())
                 .build();
     }
 
-    public static LoginDto toLoginDto(LoginRequest loginRequest) {
+    public static LoginDto toLoginDto(MemberLoginRequest memberLoginRequest) {
         return LoginDto.builder()
-                .email(loginRequest.email())
-                .password(loginRequest.password())
+                .email(memberLoginRequest.email())
+                .password(memberLoginRequest.password())
                 .build();
     }
 

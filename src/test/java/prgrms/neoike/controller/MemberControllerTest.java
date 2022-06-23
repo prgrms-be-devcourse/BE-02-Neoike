@@ -19,8 +19,8 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
 import prgrms.neoike.common.config.SecurityConfig;
-import prgrms.neoike.controller.dto.memberdto.MemberRequest;
-import prgrms.neoike.controller.dto.memberdto.LoginRequest;
+import prgrms.neoike.controller.dto.memberdto.MemberSaveRequest;
+import prgrms.neoike.controller.dto.memberdto.MemberLoginRequest;
 import prgrms.neoike.domain.member.CountryType;
 import prgrms.neoike.domain.member.Gender;
 import prgrms.neoike.service.MemberService;
@@ -61,7 +61,7 @@ class MemberControllerTest {
     void joinMemberTest() throws Exception {
 
         String content = objectMapper.writeValueAsString(
-                new MemberRequest(
+                new MemberSaveRequest(
                         "test@gmail.com",
                         "testPassword123!",
                         "testUser",
@@ -90,7 +90,7 @@ class MemberControllerTest {
     @Test
     @DisplayName("로그인 요청을 테스트한다")
     void loginTest() throws Exception {
-        String content = objectMapper.writeValueAsString(new LoginRequest("test@gmail.com", "1234!abcA"));
+        String content = objectMapper.writeValueAsString(new MemberLoginRequest("test@gmail.com", "1234!abcA"));
         String secret = "cHJncm1zLWJlLWRldmNvdXJzZS1CRS0wMi1OZW9pa2Utc3ByaW5nLWJvb3QtYmFja2VuZC1wcm9qZWN0LWp3dC10b2tlbi1wcmdybXMtYmUtZGV2Y291cnNlLUJFLTAyLU5lb2lrZS1zcHJpbmctYm9vdC1iYWNrZW5kLXByb2plY3Qtand0LXRva2Vu";
         String jwt = Jwts.builder()
                 .setSubject("test@gmail.com")

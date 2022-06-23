@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import prgrms.neoike.common.jwt.JwtFilter;
-import prgrms.neoike.controller.dto.memberdto.LoginRequest;
-import prgrms.neoike.controller.dto.memberdto.MemberRequest;
+import prgrms.neoike.controller.dto.memberdto.MemberLoginRequest;
+import prgrms.neoike.controller.dto.memberdto.MemberSaveRequest;
 import prgrms.neoike.controller.dto.memberdto.TokenResponse;
 import prgrms.neoike.controller.mapper.MemberMapper;
 import prgrms.neoike.service.MemberService;
@@ -28,15 +28,15 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("")
-    public ResponseEntity<MemberResponse> joinMember(@Valid @RequestBody MemberRequest memberRequest) {
-        MemberDto memberDto = MemberMapper.mapMemberDto(memberRequest);
+    public ResponseEntity<MemberResponse> joinMember(@Valid @RequestBody MemberSaveRequest memberSaveRequest) {
+        MemberDto memberDto = MemberMapper.mapMemberDto(memberSaveRequest);
         MemberResponse joinMemberResponse = memberService.join(memberDto);
         return ResponseEntity.ok(joinMemberResponse);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
-        LoginDto loginDto = MemberMapper.toLoginDto(loginRequest);
+    public ResponseEntity<TokenResponse> login(@Valid @RequestBody MemberLoginRequest memberLoginRequest) {
+        LoginDto loginDto = MemberMapper.toLoginDto(memberLoginRequest);
         String jwt = memberService.login(loginDto);
 
         HttpHeaders httpHeaders = new HttpHeaders();

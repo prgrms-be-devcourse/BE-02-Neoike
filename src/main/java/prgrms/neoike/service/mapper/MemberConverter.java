@@ -4,7 +4,7 @@ import prgrms.neoike.service.dto.memberdto.MemberDto;
 import prgrms.neoike.domain.member.*;
 import prgrms.neoike.service.dto.memberdto.MemberResponse;
 
-public class MemberMapper {
+public class MemberConverter {
 
     public static Member mapMember(MemberDto memberDto) {
         return Member.builder()
