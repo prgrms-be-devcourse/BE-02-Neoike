@@ -42,7 +42,6 @@ class MemberControllerTest {
     @WithMockUser
     @DisplayName("멤버 회원가입 요청을 테스트한다")
     void joinMemberTest() throws Exception {
-
         String content = objectMapper.writeValueAsString(
                 new MemberRequest(
                         "test@gmail.com",
