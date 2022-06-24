@@ -1,13 +1,11 @@
-package prgrms.neoike.service.mapper;
+package prgrms.neoike.service.converter;
 
 import lombok.NoArgsConstructor;
 import prgrms.neoike.domain.sneaker.Sneaker;
 import prgrms.neoike.domain.sneaker.SneakerImage;
 import prgrms.neoike.domain.sneaker.SneakerStock;
 import prgrms.neoike.domain.sneaker.Stock;
-import prgrms.neoike.service.dto.sneaker.SneakerDto;
-import prgrms.neoike.service.dto.sneaker.SneakerResponse;
-import prgrms.neoike.service.dto.sneaker.SneakerStockDto;
+import prgrms.neoike.service.dto.sneaker.*;
 
 import java.util.List;
 
@@ -40,7 +38,7 @@ public class SneakerConverter {
         return paths.stream().map(SneakerImage::new).toList();
     }
 
-    public static SneakerResponse toSneakerResponse(Long id, String code) {
-        return new SneakerResponse(id, code);
+    public static SneakerIdResponse toSneakerIdResponse(Long id, String code) {
+        return new SneakerIdResponse(id, code);
     }
 }
