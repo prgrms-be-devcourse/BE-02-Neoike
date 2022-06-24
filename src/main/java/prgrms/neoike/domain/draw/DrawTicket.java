@@ -47,4 +47,14 @@ public class DrawTicket extends BaseTimeEntity {
         this.draw = draw;
         this.drawStatus = DrawStatus.WAITING;
     }
+
+    public void changeToWinner() {
+        this.drawStatus = DrawStatus.WINNING;
+    }
+
+    public void drawQuit() {
+        if (this.drawStatus == DrawStatus.WAITING) {
+            this.drawStatus = DrawStatus.BANG;
+        }
+    }
 }

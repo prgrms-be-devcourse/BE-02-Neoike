@@ -16,14 +16,15 @@ import prgrms.neoike.service.DrawService;
 import prgrms.neoike.service.DrawTicketService;
 import prgrms.neoike.service.dto.drawdto.DrawResponse;
 import prgrms.neoike.service.dto.drawdto.ServiceDrawSaveDto;
+import prgrms.neoike.service.dto.drawticketdto.DrawTicketListResponse;
 import prgrms.neoike.service.dto.drawticketdto.DrawTicketResponse;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doReturn;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
@@ -43,6 +44,9 @@ class DrawControllerTest {
 
     @MockBean
     DrawService drawService;
+
+    @MockBean
+    DrawTicketService drawTicketService;
 
     @MockBean
     DrawMapper drawMapper;
@@ -105,5 +109,33 @@ class DrawControllerTest {
                         responseFields(
                                 fieldWithPath("drawId").type(NUMBER).description("생성된 응모 id")
                         )));
+    }
+
+    @Test
+    @DisplayName("/api/v1/draws/win 에서 추첨을 진행한다")
+    void winDrawIdTest() throws Exception {
+        // given
+        DrawTicketListResponse drawTicketResponses = new DrawTicketListResponse(
+                Arrays.asList(
+                        new DrawTicketResponse(1L),
+                        new DrawTicketResponse(2L),
+                        new DrawTicketResponse(3L)
+                )
+        );
+
+        given(drawService.drawWinner(1L)).willReturn(drawTicketResponses);
+
+        // when // then
+        mockMvc.perform(post("/api/v1/draws/win")
+                        .param("drawId", String.valueOf(1L))
+                )
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andDo(document("win-draw",
+                        responseFields(
+                                fieldWithPath("drawTicketResponses").type(ARRAY).description("응모권 배열"),
+                                fieldWithPath("drawTicketResponses[].drawTicketId").type(NUMBER).description("응모권 아이디")
+                        )));
+
     }
 }
