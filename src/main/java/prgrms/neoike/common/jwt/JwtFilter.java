@@ -1,6 +1,7 @@
 package prgrms.neoike.common.jwt;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
@@ -11,8 +12,6 @@ import java.io.IOException;
 
 @Slf4j
 public class JwtFilter extends GenericFilter {
-
-    public static final String AUTHORIZATION_HEADER = "Authorization";
 
     private TokenProvider tokenProvider;
 
@@ -38,7 +37,7 @@ public class JwtFilter extends GenericFilter {
     }
 
     private String resolveToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
+        String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);
         }

@@ -43,7 +43,7 @@ public class MemberController {
         String jwt = memberService.login(loginDto);
 
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
+        httpHeaders.add(HttpHeaders.AUTHORIZATION, "Bearer " + jwt);
 
         return ResponseEntity.ok()
                 .headers(httpHeaders)
