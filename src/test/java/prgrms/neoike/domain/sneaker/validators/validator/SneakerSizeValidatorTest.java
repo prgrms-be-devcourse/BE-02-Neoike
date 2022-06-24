@@ -44,7 +44,7 @@ class SneakerSizeValidatorTest {
     void testValidSizeUnits(SneakerStockRequest request) {
         Set<ConstraintViolation<SneakerStockRequest>> validate = validator.validate(request);
 
-        assertThat(validate.size()).isZero();
+        assertThat(validate).isEmpty();
     }
 
     static List<SneakerStockRequest> testValidSizeUnitsSource() {

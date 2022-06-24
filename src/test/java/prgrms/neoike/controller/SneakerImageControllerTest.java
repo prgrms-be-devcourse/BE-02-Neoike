@@ -13,7 +13,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import prgrms.neoike.service.dto.sneakerimage.SneakerImageResponse;
 import prgrms.neoike.service.image.SneakerImageService;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
@@ -77,7 +76,7 @@ class SneakerImageControllerTest {
     }
 
     private MockMultipartFile getTestMultipartFile() throws IOException {
-        FileInputStream fis = new FileInputStream(new File(System.getProperty("user.dir") + "/src/test/resources/test.PNG"));
+        FileInputStream fis = new FileInputStream(System.getProperty("user.dir") + "/src/test/resources/test.PNG");
 
         return new MockMultipartFile("test", "test.PNG", IMAGE_PNG_VALUE, fis);
     }
