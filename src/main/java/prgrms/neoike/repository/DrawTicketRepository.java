@@ -12,4 +12,6 @@ public interface DrawTicketRepository extends JpaRepository<DrawTicket, Long> {
     Optional<DrawTicket> findByMemberAndDraw(Member member, Draw draw);
 
     List<DrawTicket> findByMember(Member member);
+
+    List<DrawTicket> findByDraw(Draw draw);
 }
