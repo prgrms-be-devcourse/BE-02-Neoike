@@ -17,8 +17,8 @@ class SneakerSizeValidatorTest {
 
     Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
-    @DisplayName("신발 사이즈가 5단위가 아니라면 예외가 발생한다.")
-    @ParameterizedTest(name = "사이즈 단위 테스트 {index}")
+    @DisplayName("신발 사이즈의 범위가 0 보다 작고 400 보다 크면 예외가 발생한다.")
+    @ParameterizedTest(name = "사이즈 범위 테스트 {index}")
     @MethodSource("testInvalidSizeUnitsSource")
     void testInvalidSizeUnits(SneakerStockRequest request) {
         Set<ConstraintViolation<SneakerStockRequest>> validate = validator.validate(request);
