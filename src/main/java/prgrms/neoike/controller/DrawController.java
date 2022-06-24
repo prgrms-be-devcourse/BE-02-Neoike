@@ -8,7 +8,7 @@ import prgrms.neoike.controller.mapper.DrawMapper;
 import prgrms.neoike.service.DrawService;
 import prgrms.neoike.service.dto.drawdto.DrawResponse;
 import prgrms.neoike.service.dto.drawdto.ServiceDrawSaveDto;
-import prgrms.neoike.service.dto.drawticketdto.DrawTicketListResponse;
+import prgrms.neoike.service.dto.drawticketdto.DrawTicketsResponse;
 
 import javax.validation.Valid;
 import java.net.URI;
@@ -42,10 +42,10 @@ public class DrawController {
     }
 
     @PostMapping("/win")
-    public ResponseEntity<DrawTicketListResponse> winDraw(
+    public ResponseEntity<DrawTicketsResponse> winDraw(
             @RequestParam Long drawId
     ) {
-        DrawTicketListResponse winningTicketsResponse = drawService.drawWinner(drawId);
+        DrawTicketsResponse winningTicketsResponse = drawService.drawWinner(drawId);
 
         return ResponseEntity
                 .ok()

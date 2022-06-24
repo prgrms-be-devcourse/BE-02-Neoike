@@ -12,8 +12,7 @@ public class DrawMapper {
                 drawSaveRequest.startDate(),
                 drawSaveRequest.endDate(),
                 drawSaveRequest.winningDate(),
-                drawSaveRequest.quantity(),
-                drawSaveRequest.sneakerItems()
+                drawSaveRequest.quantity()
         );
     }
 }

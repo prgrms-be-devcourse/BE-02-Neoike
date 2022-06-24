@@ -7,7 +7,6 @@ import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 public record DrawSaveRequest(
         @NotNull
@@ -30,10 +29,7 @@ public record DrawSaveRequest(
 
         @NotNull
         @PositiveOrZero
-        int quantity,
-
-        @NotNull
-        ArrayList<DrawItem> sneakerItems
+        int quantity
 ) {
     @Builder
     public DrawSaveRequest {

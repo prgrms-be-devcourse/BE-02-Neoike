@@ -1,10 +1,13 @@
 package prgrms.neoike.common.util;
 
+import lombok.NoArgsConstructor;
+
 import java.util.HashSet;
 import java.util.Set;
 
+@NoArgsConstructor
 public class RandomCreator {
-    public static Set<Integer> makeRandoms(int size, int maximumNumber) {
+    public static Set<Integer> noDuplication(int size, int maximumNumber) {
         Set<Integer> duplicationRemoved = new HashSet<>();
 
         while (duplicationRemoved.size() < size) {
@@ -13,4 +16,5 @@ public class RandomCreator {
 
         return duplicationRemoved;
     }
+
 }
