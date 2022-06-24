@@ -3,16 +3,17 @@ package prgrms.neoike.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import prgrms.neoike.common.exception.EntityNotFoundException;
 import prgrms.neoike.domain.sneaker.Sneaker;
 import prgrms.neoike.domain.sneaker.SneakerImage;
 import prgrms.neoike.domain.sneaker.SneakerStock;
 import prgrms.neoike.repository.SneakerRepository;
 import prgrms.neoike.repository.SneakerStockRepository;
+import prgrms.neoike.service.converter.SneakerConverter;
 import prgrms.neoike.service.dto.sneaker.SneakerDetailDto;
 import prgrms.neoike.service.dto.sneaker.SneakerDetailResponse;
 import prgrms.neoike.service.dto.sneaker.SneakerIdResponse;
 import prgrms.neoike.service.dto.sneaker.SneakerRegisterDto;
-import prgrms.neoike.service.converter.SneakerConverter;
 
 import javax.persistence.EntityExistsException;
 import java.util.List;
@@ -37,6 +38,26 @@ public class SneakerService {
         return toSneakerIdResponse(retrievedSneaker.getId(), retrievedSneaker.getCode());
     }
 
+    @Transactional(readOnly = true)
+    public SneakerDetailResponse getSneakerDetail(SneakerDetailDto detailDto) {
+        List<SneakerStock> sneakerStocks = validateEmptySneakerDetails(detailDto);
+
+        return toSneakerDetailResponse(sneakerStocks);
+    }
+
+    private List<SneakerStock> validateEmptySneakerDetails(SneakerDetailDto detailDto) {
+        List<SneakerStock> sneakerStocks = sneakerStockRepository
+            .findByIdAndCode(detailDto.sneakerId(), detailDto.code());
+
+        if (sneakerStocks.isEmpty()) {
+            throw new EntityNotFoundException(
+                format("요청한 신발 정보를 찾을 수 없습니다. (신발코드: {0})", detailDto.code())
+            );
+        }
+
+        return sneakerStocks;
+    }
+
     private void saveSneakerStocks(SneakerRegisterDto registerDto, Sneaker retrievedSneaker) {
         List<SneakerStock> sneakerStocks = toSneakerStockEntities(registerDto.stockDto());
         sneakerStocks.forEach(s -> s.setSneaker(retrievedSneaker));
@@ -57,7 +78,7 @@ public class SneakerService {
             .ifPresent(
             sneaker -> {
                 throw new EntityExistsException(
-                    format("동일한 신발이 이미 존재합니다. (코드: {0})", code)
+                    format("동일한 신발이 이미 존재합니다. (신발코드: {0})", code)
                 );
             }
         );
