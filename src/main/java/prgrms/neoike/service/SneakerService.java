@@ -29,16 +29,24 @@ public class SneakerService {
     public SneakerResponse registerSneaker(SneakerRegisterDto registerDto) {
         validateDuplicatedSneaker(registerDto.sneakerDto().code());
 
+        Sneaker retrievedSneaker = saveSneaker(registerDto);
+        saveSneakerStocks(registerDto, retrievedSneaker);
+
+        return toSneakerResponse(retrievedSneaker.getId(), retrievedSneaker.getCode());
+    }
+
+    private void saveSneakerStocks(SneakerRegisterDto registerDto, Sneaker retrievedSneaker) {
+        List<SneakerStock> sneakerStocks = toSneakerStockEntities(registerDto.stockDto());
+        sneakerStocks.forEach(s -> s.setSneaker(retrievedSneaker));
+        sneakerStockRepository.saveAll(sneakerStocks);
+    }
+
+    private Sneaker saveSneaker(SneakerRegisterDto registerDto) {
         List<SneakerImage> sneakerImages = SneakerConverter.toSneakerImageEntity(registerDto.imageDto());
         Sneaker sneaker = toSneakerEntity(registerDto.sneakerDto());
         sneaker.attachImages(sneakerImages);
 
-        Sneaker retrievedSneaker = sneakerRepository.save(sneaker);
-        List<SneakerStock> sneakerStocks = toSneakerStockEntities(registerDto.stockDto());
-        sneakerStocks.forEach(s -> s.setSneaker(retrievedSneaker));
-        sneakerStockRepository.saveAll(sneakerStocks);
-
-        return toSneakerResponse(retrievedSneaker.getId(), retrievedSneaker.getCode());
+        return sneakerRepository.save(sneaker);
     }
 
     private void validateDuplicatedSneaker(String code) {
