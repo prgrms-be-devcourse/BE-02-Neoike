@@ -17,7 +17,10 @@ import prgrms.neoike.controller.dto.sneaker.request.SneakerRegisterRequest;
 import prgrms.neoike.controller.dto.sneaker.request.SneakerRequest;
 import prgrms.neoike.controller.dto.sneaker.request.SneakerStockRequest;
 import prgrms.neoike.service.SneakerService;
+import prgrms.neoike.service.dto.sneaker.SneakerDetailResponse;
 import prgrms.neoike.service.dto.sneaker.SneakerIdResponse;
+import prgrms.neoike.service.dto.sneaker.SneakerResponse;
+import prgrms.neoike.service.dto.sneaker.SneakerStockResponse;
 
 import java.util.List;
 
@@ -29,6 +32,7 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.JsonFieldType.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -80,6 +84,57 @@ class SneakerControllerTest {
         );
     }
 
+    @Test
+    @DisplayName("신발 아이디와 코드로 신발을 상세조회 할 수 있다.")
+    void testGetSneakerDetail() throws Exception {
+        given(sneakerService.getSneakerDetail(any()))
+            .willReturn(createDetailResponse());
+
+        MvcResult result = mvc
+            .perform(get("/api/v1/sneakers/{sneakerId}/{code}", 1, "DS-1234567"))
+            .andExpect(status().isOk())
+            .andDo(
+                document("sneaker-detail",
+                    responseDetailSnippet()
+                )
+            ).andReturn();
+
+        String resultString = result.getResponse().getContentAsString();
+        SneakerDetailResponse response = objectMapper.readValue(resultString, SneakerDetailResponse.class);
+
+        assertThat(response).isNotNull();
+
+        SneakerResponse sneakerResponse = response.sneaker();
+        List<SneakerStockResponse> sneakerStockResponses = response.sneakerStocks();
+
+        assertAll(
+            () -> assertThat(sneakerResponse.code()).isEqualTo("DS-1234567"),
+            () -> assertThat(sneakerResponse.imagePaths().size()).isOne(),
+            () -> assertThat(sneakerResponse.price()).isNotNegative(),
+            () -> assertThat(sneakerStockResponses.size()).isGreaterThan(0),
+            () -> assertThat(sneakerStockResponses).contains(new SneakerStockResponse(250, 10))
+        );
+    }
+
+    private SneakerDetailResponse createDetailResponse() {
+        return new SneakerDetailResponse(
+            List.of(
+                new SneakerStockResponse(250, 10),
+                new SneakerStockResponse(260, 10)),
+            SneakerResponse
+                .builder()
+                .memberCategory(MEN)
+                .sneakerCategory(JORDAN)
+                .name("jordan 1")
+                .price(100000)
+                .description("this is test jordan.")
+                .code("DS-1234567")
+                .releaseDate(of(2022, 10, 10, 10, 0, 0))
+                .imagePaths(List.of("/src/main/~"))
+                .build()
+        );
+    }
+
     SneakerRegisterRequest createRegisterRequest() {
         return new SneakerRegisterRequest(
             List.of("/src/main/~"),
@@ -102,6 +157,23 @@ class SneakerControllerTest {
             fieldWithPath("sneakerStocks").type(ARRAY).description("신발재고"),
             fieldWithPath("sneakerStocks.[*].size").type(NUMBER).description("사이즈"),
             fieldWithPath("sneakerStocks.[*].quantity").type(NUMBER).description("수량")
+        );
+    }
+
+    ResponseFieldsSnippet responseDetailSnippet() {
+        return responseFields(
+            fieldWithPath("sneakerStocks").type(ARRAY).description("신발재고"),
+            fieldWithPath("sneakerStocks.[*].size").type(NUMBER).description("사이즈"),
+            fieldWithPath("sneakerStocks.[*].quantity").type(NUMBER).description("수량"),
+            fieldWithPath("sneaker").type(OBJECT).description("신발"),
+            fieldWithPath("sneaker.memberCategory").type(STRING).description("멤버 카테고리"),
+            fieldWithPath("sneaker.sneakerCategory").type(STRING).description("신발 카테고리"),
+            fieldWithPath("sneaker.name").type(STRING).description("이름"),
+            fieldWithPath("sneaker.price").type(NUMBER).description("가격"),
+            fieldWithPath("sneaker.description").type(STRING).description("상품설명"),
+            fieldWithPath("sneaker.code").type(STRING).description("코드"),
+            fieldWithPath("sneaker.releaseDate").type(STRING).description("출시일자"),
+            fieldWithPath("sneaker.imagePaths").type(ARRAY).description("신발 이미지 경로")
         );
     }
 

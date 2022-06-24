@@ -4,6 +4,7 @@ import lombok.NoArgsConstructor;
 import prgrms.neoike.controller.dto.sneaker.request.SneakerRegisterRequest;
 import prgrms.neoike.controller.dto.sneaker.request.SneakerRequest;
 import prgrms.neoike.controller.dto.sneaker.request.SneakerStockRequest;
+import prgrms.neoike.service.dto.sneaker.SneakerDetailDto;
 import prgrms.neoike.service.dto.sneaker.SneakerDto;
 import prgrms.neoike.service.dto.sneaker.SneakerRegisterDto;
 import prgrms.neoike.service.dto.sneaker.SneakerStockDto;
@@ -41,5 +42,9 @@ public class SneakerMapper {
             .stream()
             .map(i -> new SneakerStockDto(i.size(), i.quantity()))
             .toList();
+    }
+
+    public static SneakerDetailDto toSneakerDetailDto(Long sneakerId, String code) {
+        return new SneakerDetailDto(sneakerId, code);
     }
 }
