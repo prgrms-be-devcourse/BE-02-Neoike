@@ -1,9 +1,9 @@
 package prgrms.neoike.controller.mapper;
 
 import lombok.NoArgsConstructor;
-import prgrms.neoike.controller.dto.sneaker.request.SneakerRegisterRequest;
-import prgrms.neoike.controller.dto.sneaker.request.SneakerRequest;
-import prgrms.neoike.controller.dto.sneaker.request.SneakerStockRequest;
+import prgrms.neoike.controller.dto.sneaker.SneakerRegisterRequest;
+import prgrms.neoike.controller.dto.sneaker.SneakerRequest;
+import prgrms.neoike.controller.dto.sneaker.SneakerStockRequest;
 import prgrms.neoike.service.dto.sneaker.SneakerDetailDto;
 import prgrms.neoike.service.dto.sneaker.SneakerDto;
 import prgrms.neoike.service.dto.sneaker.SneakerRegisterDto;
