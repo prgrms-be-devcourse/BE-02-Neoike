@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.restdocs.payload.RequestFieldsSnippet;
-import org.springframework.restdocs.payload.ResponseFieldsSnippet;
+import org.springframework.restdocs.payload.FieldDescriptor;
+import org.springframework.restdocs.request.ParameterDescriptor;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import prgrms.neoike.controller.dto.sneaker.request.SneakerRegisterRequest;
@@ -31,10 +31,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.JsonFieldType.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static prgrms.neoike.domain.sneaker.MemberCategory.MEN;
 import static prgrms.neoike.domain.sneaker.SneakerCategory.JORDAN;
@@ -69,8 +71,10 @@ class SneakerControllerTest {
             .andExpect(status().isCreated())
             .andDo(
                 document("sneaker-register",
-                    requestRegisterSnippet(),
-                    responseRegisterSnippet()
+                    requestFields(sneakerImage())
+                        .andWithPrefix("sneaker.", sneaker())
+                        .andWithPrefix("sneakerStocks.", sneakerStock()),
+                    responseFields(commonPostMethod())
                 )
             ).andReturn();
 
@@ -95,7 +99,11 @@ class SneakerControllerTest {
             .andExpect(status().isOk())
             .andDo(
                 document("sneaker-detail",
-                    responseDetailSnippet()
+                    pathParameters(commonParam()),
+                    responseFields()
+                        .andWithPrefix("sneakerStocks.", sneakerStock())
+                        .andWithPrefix("sneaker.", sneaker())
+                        .andWithPrefix("sneaker.", commonGetMethod())
                 )
             ).andReturn();
 
@@ -111,7 +119,6 @@ class SneakerControllerTest {
             () -> assertThat(sneakerResponse.code()).isEqualTo("DS-1234567"),
             () -> assertThat(sneakerResponse.imagePaths().size()).isOne(),
             () -> assertThat(sneakerResponse.price()).isNotNegative(),
-            () -> assertThat(sneakerStockResponses.size()).isGreaterThan(0),
             () -> assertThat(sneakerStockResponses).contains(new SneakerStockResponse(250, 10))
         );
     }
@@ -123,6 +130,7 @@ class SneakerControllerTest {
                 new SneakerStockResponse(260, 10)),
             SneakerResponse
                 .builder()
+                .sneakerId(1L)
                 .memberCategory(MEN)
                 .sneakerCategory(JORDAN)
                 .name("jordan 1")
@@ -135,52 +143,66 @@ class SneakerControllerTest {
         );
     }
 
-    SneakerRegisterRequest createRegisterRequest() {
+    private SneakerRegisterRequest createRegisterRequest() {
         return new SneakerRegisterRequest(
             List.of("/src/main/~"),
-            new SneakerRequest(MEN, JORDAN, "Jordan 1", 100000, "this is test jordan.", "DS-1234567", of(2022, 10, 10, 10, 0, 0)),
-            List.of(new SneakerStockRequest(250, 10), new SneakerStockRequest(260, 10))
+            SneakerRequest
+                .builder()
+                .memberCategory(MEN)
+                .sneakerCategory(JORDAN)
+                .name("jordan 1")
+                .price(100000)
+                .description("this is test jordan.")
+                .code("DS-1234567")
+                .releaseDate(of(2022, 10, 10, 10, 0, 0))
+                .build(),
+            List.of(
+                new SneakerStockRequest(250, 10),
+                new SneakerStockRequest(260, 10))
         );
     }
 
-    RequestFieldsSnippet requestRegisterSnippet() {
-        return requestFields(
-            fieldWithPath("imagePaths").type(ARRAY).description("신발 이미지 경로"),
-            fieldWithPath("sneaker").type(OBJECT).description("신발"),
-            fieldWithPath("sneaker.memberCategory").type(STRING).description("멤버 카테고리"),
-            fieldWithPath("sneaker.sneakerCategory").type(STRING).description("신발 카테고리"),
-            fieldWithPath("sneaker.name").type(STRING).description("이름"),
-            fieldWithPath("sneaker.price").type(NUMBER).description("가격"),
-            fieldWithPath("sneaker.description").type(STRING).description("상품설명"),
-            fieldWithPath("sneaker.code").type(STRING).description("코드"),
-            fieldWithPath("sneaker.releaseDate").type(STRING).description("출시일자"),
-            fieldWithPath("sneakerStocks").type(ARRAY).description("신발재고"),
-            fieldWithPath("sneakerStocks.[*].size").type(NUMBER).description("사이즈"),
-            fieldWithPath("sneakerStocks.[*].quantity").type(NUMBER).description("수량")
+    private List<FieldDescriptor> commonGetMethod() {
+        return List.of(
+            fieldWithPath("sneakerId").type(NUMBER).description("신발 아이디"),
+            sneakerImage()
         );
     }
 
-    ResponseFieldsSnippet responseDetailSnippet() {
-        return responseFields(
-            fieldWithPath("sneakerStocks").type(ARRAY).description("신발재고"),
-            fieldWithPath("sneakerStocks.[*].size").type(NUMBER).description("사이즈"),
-            fieldWithPath("sneakerStocks.[*].quantity").type(NUMBER).description("수량"),
-            fieldWithPath("sneaker").type(OBJECT).description("신발"),
-            fieldWithPath("sneaker.memberCategory").type(STRING).description("멤버 카테고리"),
-            fieldWithPath("sneaker.sneakerCategory").type(STRING).description("신발 카테고리"),
-            fieldWithPath("sneaker.name").type(STRING).description("이름"),
-            fieldWithPath("sneaker.price").type(NUMBER).description("가격"),
-            fieldWithPath("sneaker.description").type(STRING).description("상품설명"),
-            fieldWithPath("sneaker.code").type(STRING).description("코드"),
-            fieldWithPath("sneaker.releaseDate").type(STRING).description("출시일자"),
-            fieldWithPath("sneaker.imagePaths").type(ARRAY).description("신발 이미지 경로")
+    private FieldDescriptor sneakerImage() {
+        return fieldWithPath("imagePaths").type(ARRAY).description("신발 이미지 경로");
+    }
+
+    private List<FieldDescriptor> sneakerStock() {
+        return List.of(
+            fieldWithPath("[*].size").type(NUMBER).description("사이즈"),
+            fieldWithPath("[*].quantity").type(NUMBER).description("수량")
         );
     }
 
-    ResponseFieldsSnippet responseRegisterSnippet() {
-        return responseFields(
+    private List<FieldDescriptor> sneaker() {
+        return List.of(
+            fieldWithPath("memberCategory").type(STRING).description("멤버 카테고리"),
+            fieldWithPath("sneakerCategory").type(STRING).description("신발 카테고리"),
+            fieldWithPath("name").type(STRING).description("이름"),
+            fieldWithPath("price").type(NUMBER).description("가격"),
+            fieldWithPath("description").type(STRING).description("상품설명"),
+            fieldWithPath("code").type(STRING).description("코드"),
+            fieldWithPath("releaseDate").type(STRING).description("출시일자")
+        );
+    }
+
+    private List<FieldDescriptor> commonPostMethod() {
+        return List.of(
             fieldWithPath("sneakerId").type(NUMBER).description("신발 아이디"),
             fieldWithPath("code").type(STRING).description("코드")
+        );
+    }
+
+    private List<ParameterDescriptor> commonParam() {
+        return List.of(
+            parameterWithName("sneakerId").description("신발 아이디"),
+            parameterWithName("code").description("코드")
         );
     }
 }
