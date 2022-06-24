@@ -1,7 +1,6 @@
 package prgrms.neoike.service.image;
 
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +17,7 @@ import java.util.List;
 import static java.nio.file.Files.deleteIfExists;
 import static java.nio.file.Path.of;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @SpringBootTest
 class ImageLocalServiceTest {
@@ -43,14 +43,14 @@ class ImageLocalServiceTest {
         MockMultipartFile multipartFile = getMockMultipartFile("test", "PNG", fullPath);
         imageResponse = imageLocalService.upload(new SneakerImageUploadDto(List.of(multipartFile)));
 
-        Assertions.assertAll(
-            () -> assertThat(imageResponse).isNotNull(),
+        assertThat(imageResponse).isNotNull();
+        assertAll(
             () -> imageResponse
                 .paths()
                 .forEach(
                     path -> assertThat(new File(System.getProperty("user.dir") + path)).isFile()
                 )
-        );
+            );
     }
 
     private MockMultipartFile getMockMultipartFile(String fileName, String contentType, String path) throws IOException {

@@ -1,6 +1,5 @@
 package prgrms.neoike.service;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +16,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static prgrms.neoike.domain.sneaker.MemberCategory.MEN;
 import static prgrms.neoike.domain.sneaker.SneakerCategory.JORDAN;
 
@@ -33,8 +33,8 @@ class SneakerServiceTest {
         SneakerRegisterDto sneakerRegisterDto = registerServiceDto();
         SneakerResponse sneakerResponse = sneakerService.registerSneaker(sneakerRegisterDto);
 
-        Assertions.assertAll(
-            () -> assertThat(sneakerResponse).isNotNull(),
+        assertThat(sneakerResponse).isNotNull();
+        assertAll(
             () -> assertThat(sneakerResponse.sneakerId()).isNotNull().isNotNegative(),
             () -> assertThat(sneakerResponse.code()).isEqualTo(sneakerRegisterDto.sneakerDto().code())
         );
