@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import prgrms.neoike.service.dto.sneakerimage.SneakerImageResponse;
 import prgrms.neoike.service.image.SneakerImageService;
 
@@ -49,12 +50,12 @@ class SneakerImageControllerTest {
     @DisplayName("신발 이미지 저장이 성공적으로 이루어진다.")
     void testUploadSneakerImages() throws Exception {
         MockMultipartFile testMultipartFile = getTestMultipartFile();
-        var expectedResponse = new SneakerImageResponse(List.of("/src/main/resources/sneaker/images/" + now() + ".PNG"));
+        SneakerImageResponse expectedResponse = new SneakerImageResponse(List.of("/src/main/resources/sneaker/images/" + now() + ".PNG"));
 
         given(sneakerImageService.upload(any()))
             .willReturn(expectedResponse);
 
-        var result = mvc.perform(multipart("/api/v1/images")
+        MvcResult result = mvc.perform(multipart("/api/v1/images")
             .file(testMultipartFile)
             .contentType(MULTIPART_FORM_DATA))
             .andExpect(status().isOk())
