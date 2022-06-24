@@ -1,7 +1,6 @@
 package prgrms.neoike.service;
 
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,14 +8,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import prgrms.neoike.domain.draw.DrawStatus;
-import prgrms.neoike.domain.draw.DrawTicket;
 import prgrms.neoike.domain.member.*;
+import prgrms.neoike.domain.sneaker.MemberCategory;
+import prgrms.neoike.domain.sneaker.Sneaker;
+import prgrms.neoike.domain.sneaker.SneakerCategory;
 import prgrms.neoike.repository.DrawRepository;
 import prgrms.neoike.repository.DrawTicketRepository;
 import prgrms.neoike.repository.MemberRepository;
+import prgrms.neoike.repository.SneakerRepository;
 import prgrms.neoike.service.dto.drawdto.DrawResponse;
 import prgrms.neoike.service.dto.drawdto.ServiceDrawSaveDto;
-import prgrms.neoike.service.dto.drawticketdto.DrawTicketListResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -24,7 +25,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @SpringBootTest
@@ -43,6 +43,9 @@ class DrawServiceTest {
     DrawTicketRepository drawTicketRepository;
 
     @Autowired
+    SneakerRepository sneakerRepository;
+
+    @Autowired
     DrawRepository drawRepository;
 
 
@@ -55,10 +58,11 @@ class DrawServiceTest {
     @DisplayName("Draw 엔티티를 저장한다.")
     void saveDrawTest() {
         // given
-        ServiceDrawSaveDto drawSaveDto = getDrawSaveDto();
+        Sneaker sneaker = sneaker();
+        ServiceDrawSaveDto drawSaveDto = validDrawSaveDto(sneaker.getId(), 50);
 
         // when
-        DrawResponse save = drawService.save(drawSaveDto);
+        drawService.save(drawSaveDto);
 
         // then
         assertThat(drawRepository.count()).isEqualTo(1);
@@ -67,43 +71,47 @@ class DrawServiceTest {
     @Test
     @DisplayName("등록 순서가 잘못된 Draw 엔티티를 저장할때 오류 발생")
     void invalidSaveDrawTest() {
-        // given // when // then
+        // given
+        Sneaker sneaker = sneaker();
+
+        // when // then
         assertThatThrownBy(() -> drawService.save(
                 ServiceDrawSaveDto.builder()
-                        .sneakerId(1L)
+                        .sneakerId(sneaker.getId())
                         .startDate(endDate)
                         .endDate(startDate)
                         .winningDate(winningDate)
                         .quantity(50)
-                        .sneakerItems(new ArrayList<>())
                         .build()
         )).isInstanceOf(IllegalArgumentException.class);
 
         assertThatThrownBy(() -> drawService.save(
                 ServiceDrawSaveDto.builder()
-                        .sneakerId(1L)
+                        .sneakerId(sneaker.getId())
                         .startDate(startDate)
                         .endDate(winningDate)
                         .winningDate(endDate)
                         .quantity(50)
-                        .sneakerItems(new ArrayList<>())
                         .build()
         )).isInstanceOf(IllegalArgumentException.class);
     }
+
 
     @Test
     @DisplayName("추첨을 진행한다")
     void drawWinTest() {
         // given
-        ServiceDrawSaveDto drawSaveDto = getDrawSaveDto();
+        int quantity = 5;
+        Sneaker sneaker = sneaker();
+        ServiceDrawSaveDto drawSaveDto = validDrawSaveDto(sneaker.getId(), quantity);
         DrawResponse save = drawService.save(drawSaveDto);
 
-        List<Member> members = Stream.generate(() -> memberRepository.save(sampleMember()))
+        List<Member> members = Stream.generate(() -> memberRepository.save(validMember()))
                 .limit(5)
                 .toList();
 
         members.stream().forEach(
-                (member) -> drawTicketService.save(member.getId(), save.drawId())
+                (member) -> drawTicketService.save(member.getId(), save.drawId(), 275)
         );
 
 
@@ -117,22 +125,32 @@ class DrawServiceTest {
                 .filter((status) -> status == DrawStatus.WINNING)
                 .count();
 
-        Assertions.assertThat(count).isEqualTo(3); // 3(현재 설정값) 에는 sneaker 의 재고가 들어가야 된다. 추후 수정예정
+        Assertions.assertThat(count).isEqualTo(quantity);
     }
 
-    private ServiceDrawSaveDto getDrawSaveDto() {
-        ServiceDrawSaveDto drawSaveDto = ServiceDrawSaveDto.builder()
-                .sneakerId(1L)
+    private Sneaker sneaker() {
+        return sneakerRepository.save(Sneaker.builder()
+                .memberCategory(MemberCategory.MEN)
+                .sneakerCategory(SneakerCategory.BASKETBALL)
+                .name("air jordan")
+                .price(75000)
+                .description("1")
+                .code("AB1234")
+                .releaseDate(LocalDateTime.now())
+                .build()
+        );
+    }
+    private ServiceDrawSaveDto validDrawSaveDto(Long sneakerId, int quantity) {
+        return ServiceDrawSaveDto.builder()
+                .sneakerId(sneakerId)
                 .startDate(startDate)
                 .endDate(endDate)
                 .winningDate(winningDate)
-                .quantity(50)
-                .sneakerItems(new ArrayList<>())
+                .quantity(quantity)
                 .build();
-        return drawSaveDto;
     }
 
-    private Member sampleMember() {
+    private Member validMember() {
         return Member.builder()
                 .name("이용훈")
                 .password(new Password("123abcAB!!"))

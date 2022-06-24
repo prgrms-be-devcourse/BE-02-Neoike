@@ -12,11 +12,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import prgrms.neoike.controller.dto.drawdto.DrawItem;
 import prgrms.neoike.controller.dto.drawdto.DrawSaveRequest;
 import prgrms.neoike.controller.mapper.DrawMapper;
+import prgrms.neoike.domain.draw.DrawStatus;
 import prgrms.neoike.service.DrawService;
 import prgrms.neoike.service.DrawTicketService;
 import prgrms.neoike.service.dto.drawdto.DrawResponse;
 import prgrms.neoike.service.dto.drawdto.ServiceDrawSaveDto;
-import prgrms.neoike.service.dto.drawticketdto.DrawTicketListResponse;
+import prgrms.neoike.service.dto.drawticketdto.DrawTicketsResponse;
 import prgrms.neoike.service.dto.drawticketdto.DrawTicketResponse;
 
 import java.time.LocalDateTime;
@@ -65,22 +66,14 @@ class DrawControllerTest {
                 .endDate(middleDate)
                 .winningDate(lateDate)
                 .quantity(50)
-                .sneakerItems(new ArrayList<DrawItem>() {{
-                    add(new DrawItem(1L, 10));
-                    add(new DrawItem(2L, 20));
-                }})
                 .build();
 
         ServiceDrawSaveDto serviceDrawSaveDto = ServiceDrawSaveDto.builder()
-                .sneakerId(1L)
+                .sneakerId(2L)
                 .startDate(fastDate)
                 .endDate(middleDate)
                 .winningDate(lateDate)
                 .quantity(50)
-                .sneakerItems(new ArrayList<DrawItem>() {{
-                    add(new DrawItem(1L, 10));
-                    add(new DrawItem(2L, 20));
-                }})
                 .build();
 
         DrawResponse drawResponse = new DrawResponse(3L);
@@ -101,10 +94,7 @@ class DrawControllerTest {
                                 fieldWithPath("startDate").type(STRING).description("응모 시작 날짜"),
                                 fieldWithPath("endDate").type(STRING).description("응모 종료 날짜"),
                                 fieldWithPath("winningDate").type(STRING).description("추첨 날짜"),
-                                fieldWithPath("quantity").type(NUMBER).description("응모 개수"),
-                                fieldWithPath("sneakerItems").type(ARRAY).description("sneakerItem 배열"),
-                                fieldWithPath("sneakerItems[].sneakerItemId").type(NUMBER).description("sneakerItem id"),
-                                fieldWithPath("sneakerItems[].quantity").type(NUMBER).description("해당 sneakerItem 개수")
+                                fieldWithPath("quantity").type(NUMBER).description("응모 개수")
                         ),
                         responseFields(
                                 fieldWithPath("drawId").type(NUMBER).description("생성된 응모 id")
@@ -115,11 +105,16 @@ class DrawControllerTest {
     @DisplayName("/api/v1/draws/win 에서 추첨을 진행한다")
     void winDrawIdTest() throws Exception {
         // given
-        DrawTicketListResponse drawTicketResponses = new DrawTicketListResponse(
+        DrawTicketsResponse drawTicketResponses = new DrawTicketsResponse(
                 Arrays.asList(
-                        new DrawTicketResponse(1L),
-                        new DrawTicketResponse(2L),
-                        new DrawTicketResponse(3L)
+                        DrawTicketResponse.builder()
+                                .drawTicketId(1L)
+                                .drawStatus(DrawStatus.WINNING)
+                                .sneakerName("air jordan")
+                                .price(27500)
+                                .code("AB1234")
+                                .size(275)
+                                .build()
                 )
         );
 
@@ -134,7 +129,12 @@ class DrawControllerTest {
                 .andDo(document("win-draw",
                         responseFields(
                                 fieldWithPath("drawTicketResponses").type(ARRAY).description("응모권 배열"),
-                                fieldWithPath("drawTicketResponses[].drawTicketId").type(NUMBER).description("응모권 아이디")
+                                fieldWithPath("drawTicketResponses[].drawTicketId").type(NUMBER).description("응모권 아이디"),
+                                fieldWithPath("drawTicketResponses[].drawStatus").type(STRING).description("응모권 상태"),
+                                fieldWithPath("drawTicketResponses[].sneakerName").type(STRING).description("신발 이름"),
+                                fieldWithPath("drawTicketResponses[].price").type(NUMBER).description("가격"),
+                                fieldWithPath("drawTicketResponses[].code").type(STRING).description("코드"),
+                                fieldWithPath("drawTicketResponses[].size").type(NUMBER).description("사이즈")
                         )));
 
     }

@@ -7,11 +7,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import prgrms.neoike.domain.draw.Draw;
+import prgrms.neoike.domain.draw.DrawStatus;
 import prgrms.neoike.domain.member.*;
+import prgrms.neoike.domain.sneaker.MemberCategory;
+import prgrms.neoike.domain.sneaker.Sneaker;
+import prgrms.neoike.domain.sneaker.SneakerCategory;
 import prgrms.neoike.repository.DrawRepository;
 import prgrms.neoike.repository.DrawTicketRepository;
 import prgrms.neoike.repository.MemberRepository;
-import prgrms.neoike.service.dto.drawticketdto.DrawTicketListResponse;
+import prgrms.neoike.repository.SneakerRepository;
+import prgrms.neoike.service.dto.drawdto.ServiceDrawSaveDto;
+import prgrms.neoike.service.dto.drawticketdto.DrawTicketsResponse;
 
 import java.time.LocalDateTime;
 
@@ -32,6 +38,9 @@ class DrawTicketServiceTest {
     @Autowired
     MemberRepository memberRepository;
 
+    @Autowired
+    SneakerRepository sneakerRepository;
+
     LocalDateTime startDate = LocalDateTime.of(2025, 06, 12, 12, 00, 00);
     LocalDateTime endDate = LocalDateTime.of(2025, 06, 13, 12, 00, 00);
     LocalDateTime winningDate = LocalDateTime.of(2025, 06, 14, 12, 00, 00);
@@ -41,6 +50,7 @@ class DrawTicketServiceTest {
         drawTicketRepository.deleteAllInBatch();
         drawRepository.deleteAllInBatch();
         memberRepository.deleteAllInBatch();
+        sneakerRepository.deleteAllInBatch();
     }
 
     @Test
@@ -48,11 +58,12 @@ class DrawTicketServiceTest {
     @Transactional
     void saveDrawTicketTest() {
         // given
-        Draw draw = drawRepository.save(sampleDraw(50));
-        Member member = memberRepository.save(sampleMember());
+        Sneaker sneaker = sneakerRepository.save(sneaker());
+        Draw draw = drawRepository.save(validDraw(50, sneaker));
+        Member member = memberRepository.save(validMember());
 
         // when
-        drawTicketService.save(member.getId(), draw.getId());
+        drawTicketService.save(member.getId(), draw.getId(), 275);
 
         // then
         Draw reducedDraw = drawRepository.findById(draw.getId()).get();
@@ -64,19 +75,26 @@ class DrawTicketServiceTest {
     @Transactional
     void findDrawTicketsByMemberIdTest() {
         // given
-        Draw draw1 = drawRepository.save(sampleDraw(50));
-        Draw draw2 = drawRepository.save(sampleDraw(30));
+        Sneaker sneaker1 = sneakerRepository.save(sneaker());
+        Sneaker sneaker2 = sneakerRepository.save(sneaker());
 
-        Member member = memberRepository.save(sampleMember());
+        Draw draw1 = drawRepository.save(validDraw(50, sneaker1));
+        Draw draw2 = drawRepository.save(validDraw(30, sneaker2));
+        Member member = memberRepository.save(validMember());
 
         // when
-        drawTicketService.save(member.getId(), draw1.getId());
-        drawTicketService.save(member.getId(), draw2.getId());
+        drawTicketService.save(member.getId(), draw1.getId(), 275);
+        drawTicketService.save(member.getId(), draw2.getId(), 275);
 
         // then
-        DrawTicketListResponse drawTicketResponses = drawTicketService.findByMember(member.getId());
+        DrawTicketsResponse drawTicketResponses = drawTicketService.findByMember(member.getId());
 
-        assertThat(drawTicketResponses.drawTicketResponses().size()).isEqualTo(2);
+        assertThat(drawTicketResponses.drawTicketResponses()).hasSize(2);
+        assertThat(drawTicketResponses.drawTicketResponses().get(0).drawStatus()).isEqualTo(DrawStatus.WAITING);
+        assertThat(drawTicketResponses.drawTicketResponses().get(0).sneakerName()).isEqualTo("air jordan");
+        assertThat(drawTicketResponses.drawTicketResponses().get(0).price()).isEqualTo(75000);
+        assertThat(drawTicketResponses.drawTicketResponses().get(0).code()).isEqualTo("AB1234");
+        assertThat(drawTicketResponses.drawTicketResponses().get(0).size()).isEqualTo(275);
         // response 에 받는 정보가 추가되면 테스트 코드 추가 예정
     }
 
@@ -85,35 +103,37 @@ class DrawTicketServiceTest {
     @Transactional
     void invalidSaveDrawTicketTest() {
         // given
-        Draw draw = drawRepository.save(sampleDraw(0));
-        Member member = memberRepository.save(sampleMember());
+        Sneaker sneaker = sneakerRepository.save(sneaker());
+        Draw draw = drawRepository.save(validDraw(0, sneaker));
+        Member member = memberRepository.save(validMember());
 
         // when // then
         assertThatThrownBy(() ->
-                drawTicketService.save(member.getId(), draw.getId())
+                drawTicketService.save(member.getId(), draw.getId(), 275)
         ).isInstanceOf(IllegalStateException.class);
     }
-
 
     @Test
     @DisplayName("이미 Draw 에 응모를 한사람은 재응모가 불가능하다")
     @Transactional
     void duplicateSaveDrawTicketTest() {
         // given
-        Draw draw = drawRepository.save(sampleDraw(50));
-        Member member = memberRepository.save(sampleMember());
+        Sneaker sneaker = sneakerRepository.save(sneaker());
+        Draw draw = drawRepository.save(validDraw(50, sneaker));
+        Member member = memberRepository.save(validMember());
 
         // when
-        drawTicketService.save(member.getId(), draw.getId());
+        drawTicketService.save(member.getId(), draw.getId(), 275);
 
         // then
         assertThatThrownBy(() ->
-                drawTicketService.save(member.getId(), draw.getId())
+                drawTicketService.save(member.getId(), draw.getId(), 275)
         ).isInstanceOf(IllegalStateException.class);
     }
 
-    private Draw sampleDraw(int quantity) {
+    private Draw validDraw(int quantity, Sneaker sneaker) {
         return Draw.builder()
+                .sneaker(sneaker)
                 .startDate(startDate)
                 .endDate(endDate)
                 .winningDate(winningDate)
@@ -121,7 +141,19 @@ class DrawTicketServiceTest {
                 .build();
     }
 
-    private Member sampleMember() {
+    private Sneaker sneaker() {
+        return Sneaker.builder()
+                .memberCategory(MemberCategory.MEN)
+                .sneakerCategory(SneakerCategory.BASKETBALL)
+                .name("air jordan")
+                .price(75000)
+                .description("1")
+                .code("AB1234")
+                .releaseDate(LocalDateTime.now())
+                .build();
+    }
+
+    private Member validMember() {
         return Member.builder()
                 .name("이용훈")
                 .password(new Password("123abcAB!!"))
