@@ -32,22 +32,20 @@ public class ImageLocalService implements SneakerImageService {
         List<MultipartFile> files = uploadDto.files();
         List<String> paths = new ArrayList<>();
 
-        files.forEach(
-            file -> {
-                validateEmptyFile(file);
+        for (MultipartFile file : files) {
+            validateEmptyFile(file);
 
-                String fileFormat = getFileFormat(requireNonNull(file.getOriginalFilename()));
-                validateFileFormat(fileFormat, formatTypes);
+            String fileFormat = getFileFormat(requireNonNull(file.getOriginalFilename()));
+            validateFileFormat(fileFormat, formatTypes);
 
-                String fileName = rename(fileFormat);
-                String fullPath = path + fileName;
-                File newFile = new File(System.getProperty("user.dir") + fullPath);
+            String fileName = rename(fileFormat);
+            String fullPath = path + fileName;
+            File newFile = new File(System.getProperty("user.dir") + fullPath);
 
-                storeFile(file, newFile);
+            storeFile(file, newFile);
 
-                paths.add(fullPath);
-            }
-        );
+            paths.add(fullPath);
+        }
 
         return new SneakerImageResponse(paths);
     }
