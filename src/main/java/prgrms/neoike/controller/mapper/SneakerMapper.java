@@ -15,15 +15,15 @@ import static lombok.AccessLevel.PRIVATE;
 @NoArgsConstructor(access = PRIVATE)
 public class SneakerMapper {
 
-    public static SneakerRegisterDto toDto(SneakerRegisterRequest registerRequest) {
+    public static SneakerRegisterDto toSneakerRegisterDto(SneakerRegisterRequest registerRequest) {
         return new SneakerRegisterDto(
             registerRequest.imagePaths(),
-            toDto(registerRequest.sneaker()),
-            toDto(registerRequest.sneakerStocks())
+            toSneakerDto(registerRequest.sneaker()),
+            toSneakerStockDto(registerRequest.sneakerStocks())
         );
     }
 
-    public static SneakerDto toDto(SneakerRequest sneakerRequest) {
+    public static SneakerDto toSneakerDto(SneakerRequest sneakerRequest) {
         return SneakerDto
             .builder()
             .memberCategory(sneakerRequest.memberCategory())
@@ -36,7 +36,7 @@ public class SneakerMapper {
             .build();
     }
 
-    public static List<SneakerStockDto> toDto(List<SneakerStockRequest> sneakerStockRequests) {
+    public static List<SneakerStockDto> toSneakerStockDto(List<SneakerStockRequest> sneakerStockRequests) {
         return sneakerStockRequests
             .stream()
             .map(i -> new SneakerStockDto(i.size(), i.quantity()))

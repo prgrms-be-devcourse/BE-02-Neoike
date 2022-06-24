@@ -16,11 +16,14 @@ import static lombok.AccessLevel.PRIVATE;
 @NoArgsConstructor(access = PRIVATE)
 public class SneakerConverter {
 
-    public static SneakerStock toEntity(SneakerStockDto stockDto) {
-        return new SneakerStock(stockDto.size(), new Stock(stockDto.quantity()));
+    public static List<SneakerStock> toSneakerStockEntities(List<SneakerStockDto> stockDto) {
+        return stockDto
+            .stream()
+            .map(s -> new SneakerStock(s.size(), new Stock(s.quantity())))
+            .toList();
     }
 
-    public static Sneaker toEntity(SneakerDto sneakerDto) {
+    public static Sneaker toSneakerEntity(SneakerDto sneakerDto) {
         return Sneaker.
             builder()
             .memberCategory(sneakerDto.memberCategory())
@@ -33,11 +36,11 @@ public class SneakerConverter {
             .build();
     }
 
-    public static List<SneakerImage> toEntity(List<? extends String> paths) {
+    public static List<SneakerImage> toSneakerImageEntity(List<String> paths) {
         return paths.stream().map(SneakerImage::new).toList();
     }
 
-    public static SneakerResponse toResponse(Long id, String code) {
+    public static SneakerResponse toSneakerResponse(Long id, String code) {
         return new SneakerResponse(id, code);
     }
 }

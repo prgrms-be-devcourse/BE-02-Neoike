@@ -11,7 +11,7 @@ import javax.validation.Valid;
 import java.net.URI;
 
 import static java.text.MessageFormat.format;
-import static prgrms.neoike.controller.mapper.SneakerMapper.toDto;
+import static prgrms.neoike.controller.mapper.SneakerMapper.toSneakerRegisterDto;
 
 @RestController
 @RequestMapping("/api/v1/sneakers")
@@ -24,7 +24,7 @@ public class SneakerController {
     public ResponseEntity<SneakerResponse> registerSneaker(
         @RequestBody @Valid SneakerRegisterRequest registerRequest
     ) {
-        SneakerResponse response = sneakerService.registerSneaker(toDto(registerRequest));
+        SneakerResponse response = sneakerService.registerSneaker(toSneakerRegisterDto(registerRequest));
 
         return ResponseEntity
             .created(
