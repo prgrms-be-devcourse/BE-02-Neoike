@@ -61,7 +61,7 @@ class SneakerImageControllerTest {
             .andExpect(status().isOk())
             .andDo(document("image-upload",
                 responseFields(
-                    fieldWithPath("paths").type(ARRAY).description("신발 이미지 경로")
+                    fieldWithPath("imagePaths").type(ARRAY).description("신발 이미지 경로")
                 ))
             ).andReturn();
 
@@ -71,8 +71,8 @@ class SneakerImageControllerTest {
 
         assertThat(response).isNotNull();
         assertAll(
-            () -> assertThat(response.paths().size()).isOne(),
-            () -> assertThat(response.paths().get(0)).isEqualTo(expectedResponse.paths().get(0))
+            () -> assertThat(response.imagePaths().size()).isOne(),
+            () -> assertThat(response.imagePaths().get(0)).isEqualTo(expectedResponse.imagePaths().get(0))
         );
     }
 

@@ -38,7 +38,7 @@ class ImageLocalServiceTest {
 
     @AfterAll
     static void cleanup() throws IOException {
-        List<String> paths = imageResponse.paths();
+        List<String> paths = imageResponse.imagePaths();
 
         for (String path : paths) {
             deleteIfExists(Path.of(System.getProperty("user.dir") + path));
@@ -53,7 +53,7 @@ class ImageLocalServiceTest {
         assertThat(imageResponse).isNotNull();
         assertAll(
             () -> imageResponse
-                .paths()
+                .imagePaths()
                 .forEach(
                     path -> assertThat(new File(System.getProperty("user.dir") + path)).isFile()
                 )
