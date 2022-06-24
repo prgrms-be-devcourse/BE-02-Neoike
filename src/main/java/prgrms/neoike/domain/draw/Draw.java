@@ -1,6 +1,7 @@
 package prgrms.neoike.domain.draw;
 
 import static java.text.MessageFormat.format;
+import static javax.persistence.FetchType.LAZY;
 import static lombok.AccessLevel.PROTECTED;
 
 import java.time.LocalDateTime;
@@ -12,6 +13,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import prgrms.neoike.domain.BaseTimeEntity;
+import prgrms.neoike.domain.sneaker.Sneaker;
 
 @Getter
 @Entity
@@ -21,6 +23,10 @@ public class Draw extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "sneaker_id")
+    private Sneaker sneaker;
 
     @Column(name = "start_date")
     @NotNull
@@ -41,18 +47,23 @@ public class Draw extends BaseTimeEntity {
 
     @Builder
     public Draw(
+            Sneaker sneaker,
             LocalDateTime startDate,
             LocalDateTime endDate,
             LocalDateTime winningDate,
-            int quantity
-    ) {
-        validateTimeOrder(startDate, endDate, winningDate);
+            int quantity)
+    {
         validateQuantity(quantity);
+        validateTimeOrder(startDate, endDate, winningDate);
+        this.sneaker = sneaker;
         this.startDate = startDate;
         this.endDate = endDate;
         this.winningDate = winningDate;
         this.quantity = quantity;
     }
+
+
+
 
     private void validateQuantity(int quantity) {
         if (quantity < 0) {

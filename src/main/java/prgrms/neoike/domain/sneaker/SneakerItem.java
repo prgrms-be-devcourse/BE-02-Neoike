@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,6 +16,7 @@ import prgrms.neoike.domain.draw.Draw;
 
 @Getter
 @Entity
+@Table
 @NoArgsConstructor(access = PROTECTED)
 public class SneakerItem {
 
@@ -32,6 +34,9 @@ public class SneakerItem {
     @ManyToOne
     @JoinColumn(name = "sneaker_stock_id")
     private SneakerStock sneakerStock;
+
+    @Column(name = "size")
+    private int size;
 
     @Builder
     public SneakerItem(int quantity, Draw draw, SneakerStock sneakerStock) {
