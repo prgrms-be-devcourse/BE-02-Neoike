@@ -1,4 +1,4 @@
-package prgrms.neoike.controller.dto.sneaker.request;
+package prgrms.neoike.controller.dto.sneaker;
 
 import prgrms.neoike.domain.sneaker.validators.annotation.SneakerSize;
 
