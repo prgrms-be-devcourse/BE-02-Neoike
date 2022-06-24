@@ -17,7 +17,7 @@ import prgrms.neoike.controller.dto.sneaker.request.SneakerRegisterRequest;
 import prgrms.neoike.controller.dto.sneaker.request.SneakerRequest;
 import prgrms.neoike.controller.dto.sneaker.request.SneakerStockRequest;
 import prgrms.neoike.service.SneakerService;
-import prgrms.neoike.service.dto.sneaker.SneakerResponse;
+import prgrms.neoike.service.dto.sneaker.SneakerIdResponse;
 
 import java.util.List;
 
@@ -56,7 +56,7 @@ class SneakerControllerTest {
         String requestJson = objectMapper.writeValueAsString(registerRequest);
 
         given(sneakerService.registerSneaker(any()))
-            .willReturn(new SneakerResponse(1L, "DS-1234567"));
+            .willReturn(new SneakerIdResponse(1L, "DS-1234567"));
 
         MvcResult result = mvc.perform(
             post("/api/v1/sneakers")
@@ -71,7 +71,7 @@ class SneakerControllerTest {
             ).andReturn();
 
         String resultString = result.getResponse().getContentAsString();
-        SneakerResponse response = objectMapper.readValue(resultString, SneakerResponse.class);
+        SneakerIdResponse response = objectMapper.readValue(resultString, SneakerIdResponse.class);
 
         assertThat(response).isNotNull();
         assertAll(

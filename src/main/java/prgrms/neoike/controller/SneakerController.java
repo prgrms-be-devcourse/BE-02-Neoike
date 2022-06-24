@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import prgrms.neoike.controller.dto.sneaker.request.SneakerRegisterRequest;
 import prgrms.neoike.service.SneakerService;
-import prgrms.neoike.service.dto.sneaker.SneakerResponse;
+import prgrms.neoike.service.dto.sneaker.SneakerIdResponse;
 
 import javax.validation.Valid;
 import java.net.URI;
@@ -21,10 +21,10 @@ public class SneakerController {
     private final SneakerService sneakerService;
 
     @PostMapping
-    public ResponseEntity<SneakerResponse> registerSneaker(
+    public ResponseEntity<SneakerIdResponse> registerSneaker(
         @RequestBody @Valid SneakerRegisterRequest registerRequest
     ) {
-        SneakerResponse response = sneakerService.registerSneaker(toSneakerRegisterDto(registerRequest));
+        SneakerIdResponse response = sneakerService.registerSneaker(toSneakerRegisterDto(registerRequest));
 
         return ResponseEntity
             .created(

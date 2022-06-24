@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import prgrms.neoike.service.dto.sneaker.SneakerDto;
 import prgrms.neoike.service.dto.sneaker.SneakerRegisterDto;
-import prgrms.neoike.service.dto.sneaker.SneakerResponse;
+import prgrms.neoike.service.dto.sneaker.SneakerIdResponse;
 import prgrms.neoike.service.dto.sneaker.SneakerStockDto;
 
 import javax.persistence.EntityExistsException;
@@ -31,12 +31,12 @@ class SneakerServiceTest {
     @DisplayName("새로운 신발을 정상적으로 등록한다.")
     void testRegisterSneaker() {
         SneakerRegisterDto sneakerRegisterDto = registerServiceDto();
-        SneakerResponse sneakerResponse = sneakerService.registerSneaker(sneakerRegisterDto);
+        SneakerIdResponse sneakerIdResponse = sneakerService.registerSneaker(sneakerRegisterDto);
 
-        assertThat(sneakerResponse).isNotNull();
+        assertThat(sneakerIdResponse).isNotNull();
         assertAll(
-            () -> assertThat(sneakerResponse.sneakerId()).isNotNull().isNotNegative(),
-            () -> assertThat(sneakerResponse.code()).isEqualTo(sneakerRegisterDto.sneakerDto().code())
+            () -> assertThat(sneakerIdResponse.sneakerId()).isNotNull().isNotNegative(),
+            () -> assertThat(sneakerIdResponse.code()).isEqualTo(sneakerRegisterDto.sneakerDto().code())
         );
     }
 
@@ -44,7 +44,7 @@ class SneakerServiceTest {
     @DisplayName("이미 같은 코드를 가진 신발이 등록되어 있다면 예외가 발생한다.")
     void testRegisterDuplicatedSneaker() {
         SneakerRegisterDto sneakerRegisterDto = registerServiceDto();
-        SneakerResponse sneakerResponse = sneakerService.registerSneaker(sneakerRegisterDto);
+        SneakerIdResponse sneakerIdResponse = sneakerService.registerSneaker(sneakerRegisterDto);
 
         assertThatThrownBy(
             () -> { sneakerService.registerSneaker(sneakerRegisterDto); })
