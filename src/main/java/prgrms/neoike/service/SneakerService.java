@@ -16,8 +16,7 @@ import javax.persistence.EntityExistsException;
 import java.util.List;
 
 import static java.text.MessageFormat.format;
-import static prgrms.neoike.service.mapper.SneakerConverter.toEntity;
-import static prgrms.neoike.service.mapper.SneakerConverter.toResponse;
+import static prgrms.neoike.service.mapper.SneakerConverter.*;
 
 @Service
 @RequiredArgsConstructor
@@ -30,16 +29,16 @@ public class SneakerService {
     public SneakerResponse registerSneaker(SneakerRegisterDto registerDto) {
         validateDuplicatedSneaker(registerDto.sneakerDto().code());
 
-        List<SneakerImage> sneakerImages = toEntity(registerDto.imageDto());
-        Sneaker sneaker = toEntity(registerDto.sneakerDto());
+        List<SneakerImage> sneakerImages = SneakerConverter.toSneakerImageEntity(registerDto.imageDto());
+        Sneaker sneaker = toSneakerEntity(registerDto.sneakerDto());
         sneaker.attachImages(sneakerImages);
 
         Sneaker retrievedSneaker = sneakerRepository.save(sneaker);
-        List<SneakerStock> sneakerStocks = registerDto.stockDto().stream().map(SneakerConverter::toEntity).toList();
+        List<SneakerStock> sneakerStocks = toSneakerStockEntities(registerDto.stockDto());
         sneakerStocks.forEach(s -> s.setSneaker(retrievedSneaker));
         sneakerStockRepository.saveAll(sneakerStocks);
 
-        return toResponse(retrievedSneaker.getId(), retrievedSneaker.getCode());
+        return toSneakerResponse(retrievedSneaker.getId(), retrievedSneaker.getCode());
     }
 
     private void validateDuplicatedSneaker(String code) {
