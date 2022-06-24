@@ -3,7 +3,6 @@ package prgrms.neoike.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +23,7 @@ import java.util.List;
 
 import static java.time.LocalDateTime.of;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -73,8 +73,8 @@ class SneakerControllerTest {
         String resultString = result.getResponse().getContentAsString();
         SneakerResponse response = objectMapper.readValue(resultString, SneakerResponse.class);
 
-        Assertions.assertAll(
-            () -> assertThat(response).isNotNull(),
+        assertThat(response).isNotNull();
+        assertAll(
             () -> assertThat(response.sneakerId()).isEqualTo(1L),
             () -> assertThat(response.code()).isEqualTo("DS-1234567")
         );

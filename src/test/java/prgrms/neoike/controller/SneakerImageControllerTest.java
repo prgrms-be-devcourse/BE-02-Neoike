@@ -1,7 +1,6 @@
 package prgrms.neoike.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +20,7 @@ import java.util.List;
 
 import static java.time.LocalDateTime.now;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.http.MediaType.IMAGE_PNG_VALUE;
@@ -68,8 +68,9 @@ class SneakerImageControllerTest {
         String resultString = result.getResponse().getContentAsString();
         SneakerImageResponse response = objectMapper.readValue(resultString, SneakerImageResponse.class);
 
-        Assertions.assertAll(
-            () -> assertThat(response).isNotNull(),
+
+        assertThat(response).isNotNull();
+        assertAll(
             () -> assertThat(response.paths().size()).isOne(),
             () -> assertThat(response.paths().get(0)).isEqualTo(expectedResponse.paths().get(0))
         );
