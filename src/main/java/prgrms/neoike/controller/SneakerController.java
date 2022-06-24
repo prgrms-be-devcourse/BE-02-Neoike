@@ -5,12 +5,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import prgrms.neoike.controller.dto.sneaker.request.SneakerRegisterRequest;
 import prgrms.neoike.service.SneakerService;
+import prgrms.neoike.service.dto.sneaker.SneakerDetailResponse;
 import prgrms.neoike.service.dto.sneaker.SneakerIdResponse;
 
 import javax.validation.Valid;
 import java.net.URI;
 
 import static java.text.MessageFormat.format;
+import static prgrms.neoike.controller.mapper.SneakerMapper.toSneakerDetailDto;
 import static prgrms.neoike.controller.mapper.SneakerMapper.toSneakerRegisterDto;
 
 @RestController
@@ -33,5 +35,15 @@ public class SneakerController {
                 )
             )
             .body(response);
+    }
+
+    @GetMapping("/{sneakerId}/{code}")
+    public ResponseEntity<SneakerDetailResponse> getSneakerDetail(
+        @PathVariable Long sneakerId,
+        @PathVariable String code
+    ) {
+        SneakerDetailResponse sneakerDetail = sneakerService.getSneakerDetail(toSneakerDetailDto(sneakerId, code));
+
+        return ResponseEntity.ok(sneakerDetail);
     }
 }
