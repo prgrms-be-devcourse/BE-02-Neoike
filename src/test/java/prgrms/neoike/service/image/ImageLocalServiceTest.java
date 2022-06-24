@@ -33,7 +33,8 @@ class ImageLocalServiceTest {
     @BeforeAll
     static void setup() throws IOException {
         String fullPath = System.getProperty("user.dir") + "/src/test/resources/test.PNG";
-        multipartFile = getMockMultipartFile("test", "PNG", fullPath);
+        FileInputStream fis = new FileInputStream(fullPath);
+        multipartFile = new MockMultipartFile("test", "test.PNG", "PNG", fis);
     }
 
     @AfterAll
@@ -47,7 +48,7 @@ class ImageLocalServiceTest {
 
     @Test
     @DisplayName("이미지 파일을 저장한다.")
-    void testStoreImageToLocal() throws IOException {
+    void testStoreImageToLocal() {
         imageResponse = imageLocalService.upload(new SneakerImageUploadDto(List.of(multipartFile)));
 
         assertThat(imageResponse).isNotNull();
@@ -58,11 +59,5 @@ class ImageLocalServiceTest {
                     path -> assertThat(new File(System.getProperty("user.dir") + path)).isFile()
                 )
             );
-    }
-
-    private static MockMultipartFile getMockMultipartFile(String fileName, String contentType, String path) throws IOException {
-        FileInputStream fis = new FileInputStream(new File(path));
-
-        return new MockMultipartFile(fileName, fileName + "." + contentType, contentType, fis);
     }
 }

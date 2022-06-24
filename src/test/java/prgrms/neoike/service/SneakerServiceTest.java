@@ -48,7 +48,7 @@ class SneakerServiceTest {
         sneakerService.registerSneaker(sneakerRegisterDto);
 
         assertThatThrownBy(
-            () -> { sneakerService.registerSneaker(sneakerRegisterDto); })
+            () -> sneakerService.registerSneaker(sneakerRegisterDto))
             .hasMessageContaining("동일한 신발이 이미 존재합니다.")
             .isInstanceOf(EntityExistsException.class);
     }
