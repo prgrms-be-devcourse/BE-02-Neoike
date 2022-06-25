@@ -1,5 +1,6 @@
 package prgrms.neoike.repository;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import prgrms.neoike.domain.sneaker.SneakerStock;
@@ -14,4 +15,7 @@ public interface SneakerStockRepository extends JpaRepository<SneakerStock, Long
         "left join fetch n.sneakerImages " +
         "where n.id = :sneakerId and n.code = :code")
     List<SneakerStock> findByIdAndCode(Long sneakerId, String code);
+
+    @EntityGraph(attributePaths = "sneaker")
+    Optional<SneakerStock> findByIdAndSize(Long id, int size);
 }
