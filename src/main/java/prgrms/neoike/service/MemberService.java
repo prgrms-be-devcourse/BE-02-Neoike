@@ -37,7 +37,7 @@ public class MemberService {
         return MemberConverter.toMemberResponse(savedMember.getId(), savedMember.getEmail().getEmail());
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public String login(LoginDto loginDto) {
         UsernamePasswordAuthenticationToken authenticationToken
                 = new UsernamePasswordAuthenticationToken(loginDto.email(), loginDto.password());
