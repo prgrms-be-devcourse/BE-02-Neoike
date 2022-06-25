@@ -47,16 +47,26 @@ public class SneakerConverter {
         Sneaker sneaker = sneakerStocks.get(0).getSneaker();
 
         return new SneakerDetailResponse(
-            toSneakerStockResponse(sneakerStocks),
+            toSneakerStockResponses(sneakerStocks),
             toSneakerResponse(sneaker)
         );
     }
 
-    private static List<SneakerStockResponse> toSneakerStockResponse(List<SneakerStock> sneakerStocks) {
+    public static List<SneakerStockResponse> toSneakerStockResponses(List<SneakerStock> sneakerStocks) {
         return sneakerStocks
             .stream()
-            .map(stock -> new SneakerStockResponse(stock.getSize(), stock.getStock().getQuantity()))
+            .map(stock -> new SneakerStockResponse(
+                stock.getId(), stock.getSize(), stock.getStock().getQuantity(), stock.getSneaker().getId()))
             .toList();
+    }
+
+    public static SneakerStockResponse toSneakerStockResponse(SneakerStock sneakerStock) {
+        return new SneakerStockResponse(
+            sneakerStock.getId(),
+            sneakerStock.getSize(),
+            sneakerStock.getStock().getQuantity(),
+            sneakerStock.getSneaker().getId()
+        );
     }
 
     public static SneakerResponse toSneakerResponse(Sneaker sneaker) {

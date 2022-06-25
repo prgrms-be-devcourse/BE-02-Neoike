@@ -1,10 +1,9 @@
 package prgrms.neoike.service.dto.sneaker;
 
-public record LeftStockResponse(
+public record SneakerStockUpdateDto(
     Long stockId,
     int size,
-    int leftStock,
-    Long sneakerId
+    int quantity
 ) {
 
 }
