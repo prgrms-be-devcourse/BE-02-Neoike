@@ -34,6 +34,7 @@ public class MemberService {
         validateDuplicatedMember(memberDto.email());
         Member member = MemberConverter.toMember(memberDto);
         Member savedMember = memberRepository.save(member);
+
         return MemberConverter.toMemberResponse(savedMember.getId(), savedMember.getEmail().getEmail());
     }
 
