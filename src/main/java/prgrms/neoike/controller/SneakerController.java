@@ -4,11 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import prgrms.neoike.controller.dto.sneaker.SneakerRegisterRequest;
+import prgrms.neoike.controller.dto.sneaker.SneakerStockRequest;
 import prgrms.neoike.service.SneakerService;
 import prgrms.neoike.service.dto.page.PageResponse;
 import prgrms.neoike.service.dto.sneaker.SneakerDetailResponse;
 import prgrms.neoike.service.dto.sneaker.SneakerIdResponse;
 import prgrms.neoike.service.dto.sneaker.SneakerResponse;
+import prgrms.neoike.service.dto.sneaker.SneakerStockResponse;
 
 import javax.validation.Valid;
 import java.net.URI;
@@ -57,5 +59,27 @@ public class SneakerController {
         PageResponse<SneakerResponse> sneakers = sneakerService.getSneakers(toPagingDto(page, size, sortBy));
 
         return ResponseEntity.ok(sneakers);
+    }
+
+    @PutMapping("/out/stocks/{stockId}")
+    public ResponseEntity<SneakerStockResponse> decreaseSneakerStock(
+        @PathVariable Long stockId,
+        @RequestBody @Valid SneakerStockRequest stockRequest
+    ) {
+        SneakerStockResponse sneakerStockResponse = sneakerService
+            .decreaseSneakerStock(toSneakerStockUpdateDto(stockId, stockRequest));
+
+        return ResponseEntity.ok(sneakerStockResponse);
+    }
+
+    @PutMapping("/in/stocks/{stockId}")
+    public ResponseEntity<SneakerStockResponse> increaseSneakerStock(
+        @PathVariable Long stockId,
+        @RequestBody @Valid SneakerStockRequest stockRequest
+    ) {
+        SneakerStockResponse sneakerStockResponse = sneakerService
+            .increaseSneakerStock(toSneakerStockUpdateDto(stockId, stockRequest));
+
+        return ResponseEntity.ok(sneakerStockResponse);
     }
 }

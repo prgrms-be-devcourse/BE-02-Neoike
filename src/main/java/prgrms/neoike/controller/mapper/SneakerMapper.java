@@ -4,6 +4,7 @@ import lombok.NoArgsConstructor;
 import prgrms.neoike.controller.dto.sneaker.SneakerRegisterRequest;
 import prgrms.neoike.controller.dto.sneaker.SneakerRequest;
 import prgrms.neoike.controller.dto.sneaker.SneakerStockRequest;
+import prgrms.neoike.service.dto.sneaker.SneakerStockUpdateDto;
 import prgrms.neoike.service.dto.page.PageableDto;
 import prgrms.neoike.service.dto.sneaker.*;
 
@@ -48,5 +49,9 @@ public class SneakerMapper {
 
     public static PageableDto toPagingDto(int page, int size, String sortBy) {
         return new PageableDto(page, size, sortBy);
+    }
+
+    public static SneakerStockUpdateDto toSneakerStockUpdateDto(Long stockId, SneakerStockRequest stockRequest) {
+        return new SneakerStockUpdateDto(stockId, stockRequest.size(), stockRequest.quantity());
     }
 }
