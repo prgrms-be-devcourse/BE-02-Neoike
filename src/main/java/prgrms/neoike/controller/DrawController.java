@@ -30,9 +30,9 @@ public class DrawController {
         DrawResponse drawResponse = drawService.save(serviceDrawSaveDto);
 
         // Sneaker Item 등록
-        // Long sneakerId = saveRequest.sneakerId();
+        // Long stockId = saveRequest.stockId();
         // ArrayList<DrawItem> drawItems = saveRequest.sneakerItems();
-        // sneakerService.itemRegistration(sneakerId, drawItems);
+        // sneakerService.itemRegistration(stockId, drawItems);
 
         URI location = URI.create(format("/api/v1/draws/{0}", drawResponse.drawId()));
         return ResponseEntity

@@ -93,7 +93,7 @@ class DrawControllerTest {
                 .andDo(print())
                 .andDo(document("save-draw",
                         requestFields(
-                                fieldWithPath("sneakerId").type(NUMBER).description("sneaker id"),
+                                fieldWithPath("stockId").type(NUMBER).description("sneaker id"),
                                 fieldWithPath("startDate").type(STRING).description("응모 시작 날짜"),
                                 fieldWithPath("endDate").type(STRING).description("응모 종료 날짜"),
                                 fieldWithPath("winningDate").type(STRING).description("추첨 날짜"),
