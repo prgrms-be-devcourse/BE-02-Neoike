@@ -1,6 +1,7 @@
 package prgrms.neoike.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import prgrms.neoike.common.exception.EntityNotFoundException;
@@ -10,15 +11,16 @@ import prgrms.neoike.domain.sneaker.SneakerStock;
 import prgrms.neoike.repository.SneakerRepository;
 import prgrms.neoike.repository.SneakerStockRepository;
 import prgrms.neoike.service.converter.SneakerConverter;
-import prgrms.neoike.service.dto.sneaker.SneakerDetailDto;
-import prgrms.neoike.service.dto.sneaker.SneakerDetailResponse;
-import prgrms.neoike.service.dto.sneaker.SneakerIdResponse;
-import prgrms.neoike.service.dto.sneaker.SneakerRegisterDto;
+import prgrms.neoike.service.dto.page.PageResponse;
+import prgrms.neoike.service.dto.page.PageableDto;
+import prgrms.neoike.service.dto.sneaker.*;
 
 import javax.persistence.EntityExistsException;
 import java.util.List;
 
 import static java.text.MessageFormat.format;
+import static prgrms.neoike.service.converter.PageConverter.toPageable;
+import static prgrms.neoike.service.converter.PageConverter.toSneakerResponses;
 import static prgrms.neoike.service.converter.SneakerConverter.*;
 
 @Service
@@ -43,6 +45,13 @@ public class SneakerService {
         List<SneakerStock> sneakerStocks = validateEmptySneakerDetails(detailDto);
 
         return toSneakerDetailResponse(sneakerStocks);
+    }
+
+    @Transactional(readOnly = true)
+    public PageResponse<SneakerResponse> getSneakers(PageableDto pageableDto) {
+        Page<Sneaker> sneakers = sneakerRepository.findAll(toPageable(pageableDto));
+
+        return toSneakerResponses(sneakers);
     }
 
     private List<SneakerStock> validateEmptySneakerDetails(SneakerDetailDto detailDto) {

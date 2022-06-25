@@ -74,7 +74,7 @@ public class SneakerConverter {
             .build();
     }
 
-    private static List<String> toImagePaths(Set<SneakerImage> images) {
+    public static List<String> toImagePaths(Set<SneakerImage> images) {
         return images.stream().map(SneakerImage::getPath).toList();
     }
 }
