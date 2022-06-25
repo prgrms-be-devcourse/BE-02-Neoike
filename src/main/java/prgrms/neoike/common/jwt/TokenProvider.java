@@ -42,7 +42,7 @@ public class TokenProvider implements InitializingBean {
 
     public String createToken(Authentication authentication) {
 
-        long now = new Date().getTime();
+        long now = System.currentTimeMillis();
         Date validity = new Date(now + this.tokenValidityInMilliseconds);
 
         return Jwts.builder()
