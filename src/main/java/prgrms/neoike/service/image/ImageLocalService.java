@@ -53,8 +53,8 @@ public class ImageLocalService implements SneakerImageService {
     private void storeFile(MultipartFile file, File newFile) {
         try {
             file.transferTo(newFile);
-        } catch (IOException e) {
-            throw new IllegalStateException("이미지를 저장하는데 실패하였습니다.");
+        } catch (IOException ex) {
+            throw new IllegalStateException("이미지를 저장하는데 실패하였습니다.", ex);
         }
     }
 
