@@ -12,6 +12,8 @@ import prgrms.neoike.repository.MemberRepository;
 
 import java.util.List;
 
+import static java.text.MessageFormat.format;
+
 @Component("userDetailsService")
 public class CustomUserDetailService implements UserDetailsService {
 
@@ -26,7 +28,7 @@ public class CustomUserDetailService implements UserDetailsService {
     public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
         return memberRepository.findOneByEmail(username)
                 .map(this::createUser)
-                .orElseThrow(() -> new EntityNotFoundException("회원을 찾을 수 없습니다."));
+                .orElseThrow(() -> new EntityNotFoundException(format("회원을 찾을 수 없습니다. email : {0}", username)));
     }
 
     private User createUser(Member member) {
