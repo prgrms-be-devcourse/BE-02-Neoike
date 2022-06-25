@@ -71,12 +71,11 @@ class SneakerControllerTest {
             .andExpect(status().isCreated())
             .andDo(
                 document("sneaker-register",
-                    requestFields(sneakerImage())
+                    requestFields(imagePaths())
                         .andWithPrefix("sneaker.", sneaker())
                         .andWithPrefix("sneakerStocks[*].", sneakerStock()),
-                    responseFields(commonPostMethod())
-                )
-            ).andReturn();
+                    responseFields(sneakerId(), sneakerCode())))
+            .andReturn();
 
         String resultString = result.getResponse().getContentAsString();
         SneakerIdResponse response = objectMapper.readValue(resultString, SneakerIdResponse.class);
@@ -95,18 +94,17 @@ class SneakerControllerTest {
             .willReturn(createDetailResponse());
 
         MvcResult result = mvc
-            .perform(get("/api/v1/sneakers/{stockId}/{code}", 1, "DS-1234567"))
+            .perform(get("/api/v1/sneakers/{sneakerId}/{code}", 1, "DS-1234567"))
             .andExpect(status().isOk())
             .andDo(
                 document("sneaker-detail",
-                    pathParameters(commonPath()),
+                    pathParameters(sneakerIdPath(), codePath()),
                     responseFields()
                         .andWithPrefix("sneakerStocks.[*].", sneakerStock())
                         .andWithPrefix("sneakerStocks.[*].", sneakerId(), stockId())
                         .andWithPrefix("sneaker.", sneaker())
-                        .andWithPrefix("sneaker.", sneakerIdAndImages())
-                )
-            ).andReturn();
+                        .andWithPrefix("sneaker.", sneakerId(), imagePaths())))
+            .andReturn();
 
         String resultString = result.getResponse().getContentAsString();
         SneakerDetailResponse response = objectMapper.readValue(resultString, SneakerDetailResponse.class);
@@ -135,20 +133,14 @@ class SneakerControllerTest {
                 get("/api/v1/sneakers")
                     .queryParam("page", "1")
                     .queryParam("size", "1")
-                    .queryParam("sortBy", "createdAt.asc")
-            )
+                    .queryParam("sortBy", "createdAt.asc"))
             .andExpect(status().isOk())
             .andDo(
                 document("sneaker-sneakers",
                     requestParameters(pageParam()),
                     responseFields(page())
-                        .and(
-                            subsectionWithPath("contents")
-                            .type(ARRAY)
-                            .description("페이징 컨텐츠")
-                        )
-                )
-            ).andReturn();
+                        .and(subsectionWithPath("contents").type(ARRAY).description("페이징 컨텐츠"))))
+            .andReturn();
 
         String resultString = result.getResponse().getContentAsString();
         PageResponse<SneakerResponse> pageResponse = objectMapper
@@ -184,18 +176,15 @@ class SneakerControllerTest {
         MvcResult result = mvc
             .perform(
                 put("/api/v1/sneakers/out/stocks/{stockId}", 1L)
-                .content(requestString)
-                .contentType(APPLICATION_JSON)
-            )
+                    .content(requestString)
+                    .contentType(APPLICATION_JSON))
             .andExpect(status().isOk())
             .andDo(
                 document("sneaker-stock_out",
+                    pathParameters(stockIdPath()),
                     requestFields(sneakerStock()),
-                    responseFields(sneakerStock())
-                        .and(sneakerId())
-                        .and(stockId())
-                )
-            ).andReturn();
+                    responseFields(sneakerStock()).and(sneakerId(), stockId())))
+            .andReturn();
 
         String resultString = result.getResponse().getContentAsString();
         SneakerStockResponse leftSneakerStockResponse = objectMapper.readValue(resultString, SneakerStockResponse.class);
@@ -222,17 +211,13 @@ class SneakerControllerTest {
             .perform(
                 put("/api/v1/sneakers/in/stocks/{stockId}", 1L)
                     .content(requestString)
-                    .contentType(APPLICATION_JSON)
-            )
+                    .contentType(APPLICATION_JSON))
             .andExpect(status().isOk())
             .andDo(
                 document("sneaker-stock_in",
                     requestFields(sneakerStock()),
-                    responseFields(sneakerStock())
-                        .and(stockId())
-                        .and(sneakerId())
-                )
-            ).andReturn();
+                    responseFields(sneakerStock()).and(stockId(), sneakerId())))
+            .andReturn();
 
         String resultString = result.getResponse().getContentAsString();
         SneakerStockResponse leftSneakerStockResponse = objectMapper.readValue(resultString, SneakerStockResponse.class);
@@ -306,44 +291,27 @@ class SneakerControllerTest {
         );
     }
 
-    private List<FieldDescriptor> sneakerIdAndImages() {
-        return List.of(
-            fieldWithPath("sneakerId").type(NUMBER).description("신발 아이디"),
-            sneakerImage()
-        );
-    }
+    private FieldDescriptor sneakerId() { return fieldWithPath("sneakerId").type(NUMBER).description("신발 아이디"); }
 
-    private List<FieldDescriptor> commonPostMethod() {
-        return List.of(
-            fieldWithPath("sneakerId").type(NUMBER).description("신발 아이디"),
-            fieldWithPath("code").type(STRING).description("코드")
-        );
-    }
-
-    private List<ParameterDescriptor> commonPath() {
-        return List.of(
-            parameterWithName("stockId").description("신발 재고 아이디"),
-            parameterWithName("code").description("코드")
-        );
-    }
-
-    private FieldDescriptor sneakerImage() {
-        return fieldWithPath("imagePaths").type(ARRAY).description("신발 이미지 경로");
-    }
-
-    private List<FieldDescriptor> sneakerStock() {
-        return List.of(
-            fieldWithPath("size").type(NUMBER).description("사이즈"),
-            fieldWithPath("quantity").type(NUMBER).description("수량")
-        );
-    }
+    private FieldDescriptor sneakerCode() { return fieldWithPath("code").type(STRING).description("코드"); }
 
     private FieldDescriptor stockId() {
         return fieldWithPath("stockId").type(NUMBER).description("신발 재고 아이디");
     }
 
-    private FieldDescriptor sneakerId() {
-        return fieldWithPath("sneakerId").type(NUMBER).description("신발 아이디");
+    private FieldDescriptor imagePaths() { return fieldWithPath("imagePaths").type(ARRAY).description("신발 이미지 경로"); }
+
+    private ParameterDescriptor codePath() { return parameterWithName("code").description("코드"); }
+
+    private ParameterDescriptor stockIdPath() { return parameterWithName("stockId").description("신발 재고 아이디"); }
+
+    private ParameterDescriptor sneakerIdPath() { return parameterWithName("sneakerId").description("신발 아이디"); }
+
+    private List<FieldDescriptor> sneakerStock() {
+        return List.of(
+            fieldWithPath("size").type(NUMBER).description("신발 사이즈"),
+            fieldWithPath("quantity").type(NUMBER).description("수량")
+        );
     }
 
     private List<FieldDescriptor> sneaker() {
