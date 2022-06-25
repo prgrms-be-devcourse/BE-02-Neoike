@@ -5,13 +5,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
+import org.springframework.web.filter.GenericFilterBean;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 @Slf4j
-public class JwtFilter extends GenericFilter {
+public class JwtFilter extends GenericFilterBean {
 
     public static final String AUTHORIZATION_TYPE = "Bearer ";
 
@@ -30,10 +31,10 @@ public class JwtFilter extends GenericFilter {
         if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
             Authentication authentication = tokenProvider.getAuthentication(jwt);
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            log.debug("Security Context에 '{}' 인증정보를 저장했습니다. uri: {}", authentication.getName(), requestURI);
+            log.info("Security Context에 '{}' 인증정보를 저장했습니다. uri: {}", authentication.getName(), requestURI);
 
         } else {
-            log.debug("유요한 JWT 토큰이 없습니다, uri: {}", requestURI);
+            log.info("유요한 JWT 토큰이 없습니다, uri: {}", requestURI);
         }
         filterChain.doFilter(request, response);
     }
