@@ -7,6 +7,7 @@ import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import prgrms.neoike.common.exception.EntityNotFoundException;
 import prgrms.neoike.service.dto.page.PageResponse;
@@ -73,8 +74,8 @@ class SneakerServiceTest {
             () -> assertThat(idResponse.code()).isEqualTo(sneakerResponse.code()),
             () -> assertThat(idResponse.sneakerId()).isEqualTo(sneakerResponse.sneakerId()),
             () -> assertThat(sneakerStockResponses).contains(
-                new SneakerStockResponse(150, 10),
-                new SneakerStockResponse(200, 10)
+                new SneakerStockResponse(sneakerStockResponses.get(0).stockId(), 150, 10, sneakerResponse.sneakerId()),
+                new SneakerStockResponse(sneakerStockResponses.get(1).stockId(), 200, 10, sneakerResponse.sneakerId())
             )
         );
     }
@@ -123,6 +124,62 @@ class SneakerServiceTest {
             () -> sneakerService.getSneakers(new PageableDto(1, 5, "id.ABCDE")))
             .hasMessage(format("페이징 정렬에 실패하였습니다. (direction: {0})", "ABCDE"))
             .isInstanceOf(QueryParameterException.class);
+    }
+
+    @Test
+    @Rollback
+    @DisplayName("입력된 신발 재고의 아이디와 사이즈에 맞는 재고를 찾아서 입력된 수량만큼 감소시킨다.")
+    void testDecreaseSneakerStock() {
+        SneakerStockResponse stockResponse = getStockResponse();
+        int countOfBeforeDecrease = stockResponse.quantity();
+        SneakerStockUpdateDto updateDto = new SneakerStockUpdateDto(stockResponse.stockId(), stockResponse.size(), 1);
+        SneakerStockResponse decreasedStockResponse = sneakerService.decreaseSneakerStock(updateDto);
+
+        assertAll(
+            () -> assertThat(decreasedStockResponse.stockId()).isEqualTo(stockResponse.stockId()),
+            () -> assertThat(decreasedStockResponse.size()).isEqualTo(stockResponse.size()),
+            () -> assertThat(decreasedStockResponse.quantity()).isLessThan(stockResponse.quantity()),
+            () -> assertThat(countOfBeforeDecrease - updateDto.quantity()).isEqualTo(decreasedStockResponse.quantity())
+        );
+    }
+
+    @Test
+    @Rollback
+    @DisplayName("입력된 신발 재고의 아이디와 사이즈에 맞는 재고를 찾아서 입력된 수량만큼 증가시킨다.")
+    void testIncreaseSneakerStock() {
+        SneakerStockResponse stockResponse = getStockResponse();
+        int countOfBeforeIncrease = stockResponse.quantity();
+        SneakerStockUpdateDto updateDto = new SneakerStockUpdateDto(stockResponse.stockId(), stockResponse.size(), 1);
+        SneakerStockResponse increasedStockResponse = sneakerService.increaseSneakerStock(updateDto);
+
+        assertAll(
+            () -> assertThat(increasedStockResponse.stockId()).isEqualTo(stockResponse.stockId()),
+            () -> assertThat(increasedStockResponse.size()).isEqualTo(stockResponse.size()),
+            () -> assertThat(increasedStockResponse.quantity()).isGreaterThan(stockResponse.quantity()),
+            () -> assertThat(countOfBeforeIncrease + updateDto.quantity()).isEqualTo(increasedStockResponse.quantity())
+        );
+    }
+
+    @Test
+    @DisplayName("현재 신발의 재고 수량보다 더 큰 수량이 입력되면 예외가 발생한다.")
+    void testNotEnoughStockQuantity() {
+        SneakerStockResponse stockResponse = getStockResponse();
+        SneakerStockUpdateDto updateDto = new SneakerStockUpdateDto(stockResponse.stockId(), stockResponse.size(), 999999999);
+
+        assertThatThrownBy(
+            () -> sneakerService.decreaseSneakerStock(updateDto))
+            .hasMessage(format("재고가 부족합니다. (현재재고: {0})", stockResponse.quantity()))
+            .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    private SneakerStockResponse getStockResponse() {
+        SneakerRegisterDto registerDto = createRegisterDto();
+        SneakerIdResponse sneakerIdResponse = sneakerService.registerSneaker(registerDto);
+        SneakerDetailDto detailDto = new SneakerDetailDto(sneakerIdResponse.sneakerId(), sneakerIdResponse.code());
+        SneakerDetailResponse sneakerDetail = sneakerService.getSneakerDetail(detailDto);
+        List<SneakerStockResponse> sneakerStockResponses = sneakerDetail.sneakerStocks();
+
+        return sneakerStockResponses.get(0);
     }
 
     private void register5Sneakers() {
