@@ -5,15 +5,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import prgrms.neoike.controller.dto.sneaker.SneakerRegisterRequest;
 import prgrms.neoike.service.SneakerService;
+import prgrms.neoike.service.dto.page.PageResponse;
 import prgrms.neoike.service.dto.sneaker.SneakerDetailResponse;
 import prgrms.neoike.service.dto.sneaker.SneakerIdResponse;
+import prgrms.neoike.service.dto.sneaker.SneakerResponse;
 
 import javax.validation.Valid;
 import java.net.URI;
 
 import static java.text.MessageFormat.format;
-import static prgrms.neoike.controller.mapper.SneakerMapper.toSneakerDetailDto;
-import static prgrms.neoike.controller.mapper.SneakerMapper.toSneakerRegisterDto;
+import static prgrms.neoike.controller.mapper.SneakerMapper.*;
 
 @RestController
 @RequestMapping("/api/v1/sneakers")
@@ -45,5 +46,16 @@ public class SneakerController {
         SneakerDetailResponse sneakerDetail = sneakerService.getSneakerDetail(toSneakerDetailDto(sneakerId, code));
 
         return ResponseEntity.ok(sneakerDetail);
+    }
+
+    @GetMapping
+    public ResponseEntity<PageResponse<SneakerResponse>> getSneakers(
+        @RequestParam(defaultValue = "1") int page,
+        @RequestParam(defaultValue = "20") int size,
+        @RequestParam(defaultValue = "createdAt.desc") String sortBy
+    ) {
+        PageResponse<SneakerResponse> sneakers = sneakerService.getSneakers(toPagingDto(page, size, sortBy));
+
+        return ResponseEntity.ok(sneakers);
     }
 }
