@@ -1,5 +1,6 @@
 package prgrms.neoike.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -17,6 +18,7 @@ import prgrms.neoike.controller.dto.sneaker.SneakerRegisterRequest;
 import prgrms.neoike.controller.dto.sneaker.SneakerRequest;
 import prgrms.neoike.controller.dto.sneaker.SneakerStockRequest;
 import prgrms.neoike.service.SneakerService;
+import prgrms.neoike.service.dto.page.PageResponse;
 import prgrms.neoike.service.dto.sneaker.SneakerDetailResponse;
 import prgrms.neoike.service.dto.sneaker.SneakerIdResponse;
 import prgrms.neoike.service.dto.sneaker.SneakerResponse;
@@ -35,8 +37,7 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.JsonFieldType.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static prgrms.neoike.domain.sneaker.MemberCategory.MEN;
 import static prgrms.neoike.domain.sneaker.SneakerCategory.JORDAN;
@@ -99,7 +100,7 @@ class SneakerControllerTest {
             .andExpect(status().isOk())
             .andDo(
                 document("sneaker-detail",
-                    pathParameters(commonParam()),
+                    pathParameters(commonPath()),
                     responseFields()
                         .andWithPrefix("sneakerStocks.", sneakerStock())
                         .andWithPrefix("sneaker.", sneaker())
@@ -123,24 +124,89 @@ class SneakerControllerTest {
         );
     }
 
+    @Test
+    @DisplayName("신발을 페이징 처리를 하여 전체조회 할 수 있다.")
+    void testGetSneakers() throws Exception {
+        given(sneakerService.getSneakers(any()))
+            .willReturn(createPageResponseWithSneakerResponse());
+
+        MvcResult result = mvc
+            .perform(
+                get("/api/v1/sneakers")
+                    .queryParam("page", "1")
+                    .queryParam("size", "1")
+                    .queryParam("sortBy", "createdAt.asc")
+            )
+            .andExpect(status().isOk())
+            .andDo(
+                document("sneaker-sneakers",
+                    requestParameters(pageParam()),
+                    responseFields(page())
+                        .and(
+                            subsectionWithPath("contents")
+                            .type(ARRAY)
+                            .description("페이징 컨텐츠")
+                        )
+                )
+            ).andReturn();
+
+        String resultString = result.getResponse().getContentAsString();
+        PageResponse<SneakerResponse> pageResponse = objectMapper
+            .readValue(resultString, new TypeReference<>() {});
+
+        assertAll(
+            () -> assertThat(pageResponse.page()).isEqualTo(1),
+            () -> assertThat(pageResponse.isFirst()).isTrue(),
+            () -> assertThat(pageResponse.sorted()).isTrue(),
+            () -> assertThat(pageResponse.size()).isEqualTo(1)
+        );
+
+        List<SneakerResponse> contents = pageResponse.contents();
+
+        assertThat(contents).isNotEmpty();
+        assertAll(
+            () -> assertThat(contents).hasSize(1),
+            () -> assertThat(contents).containsExactly(createSneakerResponse()),
+            () -> assertThat(contents.get(0)).isInstanceOf(SneakerResponse.class),
+            () -> assertThat(contents.get(0).sneakerId()).isEqualTo(1)
+        );
+    }
+
+    private PageResponse<SneakerResponse> createPageResponseWithSneakerResponse() {
+        return PageResponse.<SneakerResponse>builder()
+            .contents(List.of(createSneakerResponse()))
+            .page(1)
+            .size(1)
+            .sorted(true)
+            .totalPages(1)
+            .totalElements(1)
+            .isFirst(true)
+            .isLast(false)
+            .build();
+    }
+
     private SneakerDetailResponse createDetailResponse() {
         return new SneakerDetailResponse(
             List.of(
                 new SneakerStockResponse(250, 10),
                 new SneakerStockResponse(260, 10)),
-            SneakerResponse
-                .builder()
-                .sneakerId(1L)
-                .memberCategory(MEN)
-                .sneakerCategory(JORDAN)
-                .name("jordan 1")
-                .price(100000)
-                .description("this is test jordan.")
-                .code("DS-1234567")
-                .releaseDate(of(2022, 10, 10, 10, 0, 0))
-                .imagePaths(List.of("/src/main/~"))
-                .build()
+            createSneakerResponse()
         );
+    }
+
+    private SneakerResponse createSneakerResponse() {
+        return SneakerResponse
+            .builder()
+            .sneakerId(1L)
+            .memberCategory(MEN)
+            .sneakerCategory(JORDAN)
+            .name("jordan 1")
+            .price(100000)
+            .description("this is test jordan.")
+            .code("DS-1234567")
+            .releaseDate(of(2022, 10, 10, 10, 0, 0))
+            .imagePaths(List.of("/src/main/~"))
+            .build();
     }
 
     private SneakerRegisterRequest createRegisterRequest() {
@@ -169,6 +235,20 @@ class SneakerControllerTest {
         );
     }
 
+    private List<FieldDescriptor> commonPostMethod() {
+        return List.of(
+            fieldWithPath("sneakerId").type(NUMBER).description("신발 아이디"),
+            fieldWithPath("code").type(STRING).description("코드")
+        );
+    }
+
+    private List<ParameterDescriptor> commonPath() {
+        return List.of(
+            parameterWithName("sneakerId").description("신발 아이디"),
+            parameterWithName("code").description("코드")
+        );
+    }
+
     private FieldDescriptor sneakerImage() {
         return fieldWithPath("imagePaths").type(ARRAY).description("신발 이미지 경로");
     }
@@ -192,17 +272,23 @@ class SneakerControllerTest {
         );
     }
 
-    private List<FieldDescriptor> commonPostMethod() {
+    private List<FieldDescriptor> page() {
         return List.of(
-            fieldWithPath("sneakerId").type(NUMBER).description("신발 아이디"),
-            fieldWithPath("code").type(STRING).description("코드")
+            fieldWithPath("page").type(NUMBER).description("페이지"),
+            fieldWithPath("size").type(NUMBER).description("페이지 사이즈"),
+            fieldWithPath("totalPages").type(NUMBER).description("전체 페이지수"),
+            fieldWithPath("totalElements").type(NUMBER).description("전체 컨텐츠수"),
+            fieldWithPath("sorted").type(BOOLEAN).description("정렬상태"),
+            fieldWithPath("isFirst").type(BOOLEAN).description("첫 번째 페이지"),
+            fieldWithPath("isLast").type(BOOLEAN).description("마지막 페이지")
         );
     }
 
-    private List<ParameterDescriptor> commonParam() {
+    private List<ParameterDescriptor> pageParam() {
         return List.of(
-            parameterWithName("sneakerId").description("신발 아이디"),
-            parameterWithName("code").description("코드")
+            parameterWithName("page").description("페이지"),
+            parameterWithName("size").description("페이지 사이즈"),
+            parameterWithName("sortBy").description("페이지 정렬")
         );
     }
 }
