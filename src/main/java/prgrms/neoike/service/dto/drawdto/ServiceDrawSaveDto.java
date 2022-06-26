@@ -5,6 +5,7 @@ import lombok.Builder;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public record ServiceDrawSaveDto(
         @NotNull
@@ -18,6 +19,9 @@ public record ServiceDrawSaveDto(
 
         @NotNull
         LocalDateTime winningDate,
+
+        @NotNull
+        List<ServiceItemDto> sneakerItems,
 
         @NotNull
         @PositiveOrZero

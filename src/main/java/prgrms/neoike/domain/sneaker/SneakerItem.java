@@ -39,9 +39,10 @@ public class SneakerItem {
     private int size;
 
     @Builder
-    public SneakerItem(int quantity, Draw draw, SneakerStock sneakerStock) {
+    public SneakerItem(int quantity, Draw draw, SneakerStock sneakerStock, int size) {
         this.quantity = quantity;
         this.draw = draw;
         this.sneakerStock = sneakerStock;
+        this.size = size;
     }
 }

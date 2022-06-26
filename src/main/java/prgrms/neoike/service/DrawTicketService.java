@@ -11,6 +11,7 @@ import prgrms.neoike.domain.sneaker.Sneaker;
 import prgrms.neoike.repository.DrawRepository;
 import prgrms.neoike.repository.DrawTicketRepository;
 import prgrms.neoike.repository.MemberRepository;
+import prgrms.neoike.repository.SneakerItemRepository;
 import prgrms.neoike.service.dto.drawticketdto.DrawTicketResponse;
 import prgrms.neoike.service.converter.DrawConverter;
 import prgrms.neoike.service.dto.drawticketdto.DrawTicketsResponse;
@@ -29,6 +30,7 @@ public class DrawTicketService {
     private final DrawTicketRepository drawTicketRepository;
     private final DrawRepository drawRepository;
     private final MemberRepository memberRepository;
+    private final SneakerItemRepository sneakerItemRepository;
 
     @Transactional
     public DrawTicketResponse save(Long memberId, Long drawId, int size) {
@@ -42,6 +44,7 @@ public class DrawTicketService {
 
         validateUniqueTicket(member, draw); // 이미 응모한 사람인지 체크
         draw.validateSpare(); // 응모권 재고가 0 이상인지 체크
+        validateSizeInput(draw, size); // 응모권의 사이즈가 SneakerItem 의 사이즈 중에 하나인지 체크
 
         DrawTicket save = drawTicketRepository.save(
                 DrawTicket.builder()
@@ -55,6 +58,15 @@ public class DrawTicketService {
         );
 
         return drawConverter.toDrawTicketResponse(save);
+    }
+
+    @Transactional(readOnly = true)
+    public void validateSizeInput(Draw draw, int size) {
+        if(!sneakerItemRepository.findByDraw(draw).stream()
+                .anyMatch(sneakerItem -> sneakerItem.getSize() == size)
+        ){
+            throw new IllegalStateException("입력 사이즈에 해당하는 신발이 존재하지 않습니다.");
+        }
     }
 
     @Transactional(readOnly = true)

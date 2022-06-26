@@ -62,9 +62,6 @@ public class Draw extends BaseTimeEntity {
         this.quantity = quantity;
     }
 
-
-
-
     private void validateQuantity(int quantity) {
         if (quantity < 0) {
             throw new IllegalArgumentException("입력된 수량이 음수 입니다.");

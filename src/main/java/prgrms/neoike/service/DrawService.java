@@ -9,10 +9,8 @@ import prgrms.neoike.domain.draw.Draw;
 import prgrms.neoike.domain.draw.DrawTicket;
 import prgrms.neoike.domain.sneaker.Sneaker;
 import prgrms.neoike.domain.sneaker.SneakerItem;
-import prgrms.neoike.repository.DrawRepository;
-import prgrms.neoike.repository.DrawTicketRepository;
-import prgrms.neoike.repository.SneakerItemRepository;
-import prgrms.neoike.repository.SneakerRepository;
+import prgrms.neoike.domain.sneaker.SneakerStock;
+import prgrms.neoike.repository.*;
 import prgrms.neoike.service.dto.drawdto.DrawResponse;
 import prgrms.neoike.service.dto.drawdto.ServiceDrawSaveDto;
 import prgrms.neoike.service.converter.DrawConverter;
@@ -30,7 +28,9 @@ public class DrawService {
     private final DrawTicketRepository drawTicketRepository;
     private final SneakerRepository sneakerRepository;
     private final SneakerItemRepository sneakerItemRepository;
+    private final SneakerStockRepository sneakerStockRepository;
     private final DrawConverter drawConverter;
+    private boolean isTicketQuantityLOEThanSneakerItemQuantity;
 
     @Transactional
     public DrawResponse save(ServiceDrawSaveDto drawSaveRequest) {
@@ -41,6 +41,23 @@ public class DrawService {
         Draw draw = drawConverter.toDraw(drawSaveRequest, sneaker);
         Draw savedDraw = drawRepository.save(draw);
 
+        // 해당 sneakerId 에 해당하는 SneakerItem 들을 생성한 후 저장한다.
+        drawSaveRequest.sneakerItems().forEach(
+                (sneakerItem) -> {
+                    int size = sneakerItem.size();
+                    SneakerStock sneakerStock = sneakerStockRepository.findBySneakerAndSize(sneaker, size)
+                            .orElseThrow(() -> new EntityNotFoundException(format("SneakerStock 엔티티를 sneaker 와 size 로 찾을 수 없습니다. sneakerId : {0}, size : {1}", sneakerId, size)));
+
+                    sneakerItemRepository.save(
+                            SneakerItem.builder()
+                                    .sneakerStock(sneakerStock)
+                                    .draw(draw)
+                                    .size(size)
+                                    .build()
+                    );
+                }
+        );
+
         return drawConverter.toDrawResponseDto(savedDraw.getId());
     }
 
@@ -49,33 +66,55 @@ public class DrawService {
         Draw draw = drawRepository.findById(drawId)
                 .orElseThrow(() -> new EntityNotFoundException(format("Draw 엔티티를 id 로 찾을 수 없습니다. drawId : {0}", drawId)));
 
-
         List<SneakerItem> sneakerItems = sneakerItemRepository.findByDraw(draw);
         List<DrawTicket> drawTickets = drawTicketRepository.findByDraw(draw);
 
         List<DrawTicketResponse> successDrawTickets = new ArrayList<>();
-        Set<Integer> randomSet = RandomCreator.noDuplication(draw.getQuantity(), drawTickets.size());
+        Map<Integer, SneakerItem> sizeToSneakerItem = new HashMap<>();
 
-        Map<Integer, Integer> map = new HashMap<>();
         sneakerItems.forEach(
-                (sneakerItem) -> map.put(sneakerItem.getSize(), sneakerItem.getQuantity())
+                (sneakerItem) -> sizeToSneakerItem.put(sneakerItem.getSize(), sneakerItem)
         );
 
-        randomSet.forEach(
-                (id) -> {
-                    DrawTicket winTicket = drawTickets.get(id);
-                    int size = winTicket.getSize();
-                    if (map.get(size) > 0) {
-                        winTicket.changeToWinner();
-                        map.put(size , map.get(size)-1);
-                        successDrawTickets.add(drawConverter.toDrawTicketResponse(winTicket));
-                    }
-                    // 당첨자에게 당첨되었다는 알람 전송
-                    // 로직구현
+        sizeToSneakerItem.forEach(
+                (size, sneakerItem) -> {
+                    List<DrawTicket> ticketsBySize = drawTickets.stream()
+                            .filter((drawTicket) -> drawTicket.getSize() == size)
+                            .toList();
+                    drawWinnerBySize(successDrawTickets, sneakerItem, ticketsBySize);
                 }
         );
+
         drawTickets.forEach(DrawTicket::drawQuit);
 
         return new DrawTicketsResponse(successDrawTickets);
+    }
+
+    private void drawWinnerBySize(List<DrawTicketResponse> successDrawTickets,
+                                  SneakerItem sneakerItem,
+                                  List<DrawTicket> ticketsBySize
+    ) {
+        int quantity = sneakerItem.getQuantity();
+        isTicketQuantityLOEThanSneakerItemQuantity = (ticketsBySize.size() <= quantity);
+
+        if (isTicketQuantityLOEThanSneakerItemQuantity) {
+            ticketsBySize.forEach(DrawTicket::changeToWinner);
+            // sneakerItem.changeQuantity(ticketsBySize.size());
+            // sneakerItem 의 재고를 감소시키고 감소하고 남은 개수는 다시 SneakerStock 재고에 추가한다.
+            return;
+        }
+
+        Set<Integer> randomSet = RandomCreator.noDuplication(quantity, ticketsBySize.size());
+        randomSet.forEach(
+                (id) -> {
+                    DrawTicket winTicket = ticketsBySize.get(id);
+                    winTicket.changeToWinner();
+                    successDrawTickets.add(drawConverter.toDrawTicketResponse(winTicket));
+
+                    // 당첨자에게 당첨되었다는 알람 전송
+                }
+        );
+        // sneakerItem.changeQuantity();
+        // sneakerItem 의 재고를 0 으로 바꾼다.
     }
 }
