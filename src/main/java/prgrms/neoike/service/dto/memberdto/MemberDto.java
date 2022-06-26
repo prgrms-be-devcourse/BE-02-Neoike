@@ -7,6 +7,7 @@ import prgrms.neoike.domain.member.Gender;
 
 import java.time.LocalDateTime;
 
+@Builder
 public record MemberDto(
         String email,
         String password,
@@ -17,8 +18,4 @@ public record MemberDto(
         String phoneNumber,
         Gender gender
 ) {
-    @Builder
-    public MemberDto{
-
-    }
 }

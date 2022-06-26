@@ -1,15 +1,15 @@
 package prgrms.neoike.domain.member;
 
-import static javax.persistence.EnumType.STRING;
-import static lombok.AccessLevel.PROTECTED;
-
-import java.time.LocalDateTime;
-import javax.persistence.*;
-
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import prgrms.neoike.domain.BaseTimeEntity;
+
+import javax.persistence.*;
+import java.time.LocalDateTime;
+
+import static javax.persistence.EnumType.STRING;
+import static lombok.AccessLevel.PROTECTED;
 
 @Getter
 @Entity

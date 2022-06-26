@@ -1,12 +1,15 @@
 package prgrms.neoike.service.converter;
 
+import prgrms.neoike.domain.member.Email;
+import prgrms.neoike.domain.member.Member;
+import prgrms.neoike.domain.member.Password;
+import prgrms.neoike.domain.member.PhoneNumber;
 import prgrms.neoike.service.dto.memberdto.MemberDto;
-import prgrms.neoike.domain.member.*;
 import prgrms.neoike.service.dto.memberdto.MemberResponse;
 
-public class MemberMapper {
+public class MemberConverter {
 
-    public static Member mapMember(MemberDto memberDto) {
+    public static Member toMember(MemberDto memberDto) {
         return Member.builder()
                 .name(memberDto.name())
                 .password(new Password(memberDto.password()))
@@ -18,10 +21,7 @@ public class MemberMapper {
                 .build();
     }
 
-    public static MemberResponse mapMemberResponse(Long memberId, String email) {
-        return MemberResponse.builder()
-                .memberId(memberId)
-                .email(email)
-                .build();
+    public static MemberResponse toMemberResponse(Long memberId, String email) {
+        return new MemberResponse(memberId, email);
     }
 }
