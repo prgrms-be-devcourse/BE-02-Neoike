@@ -11,12 +11,14 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import prgrms.neoike.controller.dto.drawdto.DrawItem;
 import prgrms.neoike.controller.dto.drawdto.DrawSaveRequest;
+import prgrms.neoike.controller.dto.drawdto.ItemSizeAndQuantity;
 import prgrms.neoike.controller.mapper.DrawMapper;
 import prgrms.neoike.domain.draw.DrawStatus;
 import prgrms.neoike.service.DrawService;
 import prgrms.neoike.service.DrawTicketService;
 import prgrms.neoike.service.dto.drawdto.DrawResponse;
 import prgrms.neoike.service.dto.drawdto.ServiceDrawSaveDto;
+import prgrms.neoike.service.dto.drawdto.ServiceItemDto;
 import prgrms.neoike.service.dto.drawticketdto.DrawTicketsResponse;
 import prgrms.neoike.service.dto.drawticketdto.DrawTicketResponse;
 
@@ -60,11 +62,17 @@ class DrawControllerTest {
         LocalDateTime middleDate = LocalDateTime.of(2025, 06, 13, 12, 00, 00);
         LocalDateTime lateDate = LocalDateTime.of(2025, 06, 15, 12, 00, 00);
 
+        ItemSizeAndQuantity sneakerItems = new ItemSizeAndQuantity(275, 10);
+        ServiceItemDto sneakerItemsInService = new ServiceItemDto(275, 10);
+
         DrawSaveRequest drawSaveRequest = DrawSaveRequest.builder()
                 .sneakerId(1L)
                 .startDate(fastDate)
                 .endDate(middleDate)
                 .winningDate(lateDate)
+                .sneakerItems(new ArrayList<>(){{
+                    add(sneakerItems);
+                }})
                 .quantity(50)
                 .build();
 
@@ -73,6 +81,9 @@ class DrawControllerTest {
                 .startDate(fastDate)
                 .endDate(middleDate)
                 .winningDate(lateDate)
+                .sneakerItems(new ArrayList<>(){{
+                    add(sneakerItemsInService);
+                }})
                 .quantity(50)
                 .build();
 
@@ -94,7 +105,11 @@ class DrawControllerTest {
                                 fieldWithPath("startDate").type(STRING).description("응모 시작 날짜"),
                                 fieldWithPath("endDate").type(STRING).description("응모 종료 날짜"),
                                 fieldWithPath("winningDate").type(STRING).description("추첨 날짜"),
-                                fieldWithPath("quantity").type(NUMBER).description("응모 개수")
+                                fieldWithPath("quantity").type(NUMBER).description("응모 개수"),
+                                fieldWithPath("winningDate").type(STRING).description("추첨 날짜"),
+                                fieldWithPath("sneakerItems").type(ARRAY).description("응모 상품들"),
+                                fieldWithPath("sneakerItems[].size").type(NUMBER).description("응모 상품 사이즈"),
+                                fieldWithPath("sneakerItems[].quantity").type(NUMBER).description("응모 상품 응모 개수")
                         ),
                         responseFields(
                                 fieldWithPath("drawId").type(NUMBER).description("생성된 응모 id")
