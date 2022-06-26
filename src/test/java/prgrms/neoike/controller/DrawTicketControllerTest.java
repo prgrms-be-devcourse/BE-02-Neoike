@@ -74,7 +74,8 @@ class DrawTicketControllerTest {
                         new DrawTicketResponse(3L)
                 )
         );
-        doReturn(drawTicketResponses).when(drawTicketService).findByMember(1L);
+
+        given(drawTicketService.findByMember(1L)).willReturn(drawTicketResponses);
 
         // when // then
         mockMvc.perform(get("/api/v1/draw-sneakers/{memberId}", 1L))
