@@ -9,7 +9,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import prgrms.neoike.controller.dto.drawdto.DrawItem;
 import prgrms.neoike.controller.dto.drawdto.DrawSaveRequest;
 import prgrms.neoike.controller.dto.drawdto.ItemSizeAndQuantity;
 import prgrms.neoike.controller.mapper.DrawMapper;

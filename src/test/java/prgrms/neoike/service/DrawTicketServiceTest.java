@@ -12,8 +12,6 @@ import prgrms.neoike.repository.*;
 import prgrms.neoike.service.dto.drawticketdto.DrawTicketsResponse;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -67,15 +65,16 @@ class DrawTicketServiceTest {
 
         SneakerStock sneakerStock275 = sneakerStockRepository.save(validStock(sneaker, 275, 30));
         sneakerItemRepository.save(validItem(sneakerStock275, draw, 275));
+
         SneakerStock sneakerStock285 = sneakerStockRepository.save(validStock(sneaker, 285, 20));
         sneakerItemRepository.save(validItem(sneakerStock285, draw, 285));
 
         // when
         drawTicketService.save(member1.getId(), draw.getId(), 275);
         drawTicketService.save(member2.getId(), draw.getId(), 285);
+        Draw reducedDraw = drawRepository.findById(draw.getId()).get();
 
         // then
-        Draw reducedDraw = drawRepository.findById(draw.getId()).get();
         assertThat(reducedDraw.getQuantity()).isEqualTo(68);
     }
 
@@ -90,12 +89,12 @@ class DrawTicketServiceTest {
 
         SneakerStock sneakerStock275 = sneakerStockRepository.save(validStock(sneaker, 275, 30));
         sneakerItemRepository.save(validItem(sneakerStock275, draw, 275));
+
         SneakerStock sneakerStock285 = sneakerStockRepository.save(validStock(sneaker, 285, 20));
         sneakerItemRepository.save(validItem(sneakerStock285, draw, 285));
 
         // when
         drawTicketService.save(member.getId(), draw.getId(), 275);
-        ;
 
         // then
         assertThatThrownBy(() ->
@@ -140,13 +139,13 @@ class DrawTicketServiceTest {
     @DisplayName("이미 Draw 에 응모를 한사람은 재응모가 불가능하다")
     @Transactional
     void duplicateSaveDrawTicketTest() {
+        // given
         Sneaker sneaker = sneakerRepository.save(validSneaker());
         Draw draw = drawRepository.save(validDraw(50, sneaker));
         Member member = memberRepository.save(validMember());
 
         SneakerStock sneakerStock275 = sneakerStockRepository.save(validStock(sneaker, 275, 30));
         sneakerItemRepository.save(validItem(sneakerStock275, draw, 275));
-        // given
 
         // when
         drawTicketService.save(member.getId(), draw.getId(), 275);
@@ -161,16 +160,15 @@ class DrawTicketServiceTest {
     @DisplayName("stock 의 사이즈와 입력된 size 가 다를경우 응모가 불가능하다.")
     @Transactional
     void invalidSaveDrawTicketTest5() {
+        // given
         Sneaker sneaker = sneakerRepository.save(validSneaker());
         Draw draw = drawRepository.save(validDraw(50, sneaker));
         Member member = memberRepository.save(validMember());
 
         SneakerStock sneakerStock275 = sneakerStockRepository.save(validStock(sneaker, 275, 30));
         sneakerItemRepository.save(validItem(sneakerStock275, draw, 275));
-        // given
 
-        // when
-        // then
+        // when // then
         assertThatThrownBy(() ->
                 drawTicketService.save(member.getId(), draw.getId(), 285)
         ).isInstanceOf(IllegalStateException.class);
@@ -191,6 +189,7 @@ class DrawTicketServiceTest {
 
         SneakerStock sneakerStock275 = sneakerStockRepository.save(validStock(sneaker1, 275, 30));
         sneakerItemRepository.save(validItem(sneakerStock275, draw1, 275));
+
         SneakerStock sneakerStock285 = sneakerStockRepository.save(validStock(sneaker2, 285, 20));
         sneakerItemRepository.save(validItem(sneakerStock285, draw2, 285));
 

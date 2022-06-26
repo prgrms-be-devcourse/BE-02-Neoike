@@ -1,18 +1,12 @@
 package prgrms.neoike.common.util;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import prgrms.neoike.service.DrawService;
-import prgrms.neoike.service.dto.drawdto.ServiceDrawSaveDto;
 
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 
 
 class RandomCreatorTest {
@@ -29,11 +23,11 @@ class RandomCreatorTest {
         integers.forEach(System.out::println);
 
         // then
-        assertThat(integers.size()).isEqualTo(size);
+        assertThat(integers).hasSize(size);
     }
 
     @Test
-    @DisplayName("size > max 경우 random 값을 만든다")
+    @DisplayName("size > max 경우 예외를 발생시킨다.")
     void sizeIsBiggerThanMax () {
         // given
         int size = 10;
@@ -55,6 +49,6 @@ class RandomCreatorTest {
         integers.forEach(System.out::println);
 
         // then
-        assertThat(integers.size()).isEqualTo(size);
+        assertThat(integers).hasSize(size);
     }
 }

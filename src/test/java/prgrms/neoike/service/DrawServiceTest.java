@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import prgrms.neoike.common.exception.EntityNotFoundException;
-import prgrms.neoike.domain.draw.Draw;
 import prgrms.neoike.domain.draw.DrawStatus;
 import prgrms.neoike.domain.member.*;
 import prgrms.neoike.domain.sneaker.*;
@@ -74,6 +73,7 @@ class DrawServiceTest {
         Sneaker sneaker = sneakerRepository.save(validSneaker());
         sneakerStockRepository.save(validSneakerStock(275, 10, sneaker));
         sneakerStockRepository.save(validSneakerStock(285, 10, sneaker));
+
         Map<Integer, Integer> sizeToQuantity = new HashMap<>(){{
             put(275, 50);
             put(285, 5);
@@ -82,7 +82,7 @@ class DrawServiceTest {
         ServiceDrawSaveDto drawSaveDto = validDrawSaveDto(sneaker.getId(), 50, sizeToQuantity);
 
         // when
-        DrawResponse save = drawService.save(drawSaveDto);
+        drawService.save(drawSaveDto);
 
         // then
         assertThat(drawRepository.count()).isEqualTo(1);
@@ -95,6 +95,7 @@ class DrawServiceTest {
         Sneaker sneaker = sneakerRepository.save(validSneaker());
         sneakerStockRepository.save(validSneakerStock(275, 10, sneaker));
         sneakerStockRepository.save(validSneakerStock(285, 10, sneaker));
+
         Map<Integer, Integer> sizeToQuantity = new HashMap<>(){{
             put(275, 50);
             put(295, 5);
@@ -103,7 +104,6 @@ class DrawServiceTest {
         ServiceDrawSaveDto drawSaveDto = validDrawSaveDto(sneaker.getId(), 50, sizeToQuantity);
 
         // when // then
-        ;
         assertThatThrownBy(() -> drawService.save(drawSaveDto))
                 .isInstanceOf(EntityNotFoundException.class);
     }
@@ -143,6 +143,7 @@ class DrawServiceTest {
         // given
         Sneaker sneaker = sneakerRepository.save(validSneaker());
         sneakerStockRepository.save(validSneakerStock(275, 5, sneaker));
+
         Map<Integer, Integer> sizeToQuantity = new HashMap<>(){{
             put(275, 5);
         }};
