@@ -1,7 +1,6 @@
 package prgrms.neoike.service;
 
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,9 +58,9 @@ class DrawServiceTest {
     @DisplayName("Draw 엔티티를 저장한다.")
     void saveDrawTest() {
         // given
-        Sneaker sneaker = savedSneaker();
-        saveSneakerStock(275, 10, sneaker);
-        saveSneakerStock(285, 10, sneaker);
+        Sneaker sneaker = sneakerRepository.save(validSneaker());
+        sneakerStockRepository.save(validSneakerStock(275, 10, sneaker));
+        sneakerStockRepository.save(validSneakerStock(285, 10, sneaker));
         Map<Integer, Integer> sizeToQuantity = new HashMap<>(){{
             put(275, 50);
             put(285, 5);
@@ -80,9 +79,9 @@ class DrawServiceTest {
     @DisplayName("저장된 stock 의 사이즈와 입력 사이즈가 달라 Draw 엔티티를 저장할때 오류 발생")
     void failSaveDrawTest() {
         // given
-        Sneaker sneaker = savedSneaker();
-        saveSneakerStock(275, 10, sneaker);
-        saveSneakerStock(285, 10, sneaker);
+        Sneaker sneaker = sneakerRepository.save(validSneaker());
+        sneakerStockRepository.save(validSneakerStock(275, 10, sneaker));
+        sneakerStockRepository.save(validSneakerStock(285, 10, sneaker));
         Map<Integer, Integer> sizeToQuantity = new HashMap<>(){{
             put(275, 50);
             put(295, 5);
@@ -100,7 +99,7 @@ class DrawServiceTest {
     @DisplayName("등록 순서가 잘못된 Draw 엔티티를 저장할때 오류 발생")
     void invalidSaveDrawTest() {
         // given
-        Sneaker sneaker = savedSneaker();
+        Sneaker sneaker = sneakerRepository.save(validSneaker());
 
         // when // then
         assertThatThrownBy(() -> drawService.save(
@@ -129,8 +128,8 @@ class DrawServiceTest {
     @DisplayName("추첨을 진행한다")
     void drawWinTest() {
         // given
-        Sneaker sneaker = savedSneaker();
-        saveSneakerStock(275, 5, sneaker);
+        Sneaker sneaker = sneakerRepository.save(validSneaker());
+        sneakerStockRepository.save(validSneakerStock(275, 5, sneaker));
         Map<Integer, Integer> sizeToQuantity = new HashMap<>(){{
             put(275, 5);
         }};
@@ -161,28 +160,26 @@ class DrawServiceTest {
         Assertions.assertThat(count).isEqualTo(5);
     }
 
-    private Sneaker savedSneaker() {
-        return sneakerRepository.save(
-                Sneaker.builder()
-                        .memberCategory(MemberCategory.MEN)
-                        .sneakerCategory(SneakerCategory.BASKETBALL)
-                        .name("air jordan")
-                        .price(75000)
-                        .description("1")
-                        .code("AB1234")
-                        .releaseDate(LocalDateTime.now())
-                        .build()
-        );
+    private Sneaker validSneaker() {
+        return Sneaker.builder()
+                .memberCategory(MemberCategory.MEN)
+                .sneakerCategory(SneakerCategory.BASKETBALL)
+                .name("air jordan")
+                .price(75000)
+                .description("1")
+                .code("AB1234")
+                .releaseDate(LocalDateTime.now())
+                .build();
     }
 
-    private void saveSneakerStock(int size, int quantity, Sneaker sneaker) {
+    private SneakerStock validSneakerStock(int size, int quantity, Sneaker sneaker) {
         SneakerStock stock = SneakerStock.builder()
                 .size(size)
                 .stock(new Stock(quantity))
                 .build();
         stock.setSneaker(sneaker);
 
-        sneakerStockRepository.save(stock);
+        return stock;
     }
 
     private ServiceDrawSaveDto validDrawSaveDto(Long sneakerId, int quantity, Map<Integer, Integer> sizeToQuantity) {

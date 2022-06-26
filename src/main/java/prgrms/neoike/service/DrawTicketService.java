@@ -85,8 +85,6 @@ public class DrawTicketService {
 
         List<DrawTicket> drawTickets = drawTicketRepository.findByMember(member);
 
-        // 추후 member 의 id 를 통해 sneakeritem 의 정보를 받아와 response 에 담는다.
-
         return new DrawTicketsResponse(
                 drawTickets.stream().map((drawTicket) ->
                         drawConverter.toDrawTicketResponse(drawTicket)
