@@ -1,12 +1,14 @@
 package prgrms.neoike.service;
 
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import prgrms.neoike.common.exception.EntityNotFoundException;
+import prgrms.neoike.domain.draw.Draw;
 import prgrms.neoike.domain.draw.DrawStatus;
 import prgrms.neoike.domain.member.*;
 import prgrms.neoike.domain.sneaker.*;
@@ -46,6 +48,9 @@ class DrawServiceTest {
     SneakerStockRepository sneakerStockRepository;
 
     @Autowired
+    SneakerItemRepository sneakerItemRepository;
+
+    @Autowired
     DrawRepository drawRepository;
 
 
@@ -53,6 +58,14 @@ class DrawServiceTest {
     LocalDateTime endDate = LocalDateTime.of(2025, 06, 13, 12, 00, 00);
     LocalDateTime winningDate = LocalDateTime.of(2025, 06, 14, 12, 00, 00);
 
+    @AfterEach
+    void afterEach() {
+        drawTicketRepository.deleteAll();
+        drawRepository.deleteAll();
+        memberRepository.deleteAll();
+        sneakerRepository.deleteAll();
+        sneakerStockRepository.deleteAll();
+    }
 
     @Test
     @DisplayName("Draw 엔티티를 저장한다.")
@@ -69,7 +82,7 @@ class DrawServiceTest {
         ServiceDrawSaveDto drawSaveDto = validDrawSaveDto(sneaker.getId(), 50, sizeToQuantity);
 
         // when
-        drawService.save(drawSaveDto);
+        DrawResponse save = drawService.save(drawSaveDto);
 
         // then
         assertThat(drawRepository.count()).isEqualTo(1);
@@ -144,7 +157,6 @@ class DrawServiceTest {
         members.stream().forEach(
                 (member) -> drawTicketService.save(member.getId(), drawResponse.drawId(), 275)
         );
-
 
         // when
         drawService.drawWinner(drawResponse.drawId());

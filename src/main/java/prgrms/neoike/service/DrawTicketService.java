@@ -60,8 +60,7 @@ public class DrawTicketService {
         return drawConverter.toDrawTicketResponse(save);
     }
 
-    @Transactional(readOnly = true)
-    public void validateSizeInput(Draw draw, int size) {
+    private void validateSizeInput(Draw draw, int size) {
         if(!sneakerItemRepository.findByDraw(draw).stream()
                 .anyMatch(sneakerItem -> sneakerItem.getSize() == size)
         ){
@@ -69,8 +68,7 @@ public class DrawTicketService {
         }
     }
 
-    @Transactional(readOnly = true)
-    public void validateUniqueTicket(Member member, Draw draw) {
+    private void validateUniqueTicket(Member member, Draw draw) {
         Optional<DrawTicket> drawTicketOptional = drawTicketRepository.findByMemberAndDraw(member, draw);
         drawTicketOptional.ifPresent(d -> {
                     throw new IllegalStateException("티켓응모를 이미 진행하였습니다.");

@@ -30,7 +30,6 @@ public class DrawService {
     private final SneakerItemRepository sneakerItemRepository;
     private final SneakerStockRepository sneakerStockRepository;
     private final DrawConverter drawConverter;
-    private boolean isTicketQuantityLOEThanSneakerItemQuantity;
 
     @Transactional
     public DrawResponse save(ServiceDrawSaveDto drawSaveRequest) {
@@ -51,6 +50,7 @@ public class DrawService {
                     sneakerItemRepository.save(
                             SneakerItem.builder()
                                     .sneakerStock(sneakerStock)
+                                    .quantity(sneakerItem.quantity())
                                     .draw(draw)
                                     .size(size)
                                     .build()
@@ -81,6 +81,7 @@ public class DrawService {
                     List<DrawTicket> ticketsBySize = drawTickets.stream()
                             .filter((drawTicket) -> drawTicket.getSize() == size)
                             .toList();
+
                     drawWinnerBySize(successDrawTickets, sneakerItem, ticketsBySize);
                 }
         );
@@ -90,12 +91,12 @@ public class DrawService {
         return new DrawTicketsResponse(successDrawTickets);
     }
 
-    private void drawWinnerBySize(List<DrawTicketResponse> successDrawTickets,
+    public void drawWinnerBySize(List<DrawTicketResponse> successDrawTickets,
                                   SneakerItem sneakerItem,
                                   List<DrawTicket> ticketsBySize
     ) {
         int quantity = sneakerItem.getQuantity();
-        isTicketQuantityLOEThanSneakerItemQuantity = (ticketsBySize.size() <= quantity);
+        Boolean isTicketQuantityLOEThanSneakerItemQuantity = (ticketsBySize.size() <= quantity);
 
         if (isTicketQuantityLOEThanSneakerItemQuantity) {
             ticketsBySize.forEach(DrawTicket::changeToWinner);
