@@ -3,16 +3,14 @@ package prgrms.neoike.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import prgrms.neoike.common.jwt.JwtFilter;
 import prgrms.neoike.controller.dto.memberdto.MemberLoginRequest;
 import prgrms.neoike.controller.dto.memberdto.MemberSaveRequest;
 import prgrms.neoike.controller.dto.memberdto.TokenResponse;
 import prgrms.neoike.controller.mapper.MemberMapper;
 import prgrms.neoike.service.MemberService;
+import prgrms.neoike.service.dto.drawticketdto.DrawTicketListResponse;
 import prgrms.neoike.service.dto.memberdto.LoginDto;
 import prgrms.neoike.service.dto.memberdto.MemberDto;
 import prgrms.neoike.service.dto.memberdto.MemberResponse;
@@ -48,5 +46,14 @@ public class MemberController {
         return ResponseEntity.ok()
                 .headers(httpHeaders)
                 .body(new TokenResponse(jwt));
+    }
+
+    @GetMapping("/history")
+    public ResponseEntity<DrawTicketListResponse> getMyDrawHistory() {
+        DrawTicketListResponse myDrawHistory = memberService.getMyDrawHistory();
+
+        return ResponseEntity
+                .ok()
+                .body(myDrawHistory);
     }
 }
