@@ -12,8 +12,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.time.LocalDateTime.now;
 import static java.util.Objects.requireNonNull;
+import static java.util.UUID.randomUUID;
 import static prgrms.neoike.service.image.ImageFileValidator.validateEmptyFile;
 import static prgrms.neoike.service.image.ImageFileValidator.validateFileFormat;
 
@@ -59,7 +59,7 @@ public class ImageLocalService implements SneakerImageService {
     }
 
     private String rename(String fileFormat) {
-        return now() + fileFormat;
+        return randomUUID() + fileFormat;
     }
 
     private String getFileFormat(String originName) {
