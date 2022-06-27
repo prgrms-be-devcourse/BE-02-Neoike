@@ -125,7 +125,7 @@ class MemberControllerTest extends SecurityApiTest {
         String token = tokenProvider.createToken(authentication);
 
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + token);
+        httpHeaders.add(HttpHeaders.AUTHORIZATION, JwtFilter.AUTHORIZATION_TYPE + token);
 
         when(customUserDetailService.loadUserByUsername(email))
                 .thenReturn(dummy);
