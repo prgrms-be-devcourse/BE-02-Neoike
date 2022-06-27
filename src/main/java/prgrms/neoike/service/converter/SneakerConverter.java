@@ -7,6 +7,7 @@ import prgrms.neoike.domain.sneaker.SneakerStock;
 import prgrms.neoike.domain.sneaker.Stock;
 import prgrms.neoike.service.dto.sneaker.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -86,5 +87,27 @@ public class SneakerConverter {
 
     public static List<String> toImagePaths(Set<SneakerImage> images) {
         return images.stream().map(SneakerImage::getPath).toList();
+    }
+
+    public static List<SneakerResponse> toSneakerContents(List<Sneaker> sneakers) {
+        if (sneakers.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return sneakers
+            .stream()
+            .map(
+                i -> SneakerResponse.builder()
+                    .sneakerId(i.getId())
+                    .memberCategory(i.getMemberCategory())
+                    .sneakerCategory(i.getSneakerCategory())
+                    .name(i.getName())
+                    .price(i.getPrice())
+                    .description(i.getDescription())
+                    .releaseDate(i.getReleaseDate())
+                    .code(i.getCode())
+                    .imagePaths(toImagePaths(i.getSneakerImages()))
+                    .build()
+            ).toList();
     }
 }
