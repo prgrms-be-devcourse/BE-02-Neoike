@@ -47,8 +47,8 @@ public class SneakerMapper {
         return new SneakerDetailDto(sneakerId, code);
     }
 
-    public static PageableDto toPagingDto(int page, int size, String sortBy) {
-        return new PageableDto(page, size, sortBy);
+    public static PageableDto toPagingDto(String page, String size, String sortBy, String direction) {
+        return new PageableDto(page, size, sortBy, direction);
     }
 
     public static SneakerStockUpdateDto toSneakerStockUpdateDto(Long stockId, SneakerStockRequest stockRequest) {

@@ -2,6 +2,7 @@ package prgrms.neoike.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import prgrms.neoike.controller.dto.sneaker.SneakerRegisterRequest;
 import prgrms.neoike.controller.dto.sneaker.SneakerStockRequest;
@@ -18,6 +19,7 @@ import java.net.URI;
 import static java.text.MessageFormat.format;
 import static prgrms.neoike.controller.mapper.SneakerMapper.*;
 
+@Validated
 @RestController
 @RequestMapping("/api/v1/sneakers")
 @RequiredArgsConstructor
@@ -52,11 +54,12 @@ public class SneakerController {
 
     @GetMapping
     public ResponseEntity<PageResponse<SneakerResponse>> getSneakers(
-        @RequestParam(defaultValue = "1") int page,
-        @RequestParam(defaultValue = "20") int size,
-        @RequestParam(defaultValue = "createdAt.desc") String sortBy
+        @RequestParam(defaultValue = "1") String page,
+        @RequestParam(defaultValue = "20") String size,
+        @RequestParam(defaultValue = "createdAt.desc") String sortBy,
+        @RequestParam(defaultValue = "desc") String direction
     ) {
-        PageResponse<SneakerResponse> sneakers = sneakerService.getSneakers(toPagingDto(page, size, sortBy));
+        PageResponse<SneakerResponse> sneakers = sneakerService.getSneakers(toPagingDto(page, size, sortBy, direction));
 
         return ResponseEntity.ok(sneakers);
     }
