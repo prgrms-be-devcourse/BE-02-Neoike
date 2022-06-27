@@ -4,19 +4,25 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import prgrms.neoike.controller.dto.drawdto.DrawItem;
+import prgrms.neoike.common.config.SecurityConfig;
 import prgrms.neoike.controller.dto.drawdto.DrawSaveRequest;
+import prgrms.neoike.controller.dto.drawdto.ItemSizeAndQuantity;
 import prgrms.neoike.controller.mapper.DrawMapper;
+import prgrms.neoike.domain.draw.DrawStatus;
 import prgrms.neoike.service.DrawService;
 import prgrms.neoike.service.DrawTicketService;
 import prgrms.neoike.service.dto.drawdto.DrawResponse;
 import prgrms.neoike.service.dto.drawdto.ServiceDrawSaveDto;
-import prgrms.neoike.service.dto.drawticketdto.DrawTicketListResponse;
+import prgrms.neoike.service.dto.drawdto.ServiceItemDto;
+import prgrms.neoike.service.dto.drawticketdto.DrawTicketsResponse;
 import prgrms.neoike.service.dto.drawticketdto.DrawTicketResponse;
 
 import java.time.LocalDateTime;
@@ -33,7 +39,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.restdocs.payload.JsonFieldType.*;
 
 
-@WebMvcTest(DrawController.class)
+@WebMvcTest(
+        controllers = DrawController.class,
+        excludeAutoConfiguration = SecurityAutoConfiguration.class,
+        excludeFilters = {
+                @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,
+                        classes = SecurityConfig.class)
+        })
 @AutoConfigureRestDocs
 class DrawControllerTest {
     @Autowired
@@ -59,28 +71,29 @@ class DrawControllerTest {
         LocalDateTime middleDate = LocalDateTime.of(2025, 06, 13, 12, 00, 00);
         LocalDateTime lateDate = LocalDateTime.of(2025, 06, 15, 12, 00, 00);
 
+        ItemSizeAndQuantity sneakerItems = new ItemSizeAndQuantity(275, 10);
+        ServiceItemDto sneakerItemsInService = new ServiceItemDto(275, 10);
+
         DrawSaveRequest drawSaveRequest = DrawSaveRequest.builder()
                 .sneakerId(1L)
                 .startDate(fastDate)
                 .endDate(middleDate)
                 .winningDate(lateDate)
-                .quantity(50)
-                .sneakerItems(new ArrayList<DrawItem>() {{
-                    add(new DrawItem(1L, 10));
-                    add(new DrawItem(2L, 20));
+                .sneakerItems(new ArrayList<>() {{
+                    add(sneakerItems);
                 }})
+                .quantity(50)
                 .build();
 
         ServiceDrawSaveDto serviceDrawSaveDto = ServiceDrawSaveDto.builder()
-                .sneakerId(1L)
+                .sneakerId(2L)
                 .startDate(fastDate)
                 .endDate(middleDate)
                 .winningDate(lateDate)
-                .quantity(50)
-                .sneakerItems(new ArrayList<DrawItem>() {{
-                    add(new DrawItem(1L, 10));
-                    add(new DrawItem(2L, 20));
+                .sneakerItems(new ArrayList<>() {{
+                    add(sneakerItemsInService);
                 }})
+                .quantity(50)
                 .build();
 
         DrawResponse drawResponse = new DrawResponse(3L);
@@ -97,14 +110,15 @@ class DrawControllerTest {
                 .andDo(print())
                 .andDo(document("save-draw",
                         requestFields(
-                                fieldWithPath("stockId").type(NUMBER).description("sneaker id"),
+                                fieldWithPath("sneakerId").type(NUMBER).description("sneaker id"),
                                 fieldWithPath("startDate").type(STRING).description("응모 시작 날짜"),
                                 fieldWithPath("endDate").type(STRING).description("응모 종료 날짜"),
                                 fieldWithPath("winningDate").type(STRING).description("추첨 날짜"),
                                 fieldWithPath("quantity").type(NUMBER).description("응모 개수"),
-                                fieldWithPath("sneakerItems").type(ARRAY).description("sneakerItem 배열"),
-                                fieldWithPath("sneakerItems[].sneakerItemId").type(NUMBER).description("sneakerItem id"),
-                                fieldWithPath("sneakerItems[].quantity").type(NUMBER).description("해당 sneakerItem 개수")
+                                fieldWithPath("winningDate").type(STRING).description("추첨 날짜"),
+                                fieldWithPath("sneakerItems").type(ARRAY).description("응모 상품들"),
+                                fieldWithPath("sneakerItems[].size").type(NUMBER).description("응모 상품 사이즈"),
+                                fieldWithPath("sneakerItems[].quantity").type(NUMBER).description("응모 상품 응모 개수")
                         ),
                         responseFields(
                                 fieldWithPath("drawId").type(NUMBER).description("생성된 응모 id")
@@ -115,11 +129,16 @@ class DrawControllerTest {
     @DisplayName("/api/v1/draws/win 에서 추첨을 진행한다")
     void winDrawIdTest() throws Exception {
         // given
-        DrawTicketListResponse drawTicketResponses = new DrawTicketListResponse(
+        DrawTicketsResponse drawTicketResponses = new DrawTicketsResponse(
                 Arrays.asList(
-                        new DrawTicketResponse(1L),
-                        new DrawTicketResponse(2L),
-                        new DrawTicketResponse(3L)
+                        DrawTicketResponse.builder()
+                                .drawTicketId(1L)
+                                .drawStatus(DrawStatus.WINNING)
+                                .sneakerName("air jordan")
+                                .price(27500)
+                                .code("AB1234")
+                                .size(275)
+                                .build()
                 )
         );
 
@@ -134,7 +153,12 @@ class DrawControllerTest {
                 .andDo(document("win-draw",
                         responseFields(
                                 fieldWithPath("drawTicketResponses").type(ARRAY).description("응모권 배열"),
-                                fieldWithPath("drawTicketResponses[].drawTicketId").type(NUMBER).description("응모권 아이디")
+                                fieldWithPath("drawTicketResponses[].drawTicketId").type(NUMBER).description("응모권 아이디"),
+                                fieldWithPath("drawTicketResponses[].drawStatus").type(STRING).description("응모권 상태"),
+                                fieldWithPath("drawTicketResponses[].sneakerName").type(STRING).description("신발 이름"),
+                                fieldWithPath("drawTicketResponses[].price").type(NUMBER).description("가격"),
+                                fieldWithPath("drawTicketResponses[].code").type(STRING).description("코드"),
+                                fieldWithPath("drawTicketResponses[].size").type(NUMBER).description("사이즈")
                         )));
 
     }

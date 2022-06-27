@@ -3,9 +3,12 @@ package prgrms.neoike.repository;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import prgrms.neoike.domain.sneaker.Sneaker;
 import prgrms.neoike.domain.sneaker.SneakerStock;
 
 import java.util.List;
+import java.util.Optional;
+
 import java.util.Optional;
 
 public interface SneakerStockRepository extends JpaRepository<SneakerStock, Long> {
@@ -22,4 +25,7 @@ public interface SneakerStockRepository extends JpaRepository<SneakerStock, Long
 
     @EntityGraph(attributePaths = "sneaker")
     Optional<SneakerStock> findByIdAndSize(Long id, int size);
+
+    Optional<SneakerStock> findBySneakerAndSize(Sneaker sneaker, int size);
+
 }

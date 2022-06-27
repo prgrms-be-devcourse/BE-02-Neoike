@@ -24,7 +24,7 @@ import prgrms.neoike.domain.member.CountryType;
 import prgrms.neoike.domain.member.Gender;
 import prgrms.neoike.service.CustomUserDetailService;
 import prgrms.neoike.service.MemberService;
-import prgrms.neoike.service.dto.drawticketdto.DrawTicketListResponse;
+import prgrms.neoike.service.dto.drawticketdto.DrawTicketsResponse;
 import prgrms.neoike.service.dto.memberdto.MemberResponse;
 
 import java.time.LocalDateTime;
@@ -114,7 +114,7 @@ class MemberControllerTest extends SecurityApiTest {
     @Test
     @DisplayName("헤더에 토큰이 없으면 history api에 접근 할 수 없다")
     void validateJwtTokenTest() throws Exception {
-        DrawTicketListResponse drawTicketListResponse = new DrawTicketListResponse(List.of());
+        DrawTicketsResponse drawTicketListResponse = new DrawTicketsResponse(List.of());
         when(memberService.getMyDrawHistory())
                 .thenReturn(drawTicketListResponse);
 

@@ -30,8 +30,12 @@ class DrawTicketTest {
 
         // when
         DrawTicket drawTicket = DrawTicket.builder()
-                .draw(draw)
                 .member(member)
+                .draw(draw)
+                .sneakerName("airjordan")
+                .price(27500)
+                .code("AB1234")
+                .size(275)
                 .build();
 
         // then
@@ -41,5 +45,9 @@ class DrawTicketTest {
         assertEquals(drawTicket.getDraw().getQuantity(), 50);
         assertEquals(drawTicket.getMember().getName(), "이용훈");
         assertEquals(drawTicket.getDrawStatus(), DrawStatus.WAITING);
+        assertEquals(drawTicket.getSneakerName(), "airjordan");
+        assertEquals(drawTicket.getPrice(), 27500);
+        assertEquals(drawTicket.getCode(), "AB1234");
+        assertEquals(drawTicket.getSize(), 275);
     }
 }

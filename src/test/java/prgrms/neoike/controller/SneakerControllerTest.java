@@ -7,13 +7,17 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.request.ParameterDescriptor;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import prgrms.neoike.common.config.SecurityConfig;
 import prgrms.neoike.controller.dto.sneaker.SneakerRegisterRequest;
 import prgrms.neoike.controller.dto.sneaker.SneakerRequest;
 import prgrms.neoike.controller.dto.sneaker.SneakerStockRequest;
@@ -42,7 +46,13 @@ import static prgrms.neoike.domain.sneaker.MemberCategory.MEN;
 import static prgrms.neoike.domain.sneaker.SneakerCategory.JORDAN;
 
 @AutoConfigureRestDocs
-@WebMvcTest(SneakerController.class)
+@WebMvcTest(
+        controllers = SneakerController.class,
+        excludeAutoConfiguration = SecurityAutoConfiguration.class,
+        excludeFilters = {
+                @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,
+                        classes = SecurityConfig.class)
+        })
 class SneakerControllerTest {
 
     @Autowired

@@ -8,7 +8,7 @@ import prgrms.neoike.controller.mapper.DrawMapper;
 import prgrms.neoike.service.DrawService;
 import prgrms.neoike.service.dto.drawdto.DrawResponse;
 import prgrms.neoike.service.dto.drawdto.ServiceDrawSaveDto;
-import prgrms.neoike.service.dto.drawticketdto.DrawTicketListResponse;
+import prgrms.neoike.service.dto.drawticketdto.DrawTicketsResponse;
 
 import javax.validation.Valid;
 import java.net.URI;
@@ -30,11 +30,6 @@ public class DrawController {
         ServiceDrawSaveDto serviceDrawSaveDto = drawMapper.toDrawSaveDto(saveRequest);
         DrawResponse drawResponse = drawService.save(serviceDrawSaveDto);
 
-        // Sneaker Item 등록
-        // Long stockId = saveRequest.stockId();
-        // ArrayList<DrawItem> drawItems = saveRequest.sneakerItems();
-        // sneakerService.itemRegistration(stockId, drawItems);
-
         URI location = URI.create(format("/api/v1/draws/{0}", drawResponse.drawId()));
         return ResponseEntity
                 .created(location)
@@ -42,10 +37,10 @@ public class DrawController {
     }
 
     @PostMapping("/win")
-    public ResponseEntity<DrawTicketListResponse> winDraw(
+    public ResponseEntity<DrawTicketsResponse> drawWinner(
             @RequestParam Long drawId
     ) {
-        DrawTicketListResponse winningTicketsResponse = drawService.drawWinner(drawId);
+        DrawTicketsResponse winningTicketsResponse = drawService.drawWinner(drawId);
 
         return ResponseEntity
                 .ok()

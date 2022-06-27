@@ -86,7 +86,7 @@ class MemberServiceTest {
         memberService.getMyDrawHistory();
 
         //then
-        then(drawTicketService).should().findByMember(member.getId());
+        then(drawTicketService).should().findByMemberId(member.getId());
     }
 
     private MemberDto addTestMemberDto() {
