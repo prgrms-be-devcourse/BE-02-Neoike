@@ -1,6 +1,5 @@
 package prgrms.neoike.service;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,6 +15,7 @@ import prgrms.neoike.service.dto.drawdto.DrawResponse;
 import prgrms.neoike.service.dto.drawdto.ServiceDrawSaveDto;
 import prgrms.neoike.service.dto.drawdto.ServiceItemDto;
 
+import static java.text.MessageFormat.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
@@ -105,6 +105,7 @@ class DrawServiceTest {
 
         // when // then
         assertThatThrownBy(() -> drawService.save(drawSaveDto))
+                .hasMessageContaining(format("SneakerStock 엔티티를 sneaker 와 size 로 찾을 수 없습니다. sneakerId : {0}, size : {1}", sneaker.getId(), 295))
                 .isInstanceOf(EntityNotFoundException.class);
     }
 
@@ -123,7 +124,9 @@ class DrawServiceTest {
                         .winningDate(winningDate)
                         .quantity(50)
                         .build()
-        )).isInstanceOf(IllegalArgumentException.class);
+        ))
+                .hasMessageContaining(format("입력된 날짜의 순서가 맞지 않습니다. (startDate : {0} , endDate : {1})", endDate, startDate))
+                .isInstanceOf(IllegalArgumentException.class);
 
         assertThatThrownBy(() -> drawService.save(
                 ServiceDrawSaveDto.builder()
@@ -133,7 +136,9 @@ class DrawServiceTest {
                         .winningDate(endDate)
                         .quantity(50)
                         .build()
-        )).isInstanceOf(IllegalArgumentException.class);
+        ))
+                .hasMessageContaining(format("입력된 날짜의 순서가 맞지 않습니다. (endDate : {0} , winningDate : {1})", winningDate, endDate))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
 
@@ -170,7 +175,7 @@ class DrawServiceTest {
                 .filter((status) -> status == DrawStatus.WINNING)
                 .count();
 
-        Assertions.assertThat(count).isEqualTo(5);
+        assertThat(count).isEqualTo(5);
     }
 
     private Sneaker validSneaker() {

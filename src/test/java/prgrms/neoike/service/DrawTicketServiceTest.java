@@ -13,10 +13,13 @@ import prgrms.neoike.service.dto.drawticketdto.DrawTicketsResponse;
 
 import java.time.LocalDateTime;
 
+import static java.text.MessageFormat.format;
 import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @SpringBootTest
+@Transactional
 class DrawTicketServiceTest {
     @Autowired
     DrawTicketService drawTicketService;
@@ -55,7 +58,6 @@ class DrawTicketServiceTest {
 
     @Test
     @DisplayName("DrawTicket 을 저장한다.")
-    @Transactional
     void saveDrawTicketTest() {
         // given
         Sneaker sneaker = sneakerRepository.save(validSneaker());
@@ -80,7 +82,6 @@ class DrawTicketServiceTest {
 
     @Test
     @DisplayName("한 회원은 중복으로 응모에 신청할 수 없다")
-    @Transactional
     void invalidSaveDrawTicketTest1() {
         // given
         Sneaker sneaker = sneakerRepository.save(validSneaker());
@@ -99,30 +100,13 @@ class DrawTicketServiceTest {
         // then
         assertThatThrownBy(() ->
                 drawTicketService.save(member.getId(), draw.getId(), 285)
-        ).isInstanceOf(IllegalStateException.class);
-    }
-
-    @Test
-    @DisplayName("응모권 재고가 0 이면 응모에 실패한다")
-    @Transactional
-    void invalidSaveDrawTicketTest2() {
-        // given
-        Sneaker sneaker = sneakerRepository.save(validSneaker());
-        Draw draw = drawRepository.save(validDraw(0, sneaker));
-        Member member = memberRepository.save(validMember());
-
-        SneakerStock sneakerStock275 = sneakerStockRepository.save(validStock(sneaker, 275, 30));
-        sneakerItemRepository.save(validItem(sneakerStock275, draw, 275));
-
-        // when // then
-        assertThatThrownBy(() ->
-                drawTicketService.save(member.getId(), draw.getId(), 275)
-        ).isInstanceOf(IllegalStateException.class);
+        )
+                .hasMessageContaining("티켓응모를 이미 진행하였습니다.")
+                .isInstanceOf(IllegalStateException.class);
     }
 
     @Test
     @DisplayName("Draw 의 재고가 0 이어서 DrawTicket 을 저장하지 못한다.")
-    @Transactional
     void invalidSaveDrawTicketTest3() {
         // given
         Sneaker sneaker = sneakerRepository.save(validSneaker());
@@ -132,12 +116,13 @@ class DrawTicketServiceTest {
         // when // then
         assertThatThrownBy(() ->
                 drawTicketService.save(member.getId(), draw.getId(), 275)
-        ).isInstanceOf(IllegalStateException.class);
+        )
+                .hasMessageContaining(format("draw 의 수량이 0 이어서 더이상 ticket 발행이 안됩니다. drawId : {0}", draw.getId()))
+                .isInstanceOf(IllegalStateException.class);
     }
 
     @Test
     @DisplayName("이미 Draw 에 응모를 한사람은 재응모가 불가능하다")
-    @Transactional
     void duplicateSaveDrawTicketTest() {
         // given
         Sneaker sneaker = sneakerRepository.save(validSneaker());
@@ -153,12 +138,13 @@ class DrawTicketServiceTest {
         // then
         assertThatThrownBy(() ->
                 drawTicketService.save(member.getId(), draw.getId(), 275)
-        ).isInstanceOf(IllegalStateException.class);
+        )
+                .hasMessageContaining("티켓응모를 이미 진행하였습니다.")
+                .isInstanceOf(IllegalStateException.class);
     }
 
     @Test
     @DisplayName("stock 의 사이즈와 입력된 size 가 다를경우 응모가 불가능하다.")
-    @Transactional
     void invalidSaveDrawTicketTest5() {
         // given
         Sneaker sneaker = sneakerRepository.save(validSneaker());
@@ -171,12 +157,13 @@ class DrawTicketServiceTest {
         // when // then
         assertThatThrownBy(() ->
                 drawTicketService.save(member.getId(), draw.getId(), 285)
-        ).isInstanceOf(IllegalStateException.class);
+        )
+                .hasMessageContaining("입력 사이즈에 해당하는 신발이 존재하지 않습니다.")
+                .isInstanceOf(IllegalStateException.class);
     }
 
     @Test
     @DisplayName("memberID 로 DrawTicket을 조회한다.")
-    @Transactional
     void findDrawTicketsByMemberIdTest() {
         // given
         Sneaker sneaker1 = sneakerRepository.save(validSneaker());
@@ -201,11 +188,14 @@ class DrawTicketServiceTest {
         DrawTicketsResponse drawTicketResponses = drawTicketService.findByMember(member.getId());
 
         assertThat(drawTicketResponses.drawTicketResponses()).hasSize(2);
-        assertThat(drawTicketResponses.drawTicketResponses().get(0).drawStatus()).isEqualTo(DrawStatus.WAITING);
-        assertThat(drawTicketResponses.drawTicketResponses().get(0).sneakerName()).isEqualTo("air jordan");
-        assertThat(drawTicketResponses.drawTicketResponses().get(0).price()).isEqualTo(75000);
-        assertThat(drawTicketResponses.drawTicketResponses().get(0).code()).isEqualTo("AB1234");
-        assertThat(drawTicketResponses.drawTicketResponses().get(0).size()).isEqualTo(275);
+        assertAll(
+                () -> assertThat(drawTicketResponses.drawTicketResponses().get(0).drawStatus()).isEqualTo(DrawStatus.WAITING),
+                () -> assertThat(drawTicketResponses.drawTicketResponses().get(0).sneakerName()).isEqualTo("air jordan"),
+                () -> assertThat(drawTicketResponses.drawTicketResponses().get(0).price()).isEqualTo(75000),
+                () -> assertThat(drawTicketResponses.drawTicketResponses().get(0).code()).isEqualTo("AB1234"),
+                () -> assertThat(drawTicketResponses.drawTicketResponses().get(0).size()).isEqualTo(275)
+        );
+
     }
 
     private Draw validDraw(int quantity, Sneaker sneaker) {
