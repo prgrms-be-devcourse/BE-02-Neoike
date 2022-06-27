@@ -48,7 +48,7 @@ public class MemberController {
                 .body(new TokenResponse(jwt));
     }
 
-    @GetMapping("/history")
+    @GetMapping("/draw-history")
     public ResponseEntity<DrawTicketListResponse> getMyDrawHistory() {
         DrawTicketListResponse myDrawHistory = memberService.getMyDrawHistory();
 
