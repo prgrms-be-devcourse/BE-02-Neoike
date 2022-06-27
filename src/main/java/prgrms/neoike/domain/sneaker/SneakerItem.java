@@ -46,7 +46,7 @@ public class SneakerItem {
         this.size = size;
     }
 
-    public boolean isROEThan(int ticketQuantity) {
+    public boolean isLargerOrEqualThan(int ticketQuantity) {
         return this.quantity >= ticketQuantity;
     }
 

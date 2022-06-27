@@ -39,12 +39,12 @@ public class DrawService {
                 .orElseThrow(() -> new EntityNotFoundException(format("Sneaker 엔티티를 id 로 찾을 수 없습니다. drawId : {0}", sneakerId)));
 
         Draw draw = drawConverter.toDraw(drawSaveRequest, sneaker);
-        Draw savedDraw = drawRepository.save(draw);
+        drawRepository.save(draw);
 
         // 해당 sneakerId 에 해당하는 SneakerItem 들을 생성한 후 저장한다.
-        saveSneakerItem(drawSaveRequest, sneakerId, sneaker, savedDraw);
+        saveSneakerItem(drawSaveRequest, sneakerId, sneaker, draw);
 
-        return drawConverter.toDrawResponseDto(savedDraw.getId());
+        return drawConverter.toDrawResponseDto(draw.getId());
     }
 
     private void saveSneakerItem(ServiceDrawSaveDto drawSaveRequest, Long sneakerId, Sneaker sneaker, Draw draw) {
@@ -53,9 +53,9 @@ public class DrawService {
                     int size = sneakerItem.size();
                     SneakerStock sneakerStock = sneakerStockRepository.findBySneakerAndSize(sneaker, size)
                             .orElseThrow(() -> new EntityNotFoundException(
-                                            format("SneakerStock 엔티티를 sneaker 와 size 로 찾을 수 없습니다. sneakerId : {0}, size : {1}", sneakerId, size)));
+                                    format("SneakerStock 엔티티를 sneaker 와 size 로 찾을 수 없습니다. sneakerId : {0}, size : {1}", sneakerId, size)));
 
-                    // SneakerStock에서 재고를 가지고와 SneakerItem을 만든다.
+                    // SneakerStock 에서 재고를 가지고와 SneakerItem 을 만든다.
                     Stock stock = sneakerStock.getStock();
                     stock.decreaseQuantityBy(sneakerItem.quantity());
                     sneakerStockRepository.flush();
@@ -83,54 +83,57 @@ public class DrawService {
         List<DrawTicketResponse> successDrawTickets = new ArrayList<>();
         Map<Integer, SneakerItem> sizeToSneakerItem = new HashMap<>();
 
-        sneakerItems.forEach(
-                (sneakerItem) -> sizeToSneakerItem.put(sneakerItem.getSize(), sneakerItem)
-        );
+        sneakerItems.forEach((sneakerItem) -> {
+            sizeToSneakerItem.put(sneakerItem.getSize(), sneakerItem);
+        });
 
-        sizeToSneakerItem.forEach(
-                (size, sneakerItem) -> {
-                    List<DrawTicket> ticketsBySize = drawTickets.stream()
-                            .filter((drawTicket) -> drawTicket.getSize() == size)
-                            .toList();
+        for (Map.Entry<Integer, SneakerItem> entry : sizeToSneakerItem.entrySet()) {
+            Integer size = entry.getKey();
+            SneakerItem sneakerItem = entry.getValue();
+            List<DrawTicket> ticketsBySize = drawTickets.stream()
+                    .filter((drawTicket) -> drawTicket.getSize() == size)
+                    .toList();
 
-                    drawWinnerBySize(successDrawTickets, sneakerItem, ticketsBySize);
-                }
-        );
+            successDrawTickets = drawWinnerBySize(successDrawTickets, sneakerItem, ticketsBySize);
+        }
 
         drawTickets.forEach(DrawTicket::drawQuit);
 
         return new DrawTicketsResponse(successDrawTickets);
     }
 
-    private void drawWinnerBySize(List<DrawTicketResponse> successDrawTickets,
-                                  SneakerItem sneakerItem,
-                                  List<DrawTicket> ticketsBySize
+    private List<DrawTicketResponse> drawWinnerBySize(List<DrawTicketResponse> successDrawTickets,
+                                                      SneakerItem sneakerItem,
+                                                      List<DrawTicket> ticketsBySize
     ) {
-        int quantity = sneakerItem.getQuantity();
         int ticketQuantity = ticketsBySize.size();
 
-        if (sneakerItem.isROEThan(ticketQuantity)) {
+        if (sneakerItem.isLargerOrEqualThan(ticketQuantity)) {
             ticketsBySize.forEach(DrawTicket::changeToWinner);
+            ticketsBySize.forEach((drawTicket) -> {
+                        drawTicket.changeToWinner();
+                        successDrawTickets.add(drawConverter.toDrawTicketResponse(drawTicket));
+                    }
+            );
 
             sneakerItem.reduceQuantity(ticketQuantity);// sneakerItem 의 재고를 감소시키고
             SneakerStock sneakerStock = sneakerItem.getSneakerStock();
             sneakerStock.addQuantity(sneakerItem.getQuantity()); // 감소하고 남은 개수는 다시 SneakerStock 재고에 추가한다.
             sneakerItem.changeQuantityZero(); // 재고 추가 후 최종 개수는 0이다.
-            return;
+
+            return successDrawTickets;
         }
 
         Set<Integer> randomSet = RandomTicketIdCreator
-                .noDuplicationIdSet(quantity, ticketsBySize.size());
+                .noDuplicationIdSet(sneakerItem.getQuantity(), ticketsBySize.size());
 
-        randomSet.forEach(
-                (id) -> {
+        randomSet.forEach((id) -> {
                     DrawTicket winTicket = ticketsBySize.get(id);
                     winTicket.changeToWinner();
                     successDrawTickets.add(drawConverter.toDrawTicketResponse(winTicket));
-
-                    // 당첨자에게 당첨되었다는 알람 전송
                 }
         );
         sneakerItem.changeQuantityZero(); // sneakerItem 의 재고를 0 으로 바꾼다.
+        return successDrawTickets;
     }
 }
