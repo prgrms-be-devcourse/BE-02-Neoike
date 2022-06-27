@@ -1,11 +1,14 @@
 package prgrms.neoike.domain.draw;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static java.text.MessageFormat.format;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 class DrawTest {
     @Test
@@ -26,10 +29,12 @@ class DrawTest {
                 .build();
 
         // then
-        assertEquals(draw.getStartDate(), fastDate);
-        assertEquals(draw.getEndDate(), middleDate);
-        assertEquals(draw.getWinningDate(), lastDate);
-        assertEquals(draw.getQuantity(), quantity);
+        assertAll(
+                () -> Assertions.assertThat(draw.getStartDate()).isEqualTo(fastDate),
+                () -> Assertions.assertThat(draw.getEndDate()).isEqualTo(middleDate),
+                () -> Assertions.assertThat(draw.getWinningDate()).isEqualTo(lastDate),
+                () -> Assertions.assertThat(draw.getQuantity()).isEqualTo(quantity)
+        );
     }
 
     @Test
@@ -43,14 +48,14 @@ class DrawTest {
         int invalidQuantity = -1;
 
         // when // then
-        assertThrows(IllegalArgumentException.class, () -> {
-            Draw.builder()
-                    .startDate(fastDate)
-                    .endDate(middleDate)
-                    .winningDate(lastDate)
-                    .quantity(invalidQuantity)
-                    .build();
-        });
+        assertThatThrownBy(() -> Draw.builder()
+                .startDate(fastDate)
+                .endDate(middleDate)
+                .winningDate(lastDate)
+                .quantity(invalidQuantity)
+                .build())
+                .hasMessage("입력된 수량이 음수 입니다.")
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -63,23 +68,23 @@ class DrawTest {
         int quantity = 50;
 
         // when // then
-        assertThrows(IllegalArgumentException.class, () -> {
-            Draw.builder()
-                    .startDate(middleDate)
-                    .endDate(fastDate)
-                    .winningDate(lastDate)
-                    .quantity(quantity)
-                    .build();
-        });
+        assertThatThrownBy(() -> Draw.builder()
+                .startDate(middleDate)
+                .endDate(fastDate)
+                .winningDate(lastDate)
+                .quantity(quantity)
+                .build())
+                .hasMessage(format("입력된 날짜의 순서가 맞지 않습니다. (startDate : {0} , endDate : {1})", middleDate, fastDate))
+                .isInstanceOf(IllegalArgumentException.class);
 
-        assertThrows(IllegalArgumentException.class, () -> {
-            Draw.builder()
-                    .startDate(middleDate)
-                    .endDate(lastDate)
-                    .winningDate(fastDate)
-                    .quantity(quantity)
-                    .build();
-        });
+        assertThatThrownBy(() -> Draw.builder()
+                .startDate(middleDate)
+                .endDate(lastDate)
+                .winningDate(fastDate)
+                .quantity(quantity)
+                .build())
+                .hasMessage(format("입력된 날짜의 순서가 맞지 않습니다. (endDate : {0} , winningDate : {1})", lastDate, fastDate))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -99,8 +104,7 @@ class DrawTest {
 
 
         // when // then
-        assertThrows(IllegalStateException.class, () -> {
-            draw.validateSpare();
-        });
+        assertThatThrownBy(() -> draw.validateSpare())
+                .isInstanceOf(IllegalStateException.class);
     }
 }
