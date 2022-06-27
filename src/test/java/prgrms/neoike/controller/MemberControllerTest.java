@@ -1,10 +1,6 @@
 package prgrms.neoike.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +19,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import prgrms.neoike.common.jwt.JwtFilter;
 import prgrms.neoike.common.jwt.TokenProvider;
 import prgrms.neoike.config.SecurityApiTest;
-import prgrms.neoike.controller.dto.memberdto.MemberLoginRequest;
 import prgrms.neoike.controller.dto.memberdto.MemberSaveRequest;
 import prgrms.neoike.domain.member.CountryType;
 import prgrms.neoike.domain.member.Gender;
@@ -33,7 +28,6 @@ import prgrms.neoike.service.dto.drawticketdto.DrawTicketListResponse;
 import prgrms.neoike.service.dto.memberdto.MemberResponse;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -96,26 +90,6 @@ class MemberControllerTest extends SecurityApiTest {
     }
 
     @Test
-    @DisplayName("로그인 요청을 테스트한다")
-    void loginTest() throws Exception {
-        String content = objectMapper.writeValueAsString(new MemberLoginRequest("test@gmail.com", "1234!abcA"));
-        String secret = "cHJncm1zLWJlLWRldmNvdXJzZS1CRS0wMi1OZW9pa2Utc3ByaW5nLWJvb3QtYmFja2VuZC1wcm9qZWN0LWp3dC10b2tlbi1wcmdybXMtYmUtZGV2Y291cnNlLUJFLTAyLU5lb2lrZS1zcHJpbmctYm9vdC1iYWNrZW5kLXByb2plY3Qtand0LXRva2Vu";
-        String jwt = Jwts.builder()
-                .setSubject("test@gmail.com")
-                .claim("auth", "")
-                .signWith(Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret)), SignatureAlgorithm.HS512)
-                .setExpiration(new Date(new Date().getTime() + 86000 * 1000))
-                .compact();
-        when(memberService.login(any())).thenReturn(jwt);
-
-        mockMvc.perform(post("/api/v1/members/login")
-                        .content(content)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andDo(print());
-    }
-
-    @Test
     @DisplayName("인증(로그인)이 유효하면 응모정보를 가져온다")
     void getMyDrawHistoryTest() throws Exception {
         String email = "test@gmail.com";
@@ -130,7 +104,7 @@ class MemberControllerTest extends SecurityApiTest {
         when(customUserDetailService.loadUserByUsername(email))
                 .thenReturn(dummy);
 
-        mockMvc.perform(get("/api/v1/members/history")
+        mockMvc.perform(get("/api/v1/members/draw-history")
                         .headers(httpHeaders)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -144,7 +118,7 @@ class MemberControllerTest extends SecurityApiTest {
         when(memberService.getMyDrawHistory())
                 .thenReturn(drawTicketListResponse);
 
-        mockMvc.perform(get("/api/v1/members/history")
+        mockMvc.perform(get("/api/v1/members/draw-history")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized())
                 .andDo(print());
