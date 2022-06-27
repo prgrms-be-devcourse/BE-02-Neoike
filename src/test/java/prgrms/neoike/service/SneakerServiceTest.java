@@ -188,7 +188,7 @@ class SneakerServiceTest {
         }
     }
 
-    private static SneakerRegisterDto createRegisterDto() {
+    private SneakerRegisterDto createRegisterDto() {
         return new SneakerRegisterDto(
             List.of("/src/main/~~~"),
             SneakerDto
