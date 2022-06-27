@@ -62,14 +62,15 @@ class DrawTicketServiceTest {
         // given
         Sneaker sneaker = sneakerRepository.save(validSneaker());
         Draw draw = drawRepository.save(validDraw(70, sneaker));
+
         Member member1 = memberRepository.save(validMember());
         Member member2 = memberRepository.save(validMember());
 
         SneakerStock sneakerStock275 = sneakerStockRepository.save(validStock(sneaker, 275, 30));
-        sneakerItemRepository.save(validItem(sneakerStock275, draw, 275));
+        sneakerItemRepository.save(validItem(sneakerStock275, draw, 275, 20));
 
         SneakerStock sneakerStock285 = sneakerStockRepository.save(validStock(sneaker, 285, 20));
-        sneakerItemRepository.save(validItem(sneakerStock285, draw, 285));
+        sneakerItemRepository.save(validItem(sneakerStock285, draw, 285, 10));
 
         // when
         drawTicketService.save(member1.getId(), draw.getId(), 275);
@@ -89,10 +90,10 @@ class DrawTicketServiceTest {
         Member member = memberRepository.save(validMember());
 
         SneakerStock sneakerStock275 = sneakerStockRepository.save(validStock(sneaker, 275, 30));
-        sneakerItemRepository.save(validItem(sneakerStock275, draw, 275));
+        sneakerItemRepository.save(validItem(sneakerStock275, draw, 275, 20));
 
         SneakerStock sneakerStock285 = sneakerStockRepository.save(validStock(sneaker, 285, 20));
-        sneakerItemRepository.save(validItem(sneakerStock285, draw, 285));
+        sneakerItemRepository.save(validItem(sneakerStock285, draw, 285, 10));
 
         // when
         drawTicketService.save(member.getId(), draw.getId(), 275);
@@ -102,7 +103,7 @@ class DrawTicketServiceTest {
                 drawTicketService.save(member.getId(), draw.getId(), 285)
         )
                 .hasMessageContaining("티켓응모를 이미 진행하였습니다.")
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -113,12 +114,15 @@ class DrawTicketServiceTest {
         Draw draw = drawRepository.save(validDraw(0, sneaker));
         Member member = memberRepository.save(validMember());
 
+        SneakerStock sneakerStock275 = sneakerStockRepository.save(validStock(sneaker, 275, 30));
+        sneakerItemRepository.save(validItem(sneakerStock275, draw, 275, 0));
+
         // when // then
         assertThatThrownBy(() ->
                 drawTicketService.save(member.getId(), draw.getId(), 275)
         )
                 .hasMessageContaining(format("draw 의 수량이 0 이어서 더이상 ticket 발행이 안됩니다. drawId : {0}", draw.getId()))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -130,7 +134,7 @@ class DrawTicketServiceTest {
         Member member = memberRepository.save(validMember());
 
         SneakerStock sneakerStock275 = sneakerStockRepository.save(validStock(sneaker, 275, 30));
-        sneakerItemRepository.save(validItem(sneakerStock275, draw, 275));
+        sneakerItemRepository.save(validItem(sneakerStock275, draw, 275, 20));
 
         // when
         drawTicketService.save(member.getId(), draw.getId(), 275);
@@ -140,7 +144,7 @@ class DrawTicketServiceTest {
                 drawTicketService.save(member.getId(), draw.getId(), 275)
         )
                 .hasMessageContaining("티켓응모를 이미 진행하였습니다.")
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -152,14 +156,14 @@ class DrawTicketServiceTest {
         Member member = memberRepository.save(validMember());
 
         SneakerStock sneakerStock275 = sneakerStockRepository.save(validStock(sneaker, 275, 30));
-        sneakerItemRepository.save(validItem(sneakerStock275, draw, 275));
+        sneakerItemRepository.save(validItem(sneakerStock275, draw, 275, 20));
 
         // when // then
         assertThatThrownBy(() ->
                 drawTicketService.save(member.getId(), draw.getId(), 285)
         )
                 .hasMessageContaining("입력 사이즈에 해당하는 신발이 존재하지 않습니다.")
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -175,17 +179,17 @@ class DrawTicketServiceTest {
         Member member = memberRepository.save(validMember());
 
         SneakerStock sneakerStock275 = sneakerStockRepository.save(validStock(sneaker1, 275, 30));
-        sneakerItemRepository.save(validItem(sneakerStock275, draw1, 275));
+        sneakerItemRepository.save(validItem(sneakerStock275, draw1, 275, 30));
 
         SneakerStock sneakerStock285 = sneakerStockRepository.save(validStock(sneaker2, 285, 20));
-        sneakerItemRepository.save(validItem(sneakerStock285, draw2, 285));
+        sneakerItemRepository.save(validItem(sneakerStock285, draw2, 285, 20));
 
         // when
         drawTicketService.save(member.getId(), draw1.getId(), 275);
         drawTicketService.save(member.getId(), draw2.getId(), 285);
 
         // then
-        DrawTicketsResponse drawTicketResponses = drawTicketService.findByMember(member.getId());
+        DrawTicketsResponse drawTicketResponses = drawTicketService.findByMemberId(member.getId());
 
         assertThat(drawTicketResponses.drawTicketResponses()).hasSize(2);
         assertAll(
@@ -232,11 +236,12 @@ class DrawTicketServiceTest {
                 .build();
     }
 
-    private SneakerItem validItem(SneakerStock sneakerStock, Draw draw, int size) {
+    private SneakerItem validItem(SneakerStock sneakerStock, Draw draw, int size, int quantity) {
         return SneakerItem.builder()
                 .sneakerStock(sneakerStock)
                 .draw(draw)
                 .size(size)
+                .quantity(quantity)
                 .build();
     }
 

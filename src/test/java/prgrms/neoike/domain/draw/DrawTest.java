@@ -104,7 +104,7 @@ class DrawTest {
 
 
         // when // then
-        assertThatThrownBy(() -> draw.validateSpare())
-                .isInstanceOf(IllegalStateException.class);
+        assertThatThrownBy(() -> draw.reduceDrawQuantity())
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }

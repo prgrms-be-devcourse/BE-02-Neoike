@@ -71,21 +71,41 @@ class DrawServiceTest {
     void saveDrawTest() {
         // given
         Sneaker sneaker = sneakerRepository.save(validSneaker());
-        sneakerStockRepository.save(validSneakerStock(275, 10, sneaker));
-        sneakerStockRepository.save(validSneakerStock(285, 10, sneaker));
+        SneakerStock stock1 = sneakerStockRepository.save(validSneakerStock(275, 10, sneaker));
+        SneakerStock stock2 = sneakerStockRepository.save(validSneakerStock(285, 10, sneaker));
 
         Map<Integer, Integer> sizeToQuantity = new HashMap<>(){{
-            put(275, 50);
+            put(275, 3);
             put(285, 5);
         }};
 
         ServiceDrawSaveDto drawSaveDto = validDrawSaveDto(sneaker.getId(), 50, sizeToQuantity);
 
         // when
-        drawService.save(drawSaveDto);
+        DrawResponse drawResponse = drawService.save(drawSaveDto);
 
         // then
-        assertThat(drawRepository.count()).isEqualTo(1);
+        assertThat(drawResponse.drawId()).isNotNull().isNotNegative();
+        assertThat(stock1.getStock().getQuantity()).isEqualTo(7);
+        assertThat(stock2.getStock().getQuantity()).isEqualTo(5);
+    }
+    @Test
+    @DisplayName("SneakerStock 보다 많은 재고를 응모 item 으로 가지고 올때 응모 생성에 실패한다")
+    void failSaveDrawTest1() {
+        // given
+        Sneaker sneaker = sneakerRepository.save(validSneaker());
+        sneakerStockRepository.save(validSneakerStock(275, 10, sneaker));
+
+        Map<Integer, Integer> sizeToQuantity = new HashMap<>(){{
+            put(275, 50);
+        }};
+
+        ServiceDrawSaveDto drawSaveDto = validDrawSaveDto(sneaker.getId(), 50, sizeToQuantity);
+
+        // when // then
+        assertThatThrownBy(() -> drawService.save(drawSaveDto))
+                .hasMessageContaining(format("재고가 부족합니다. (현재재고: {0})" ,10))
+                .isInstanceOf(IllegalStateException.class);
     }
 
     @Test
@@ -93,8 +113,8 @@ class DrawServiceTest {
     void failSaveDrawTest() {
         // given
         Sneaker sneaker = sneakerRepository.save(validSneaker());
-        sneakerStockRepository.save(validSneakerStock(275, 10, sneaker));
-        sneakerStockRepository.save(validSneakerStock(285, 10, sneaker));
+        sneakerStockRepository.save(validSneakerStock(275, 100, sneaker));
+        sneakerStockRepository.save(validSneakerStock(285, 100, sneaker));
 
         Map<Integer, Integer> sizeToQuantity = new HashMap<>(){{
             put(275, 50);
