@@ -79,7 +79,7 @@ class DrawTicketControllerTest {
                 )
         );
 
-        given(drawTicketService.findByMember(1L)).willReturn(drawTicketResponses);
+        given(drawTicketService.findByMemberId(1L)).willReturn(drawTicketResponses);
 
         // when // then
         mockMvc.perform(get("/api/v1/draw-sneakers/{memberId}", 1L))
