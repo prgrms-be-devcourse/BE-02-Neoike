@@ -45,4 +45,16 @@ public class SneakerItem {
         this.sneakerStock = sneakerStock;
         this.size = size;
     }
+
+    public boolean isROEThan(int ticketQuantity) {
+        return this.quantity >= ticketQuantity;
+    }
+
+    public void changeQuantityZero(){
+        this.quantity = 0;
+    }
+
+    public void reduceQuantity(int ticketQuantity){
+        this.quantity -= ticketQuantity;
+    }
 }

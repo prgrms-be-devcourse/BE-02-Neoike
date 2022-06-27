@@ -4,12 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import prgrms.neoike.common.exception.EntityNotFoundException;
-import prgrms.neoike.common.util.RandomCreator;
+import prgrms.neoike.common.util.RandomTicketIdCreator;
 import prgrms.neoike.domain.draw.Draw;
 import prgrms.neoike.domain.draw.DrawTicket;
 import prgrms.neoike.domain.sneaker.Sneaker;
 import prgrms.neoike.domain.sneaker.SneakerItem;
 import prgrms.neoike.domain.sneaker.SneakerStock;
+import prgrms.neoike.domain.sneaker.Stock;
 import prgrms.neoike.repository.*;
 import prgrms.neoike.service.dto.drawdto.DrawResponse;
 import prgrms.neoike.service.dto.drawdto.ServiceDrawSaveDto;
@@ -41,11 +42,23 @@ public class DrawService {
         Draw savedDraw = drawRepository.save(draw);
 
         // 해당 sneakerId 에 해당하는 SneakerItem 들을 생성한 후 저장한다.
+        saveSneakerItem(drawSaveRequest, sneakerId, sneaker, savedDraw);
+
+        return drawConverter.toDrawResponseDto(savedDraw.getId());
+    }
+
+    private void saveSneakerItem(ServiceDrawSaveDto drawSaveRequest, Long sneakerId, Sneaker sneaker, Draw draw) {
         drawSaveRequest.sneakerItems().forEach(
                 (sneakerItem) -> {
                     int size = sneakerItem.size();
                     SneakerStock sneakerStock = sneakerStockRepository.findBySneakerAndSize(sneaker, size)
-                            .orElseThrow(() -> new EntityNotFoundException(format("SneakerStock 엔티티를 sneaker 와 size 로 찾을 수 없습니다. sneakerId : {0}, size : {1}", sneakerId, size)));
+                            .orElseThrow(() -> new EntityNotFoundException(
+                                            format("SneakerStock 엔티티를 sneaker 와 size 로 찾을 수 없습니다. sneakerId : {0}, size : {1}", sneakerId, size)));
+
+                    // SneakerStock에서 재고를 가지고와 SneakerItem을 만든다.
+                    Stock stock = sneakerStock.getStock();
+                    stock.decreaseQuantityBy(sneakerItem.quantity());
+                    sneakerStockRepository.flush();
 
                     sneakerItemRepository.save(
                             SneakerItem.builder()
@@ -57,8 +70,6 @@ public class DrawService {
                     );
                 }
         );
-
-        return drawConverter.toDrawResponseDto(savedDraw.getId());
     }
 
     @Transactional
@@ -91,21 +102,26 @@ public class DrawService {
         return new DrawTicketsResponse(successDrawTickets);
     }
 
-    public void drawWinnerBySize(List<DrawTicketResponse> successDrawTickets,
+    private void drawWinnerBySize(List<DrawTicketResponse> successDrawTickets,
                                   SneakerItem sneakerItem,
                                   List<DrawTicket> ticketsBySize
     ) {
         int quantity = sneakerItem.getQuantity();
-        Boolean isTicketQuantityLOEThanSneakerItemQuantity = (ticketsBySize.size() <= quantity);
+        int ticketQuantity = ticketsBySize.size();
 
-        if (isTicketQuantityLOEThanSneakerItemQuantity) {
+        if (sneakerItem.isROEThan(ticketQuantity)) {
             ticketsBySize.forEach(DrawTicket::changeToWinner);
-            // sneakerItem.changeQuantity(ticketsBySize.size());
-            // sneakerItem 의 재고를 감소시키고 감소하고 남은 개수는 다시 SneakerStock 재고에 추가한다.
+
+            sneakerItem.reduceQuantity(ticketQuantity);// sneakerItem 의 재고를 감소시키고
+            SneakerStock sneakerStock = sneakerItem.getSneakerStock();
+            sneakerStock.addQuantity(sneakerItem.getQuantity()); // 감소하고 남은 개수는 다시 SneakerStock 재고에 추가한다.
+            sneakerItem.changeQuantityZero(); // 재고 추가 후 최종 개수는 0이다.
             return;
         }
 
-        Set<Integer> randomSet = RandomCreator.noDuplication(quantity, ticketsBySize.size());
+        Set<Integer> randomSet = RandomTicketIdCreator
+                .noDuplicationIdSet(quantity, ticketsBySize.size());
+
         randomSet.forEach(
                 (id) -> {
                     DrawTicket winTicket = ticketsBySize.get(id);
@@ -115,7 +131,6 @@ public class DrawService {
                     // 당첨자에게 당첨되었다는 알람 전송
                 }
         );
-        // sneakerItem.changeQuantity();
-        // sneakerItem 의 재고를 0 으로 바꾼다.
+        sneakerItem.changeQuantityZero(); // sneakerItem 의 재고를 0 으로 바꾼다.
     }
 }

@@ -40,4 +40,8 @@ public class SneakerStock extends BaseTimeEntity {
     public void setSneaker(Sneaker sneaker) {
         this.sneaker = sneaker;
     }
+
+    public void addQuantity(int quantity) {
+        this.stock.increaseQuantityBy(quantity);
+    }
 }
