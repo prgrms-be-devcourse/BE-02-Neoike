@@ -1,5 +1,6 @@
 package prgrms.neoike.domain.member;
 
+import static java.text.MessageFormat.format;
 import static lombok.AccessLevel.PROTECTED;
 
 import javax.persistence.Embeddable;
@@ -28,7 +29,7 @@ public class Email {
     private void validateEmailPattern(String email) {
         boolean matches = Pattern.matches(EMAIL_REGEX, email);
         if (!matches) {
-            throw new IllegalArgumentException("입력값이 이메일 형식에 맞지 않습니다.");
+            throw new IllegalArgumentException(format("입력값이 이메일 형식에 맞지 않습니다. inputEmail : {0}", email));
         }
     }
 

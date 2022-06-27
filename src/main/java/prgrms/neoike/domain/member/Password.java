@@ -8,6 +8,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import javax.persistence.Embeddable;
 import java.util.regex.Pattern;
 
+import static java.text.MessageFormat.format;
+
 @Getter
 @Embeddable
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -26,7 +28,7 @@ public class Password {
     private void validatePasswordPattern(String password) {
         boolean matches = Pattern.matches(PASSWORD_REGEX, password);
         if (!matches) {
-            throw new IllegalArgumentException("입력값이 패스워드 형식에 맞지 않습니다.");
+            throw new IllegalArgumentException(format("입력값이 패스워드 형식에 맞지 않습니다. inputPassword : {0}", password));
         }
     }
 
