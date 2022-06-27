@@ -105,7 +105,7 @@ class DrawServiceTest {
         // when // then
         assertThatThrownBy(() -> drawService.save(drawSaveDto))
                 .hasMessageContaining(format("재고가 부족합니다. (현재재고: {0})" ,10))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test

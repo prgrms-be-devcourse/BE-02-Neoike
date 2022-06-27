@@ -1,12 +1,13 @@
-package prgrms.neoike.controller.dto;
+package prgrms.neoike.controller.dto.memberdto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import prgrms.neoike.domain.member.CountryType;
 import prgrms.neoike.domain.member.Gender;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
-public record MemberRequest(
+public record MemberSaveRequest(
         @NotNull
         String email,
 
@@ -17,6 +18,7 @@ public record MemberRequest(
         String name,
 
         @NotNull
+        @JsonFormat(shape =JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
         LocalDateTime birthday,
 
         @NotNull

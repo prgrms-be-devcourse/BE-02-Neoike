@@ -13,7 +13,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import prgrms.neoike.service.dto.sneakerimage.SneakerImageResponse;
 import prgrms.neoike.service.image.SneakerImageService;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
@@ -61,7 +60,7 @@ class SneakerImageControllerTest {
             .andExpect(status().isOk())
             .andDo(document("image-upload",
                 responseFields(
-                    fieldWithPath("paths").type(ARRAY).description("신발 이미지 경로")
+                    fieldWithPath("imagePaths").type(ARRAY).description("신발 이미지 경로")
                 ))
             ).andReturn();
 
@@ -71,13 +70,13 @@ class SneakerImageControllerTest {
 
         assertThat(response).isNotNull();
         assertAll(
-            () -> assertThat(response.paths().size()).isOne(),
-            () -> assertThat(response.paths().get(0)).isEqualTo(expectedResponse.paths().get(0))
+            () -> assertThat(response.imagePaths().size()).isOne(),
+            () -> assertThat(response.imagePaths().get(0)).isEqualTo(expectedResponse.imagePaths().get(0))
         );
     }
 
     private MockMultipartFile getTestMultipartFile() throws IOException {
-        FileInputStream fis = new FileInputStream(new File(System.getProperty("user.dir") + "/src/test/resources/test.PNG"));
+        FileInputStream fis = new FileInputStream(System.getProperty("user.dir") + "/src/test/resources/test.PNG");
 
         return new MockMultipartFile("test", "test.PNG", IMAGE_PNG_VALUE, fis);
     }

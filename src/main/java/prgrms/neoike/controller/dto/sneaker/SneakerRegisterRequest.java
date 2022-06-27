@@ -1,4 +1,4 @@
-package prgrms.neoike.controller.dto.sneaker.request;
+package prgrms.neoike.controller.dto.sneaker;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;

@@ -6,6 +6,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import prgrms.neoike.domain.member.Address;
 import prgrms.neoike.domain.member.Email;
 import prgrms.neoike.domain.member.Gender;
@@ -20,9 +23,8 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class MemberServiceTest {
@@ -31,6 +33,9 @@ class MemberServiceTest {
 
     @Mock
     private MemberRepository memberRepository;
+
+    @Mock
+    private DrawTicketService drawTicketService;
 
     @Test
     @DisplayName("회원가입을 한다")
@@ -58,12 +63,30 @@ class MemberServiceTest {
         Member member = mock(Member.class);
 
         when(member.getEmail()).thenReturn(new Email("test@gmail.com"));
-        given(memberRepository.findByEmail(member.getEmail().getEmail()))
+        given(memberRepository.findOneByEmail(member.getEmail().getEmail()))
                 .willReturn(Optional.of(member));
         //when
 
         //then
         assertThrows(IllegalArgumentException.class, () -> memberService.join(memberDto));
+    }
+
+    @Test
+    @DisplayName("사용자의 응모내역을 가져온다")
+    void getMyDrawHistory() {
+        //given
+        String username = "test@gmail.com";
+        Member member = mock(Member.class);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(username, "1234!Basdf");
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        given(memberRepository.findOneByEmail(username)).willReturn(Optional.of(member));
+
+        //when
+        when(member.getId()).thenReturn(1L);
+        memberService.getMyDrawHistory();
+
+        //then
+        then(drawTicketService).should().findByMemberId(member.getId());
     }
 
     private MemberDto addTestMemberDto() {
