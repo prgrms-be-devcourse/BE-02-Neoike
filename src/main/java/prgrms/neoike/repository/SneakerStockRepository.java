@@ -7,6 +7,7 @@ import prgrms.neoike.domain.sneaker.SneakerStock;
 import java.util.Optional;
 
 public interface SneakerStockRepository extends JpaRepository<SneakerStock, Long> {
+
     Optional<SneakerStock> findBySneakerAndSize(Sneaker sneaker, int size);
 
 }

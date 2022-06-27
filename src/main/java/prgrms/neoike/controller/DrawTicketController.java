@@ -34,7 +34,7 @@ public class DrawTicketController {
     public ResponseEntity<DrawTicketsResponse> findByMemberId(
             @PathVariable Long memberId
     ) {
-        DrawTicketsResponse drawTicketResponses = drawTicketService.findByMember(memberId);
+        DrawTicketsResponse drawTicketResponses = drawTicketService.findByMemberId(memberId);
 
         return ResponseEntity
                 .ok()

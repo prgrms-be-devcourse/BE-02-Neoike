@@ -80,11 +80,11 @@ public class Draw extends BaseTimeEntity {
         }
     }
 
-    public boolean validateSpare() {
+    public boolean reduceDrawQuantity() {
         if (quantity > 0) {
             quantity--;
             return true;
         }
-        throw new IllegalStateException(format("draw 의 수량이 0 이어서 더이상 ticket 발행이 안됩니다. drawId : {0}", id));
+        throw new IllegalArgumentException(format("draw 의 수량이 0 이어서 더이상 ticket 발행이 안됩니다. drawId : {0}", id));
     }
 }

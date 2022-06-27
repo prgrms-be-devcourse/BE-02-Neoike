@@ -37,7 +37,7 @@ public class DrawController {
     }
 
     @PostMapping("/win")
-    public ResponseEntity<DrawTicketsResponse> winDraw(
+    public ResponseEntity<DrawTicketsResponse> drawWinner(
             @RequestParam Long drawId
     ) {
         DrawTicketsResponse winningTicketsResponse = drawService.drawWinner(drawId);
