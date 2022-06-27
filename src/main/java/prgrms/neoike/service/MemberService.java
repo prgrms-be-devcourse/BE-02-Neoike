@@ -18,6 +18,8 @@ import prgrms.neoike.service.dto.memberdto.LoginDto;
 import prgrms.neoike.service.dto.memberdto.MemberDto;
 import prgrms.neoike.service.dto.memberdto.MemberResponse;
 
+import static java.text.MessageFormat.format;
+
 import java.util.Optional;
 
 @Service
@@ -57,13 +59,14 @@ public class MemberService {
     private void validateDuplicatedMember(String email) {
         Optional<Member> foundMember = memberRepository.findOneByEmail(email);
         if (foundMember.isPresent()) {
-            throw new IllegalArgumentException("이미 존재하는 회원입니다.");
+            throw new IllegalArgumentException(format("이미 존재하는 회원입니다. email : {0}", email));
         }
     }
 
     public DrawTicketListResponse getMyDrawHistory() {
-        Member member = SecurityUtil.getCurrentUserName().flatMap(memberRepository::findOneByEmail)
-                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 회원입니다."));
+        Optional<String> username = SecurityUtil.getCurrentUserName();
+        Member member = username.flatMap(memberRepository::findOneByEmail)
+                .orElseThrow(() -> new EntityNotFoundException(format("존재하지 않는 회원입니다. email : {0}", username)));
 
         return drawTicketService.findByMember(member.getId());
     }
