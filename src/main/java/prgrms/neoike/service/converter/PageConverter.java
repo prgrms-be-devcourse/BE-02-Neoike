@@ -21,11 +21,15 @@ import static prgrms.neoike.service.converter.SneakerConverter.toSneakerContents
 @NoArgsConstructor(access = PRIVATE)
 public class PageConverter {
 
-    private static final int DEFAULT_SIZE = 20;
-    private static final int DEFAULT_PAGE = 0;
     private static final String DEFAULT_SORT_BY = "createdAt";
     private static final Direction DEFAULT_DIRECTION = DESC;
     private static final Set<String> SNEAKER_SORT_BY = Set.of("id", "releaseDate", "price");
+    private static final int DEFAULT_SIZE = 20;
+    private static final int DEFAULT_PAGE = 0;
+    private static final int MIN_PAGE = 0;
+    private static final int INIT_PAGE = 1;
+    private static final int MIN_SIZE = 0;
+    private static final int MAX_SIZE = 100;
 
     public static Pageable toPageable(PageableDto pageableDto) {
         int page = toPage(pageableDto.page());
@@ -60,7 +64,7 @@ public class PageConverter {
             return DEFAULT_PAGE;
         }
 
-        return pageRequest < 1 ? 0 : pageRequest - 1;
+        return pageRequest < INIT_PAGE ? MIN_PAGE : --pageRequest;
     }
 
     private static int toSize(String size) {
@@ -74,7 +78,7 @@ public class PageConverter {
             return DEFAULT_SIZE;
         }
 
-        return sizeRequest > 100 || sizeRequest < 0 ? DEFAULT_SIZE : sizeRequest;
+        return sizeRequest > MAX_SIZE || sizeRequest < MIN_SIZE ? DEFAULT_SIZE : sizeRequest;
     }
 
     private static String toSortBy(String sortBy) {
