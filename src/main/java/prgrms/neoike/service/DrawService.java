@@ -70,8 +70,6 @@ public class DrawService {
                     );
                 }
         );
-
-        return drawConverter.toDrawResponseDto(savedDraw.getId());
     }
 
     @Transactional
