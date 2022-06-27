@@ -133,7 +133,8 @@ class SneakerControllerTest {
                 get("/api/v1/sneakers")
                     .queryParam("page", "1")
                     .queryParam("size", "1")
-                    .queryParam("sortBy", "createdAt.asc"))
+                    .queryParam("sortBy", "createdAt")
+                    .queryParam("direction", "desc"))
             .andExpect(status().isOk())
             .andDo(
                 document("sneaker-sneakers",
@@ -342,7 +343,8 @@ class SneakerControllerTest {
         return List.of(
             parameterWithName("page").description("페이지"),
             parameterWithName("size").description("페이지 사이즈"),
-            parameterWithName("sortBy").description("페이지 정렬")
+            parameterWithName("sortBy").description("정렬 기준"),
+            parameterWithName("direction").description("정렬 방향")
         );
     }
 }

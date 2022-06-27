@@ -1,7 +1,6 @@
 package prgrms.neoike.service;
 
 import org.apache.commons.lang3.RandomStringUtils;
-import org.hibernate.QueryParameterException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
@@ -96,7 +95,7 @@ class SneakerServiceTest {
     @DisplayName("신발을 페이징 처리를 하여 전체조회 할 수 있다.")
     void testGetSneakers() {
         register5Sneakers();
-        PageResponse<SneakerResponse> pageResponse = sneakerService.getSneakers(new PageableDto(1, 5, "id.desc"));
+        PageResponse<SneakerResponse> pageResponse = sneakerService.getSneakers(new PageableDto("1", "5", "id", "desc"));
 
         assertThat(pageResponse).isNotNull();
         assertAll(
@@ -113,17 +112,6 @@ class SneakerServiceTest {
             () -> assertThat(contents).hasSize(5),
             () -> assertThat(contents.get(0)).isInstanceOf(SneakerResponse.class)
         );
-    }
-
-    @Test
-    @DisplayName("유효하지 않은 페이징 정렬 정보가 입력되면 예외가 발생한다.")
-    void testInvalidPagingParameter() {
-        register5Sneakers();
-
-        assertThatThrownBy(
-            () -> sneakerService.getSneakers(new PageableDto(1, 5, "id.ABCDE")))
-            .hasMessage(format("페이징 정렬에 실패하였습니다. (direction: {0})", "ABCDE"))
-            .isInstanceOf(QueryParameterException.class);
     }
 
     @Test
