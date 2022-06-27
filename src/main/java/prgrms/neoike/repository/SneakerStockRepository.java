@@ -10,10 +10,14 @@ import java.util.Optional;
 
 public interface SneakerStockRepository extends JpaRepository<SneakerStock, Long> {
 
-    @Query("select s from SneakerStock s " +
-        "join fetch s.sneaker n " +
-        "left join fetch n.sneakerImages " +
-        "where n.id = :sneakerId and n.code = :code")
+    @Query(
+        """
+            select s from SneakerStock s
+            join fetch s.sneaker n
+            left join fetch n.sneakerImages
+            where n.id = :sneakerId and n.code = :code
+        """
+    )
     List<SneakerStock> findByIdAndCode(Long sneakerId, String code);
 
     @EntityGraph(attributePaths = "sneaker")
