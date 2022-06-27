@@ -64,7 +64,7 @@ class ImageFileValidatorTest {
     }
 
     private MockMultipartFile getMockMultipartFile(String fileName, String contentType, String path) throws IOException {
-        FileInputStream fis = new FileInputStream(new File(path));
+        FileInputStream fis = new FileInputStream(path);
 
         return new MockMultipartFile(fileName, fileName + "." + contentType, contentType, fis);
     }

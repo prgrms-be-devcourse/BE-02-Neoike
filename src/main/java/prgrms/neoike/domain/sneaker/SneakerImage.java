@@ -4,7 +4,6 @@ package prgrms.neoike.domain.sneaker;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import prgrms.neoike.domain.BaseTimeEntity;
 
 import javax.persistence.*;
