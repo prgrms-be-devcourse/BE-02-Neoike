@@ -23,16 +23,16 @@ import prgrms.neoike.common.jwt.JwtFilter;
 import prgrms.neoike.common.jwt.TokenProvider;
 import prgrms.neoike.config.ApiDocumentUtil;
 import prgrms.neoike.config.SecurityApiTest;
-import prgrms.neoike.controller.dto.memberdto.MemberSaveRequest;
+import prgrms.neoike.controller.dto.member.MemberSaveRequest;
 import prgrms.neoike.domain.member.CountryType;
 import prgrms.neoike.domain.member.Gender;
 import prgrms.neoike.service.CustomUserDetailService;
 import prgrms.neoike.service.MemberService;
 import prgrms.neoike.service.dto.drawticketdto.DrawTicketListResponse;
 import prgrms.neoike.service.dto.drawticketdto.DrawTicketResponse;
-import prgrms.neoike.service.dto.memberdto.MemberResponse;
+import prgrms.neoike.service.dto.member.MemberResponse;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,7 +77,7 @@ class MemberControllerTest extends SecurityApiTest {
                         "test@gmail.com",
                         "testPassword123!",
                         "testUser",
-                        LocalDateTime.now(),
+                        LocalDate.now(),
                         "Seoul",
                         "samsungro",
                         "1234",

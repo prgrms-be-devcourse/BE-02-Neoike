@@ -7,7 +7,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import prgrms.neoike.domain.member.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,14 +29,14 @@ class MemberRepositoryTest {
                 .gender(Gender.FEMALE)
                 .address(new Address("city", "street", "12345"))
                 .password(new Password("123abcA!!"))
-                .birthDay(LocalDateTime.now())
+                .birthDay(LocalDate.now())
                 .build();
         Member savedMember = memberRepository.save(member);
 
-        Optional<Member> oneByEmail = memberRepository.findOneByEmail(savedMember.getEmail().getEmail());
+        Optional<Member> oneByEmail = memberRepository.findOneByEmail(savedMember.getEmail().getAddress());
 
         assertThat(oneByEmail).isNotEmpty();
-        assertThat(oneByEmail.get().getEmail().getEmail()).isEqualTo(member.getEmail().getEmail());
+        assertThat(oneByEmail.get().getEmail().getAddress()).isEqualTo(member.getEmail().getAddress());
     }
 
     @Test

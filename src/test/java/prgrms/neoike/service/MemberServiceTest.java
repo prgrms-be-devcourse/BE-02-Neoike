@@ -14,10 +14,10 @@ import prgrms.neoike.domain.member.Email;
 import prgrms.neoike.domain.member.Gender;
 import prgrms.neoike.domain.member.Member;
 import prgrms.neoike.repository.MemberRepository;
-import prgrms.neoike.service.dto.memberdto.MemberDto;
-import prgrms.neoike.service.dto.memberdto.MemberResponse;
+import prgrms.neoike.service.dto.member.MemberDto;
+import prgrms.neoike.service.dto.member.MemberResponse;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -63,7 +63,7 @@ class MemberServiceTest {
         Member member = mock(Member.class);
 
         when(member.getEmail()).thenReturn(new Email("test@gmail.com"));
-        given(memberRepository.findOneByEmail(member.getEmail().getEmail()))
+        given(memberRepository.findOneByEmail(member.getEmail().getAddress()))
                 .willReturn(Optional.of(member));
         //when
 
@@ -94,7 +94,7 @@ class MemberServiceTest {
                 .name("testUser")
                 .password("testPassword123!")
                 .phoneNumber("01023451234")
-                .birthday(LocalDateTime.now())
+                .birthday(LocalDate.now())
                 .email("test@gmail.com")
                 .address(new Address("seoul", "samsungro", "12345"))
                 .gender(Gender.FEMALE)

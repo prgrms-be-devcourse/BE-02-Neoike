@@ -23,6 +23,6 @@ class EmailTest {
         String upperCaseEmail = "TEST123@GMAIL.COM";
         Email email = new Email(upperCaseEmail);
 
-        assertThat(email.getEmail()).isEqualTo("test123@gmail.com");
+        assertThat(email.getAddress()).isEqualTo("test123@gmail.com");
     }
 }
