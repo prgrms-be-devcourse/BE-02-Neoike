@@ -1,6 +1,16 @@
 package prgrms.neoike.service;
 
+import static java.text.MessageFormat.format;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import prgrms.neoike.common.exception.EntityNotFoundException;
@@ -11,16 +21,17 @@ import prgrms.neoike.domain.sneaker.Sneaker;
 import prgrms.neoike.domain.sneaker.SneakerItem;
 import prgrms.neoike.domain.sneaker.SneakerStock;
 import prgrms.neoike.domain.sneaker.Stock;
-import prgrms.neoike.repository.*;
+import prgrms.neoike.repository.DrawRepository;
+import prgrms.neoike.repository.DrawTicketRepository;
+import prgrms.neoike.repository.SneakerItemRepository;
+import prgrms.neoike.repository.SneakerRepository;
+import prgrms.neoike.repository.SneakerStockRepository;
+import prgrms.neoike.service.converter.DrawConverter;
+import prgrms.neoike.service.dto.drawdto.DrawDto;
 import prgrms.neoike.service.dto.drawdto.DrawResponse;
 import prgrms.neoike.service.dto.drawdto.ServiceDrawSaveDto;
-import prgrms.neoike.service.converter.DrawConverter;
-import prgrms.neoike.service.dto.drawticketdto.DrawTicketsResponse;
 import prgrms.neoike.service.dto.drawticketdto.DrawTicketResponse;
-
-import java.util.*;
-
-import static java.text.MessageFormat.format;
+import prgrms.neoike.service.dto.drawticketdto.DrawTicketsResponse;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +44,7 @@ public class DrawService {
     private final DrawConverter drawConverter;
 
     @Transactional
+    @CacheEvict(value = "draws", allEntries = true)
     public DrawResponse save(ServiceDrawSaveDto drawSaveRequest) {
         Long sneakerId = drawSaveRequest.sneakerId();
         Sneaker sneaker = sneakerRepository.findById(sneakerId)
@@ -135,5 +147,13 @@ public class DrawService {
         );
         sneakerItem.changeQuantityZero(); // sneakerItem 의 재고를 0 으로 바꾼다.
         return successDrawTickets;
+    }
+
+    @Cacheable(value = "draws")
+    @Transactional(readOnly = true)
+    public List<DrawDto> getAvailableDraws() {
+        List<Draw> availableDraws = drawRepository.findAllByWinningDateAfter(LocalDateTime.now());
+
+        return drawConverter.toDrawDtos(availableDraws);
     }
 }

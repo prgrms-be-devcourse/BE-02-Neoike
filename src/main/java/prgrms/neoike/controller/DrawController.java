@@ -1,11 +1,13 @@
 package prgrms.neoike.controller;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import prgrms.neoike.controller.dto.drawdto.DrawSaveRequest;
 import prgrms.neoike.controller.mapper.DrawMapper;
 import prgrms.neoike.service.DrawService;
+import prgrms.neoike.service.dto.drawdto.DrawDto;
 import prgrms.neoike.service.dto.drawdto.DrawResponse;
 import prgrms.neoike.service.dto.drawdto.ServiceDrawSaveDto;
 import prgrms.neoike.service.dto.drawticketdto.DrawTicketsResponse;
@@ -14,7 +16,6 @@ import javax.validation.Valid;
 import java.net.URI;
 
 import static java.text.MessageFormat.format;
-
 
 @RestController
 @RequestMapping("/api/v1/draws")
@@ -45,5 +46,12 @@ public class DrawController {
         return ResponseEntity
                 .ok()
                 .body(winningTicketsResponse);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<DrawDto>> getAvailableDraws() {
+        List<DrawDto> draws = drawService.getAvailableDraws();
+
+        return ResponseEntity.ok(draws);
     }
 }
