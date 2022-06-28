@@ -57,7 +57,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .and()
                 .authorizeRequests()
-                    .antMatchers("/api/v1/members/history").authenticated()
+                    .antMatchers("/api/**/members/draw-history").authenticated()
                 .anyRequest()
                     .permitAll()
 
