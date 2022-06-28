@@ -1,6 +1,5 @@
 package prgrms.neoike.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,9 +35,6 @@ class SneakerImageControllerTest extends SecurityApiTest {
 
     @Autowired
     MockMvc mvc;
-
-    @Autowired
-    ObjectMapper objectMapper;
 
     @MockBean
     SneakerImageService sneakerImageService;
