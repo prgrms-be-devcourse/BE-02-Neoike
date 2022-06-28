@@ -1,17 +1,9 @@
 package prgrms.neoike.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
-import org.springframework.test.web.servlet.MockMvc;
-import prgrms.neoike.common.config.SecurityConfig;
 import prgrms.neoike.config.SecurityApiTest;
 import prgrms.neoike.controller.mapper.DrawMapper;
 import prgrms.neoike.domain.draw.DrawStatus;
@@ -34,9 +26,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = DrawTicketController.class)
 class DrawTicketControllerTest extends SecurityApiTest {
-
-    @Autowired
-    ObjectMapper objectMapper;
 
     @MockBean
     DrawTicketService drawTicketService;

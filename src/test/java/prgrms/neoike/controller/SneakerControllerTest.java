@@ -1,9 +1,6 @@
 package prgrms.neoike.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,10 +46,6 @@ class SneakerControllerTest extends SecurityApiTest {
 
     @MockBean
     SneakerService sneakerService;
-
-    ObjectMapper objectMapper = new ObjectMapper()
-        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-        .registerModule(new JavaTimeModule());
 
     @Test
     @DisplayName("신발 생성이 정상적으로 이루어진다.")
