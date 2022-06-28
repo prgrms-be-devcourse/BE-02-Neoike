@@ -5,12 +5,16 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cache.Cache.ValueWrapper;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.interceptor.SimpleKey;
 import org.springframework.transaction.annotation.Transactional;
 import prgrms.neoike.common.exception.EntityNotFoundException;
 import prgrms.neoike.domain.draw.DrawStatus;
 import prgrms.neoike.domain.member.*;
 import prgrms.neoike.domain.sneaker.*;
 import prgrms.neoike.repository.*;
+import prgrms.neoike.service.dto.drawdto.DrawDto;
 import prgrms.neoike.service.dto.drawdto.DrawResponse;
 import prgrms.neoike.service.dto.drawdto.ServiceDrawSaveDto;
 import prgrms.neoike.service.dto.drawdto.ServiceItemDto;
@@ -52,6 +56,8 @@ class DrawServiceTest {
     @Autowired
     DrawRepository drawRepository;
 
+    @Autowired
+    CacheManager cacheManager;
 
     LocalDateTime startDate = LocalDateTime.of(2025, 06, 12, 12, 00, 00);
     LocalDateTime endDate = LocalDateTime.of(2025, 06, 13, 12, 00, 00);
@@ -196,6 +202,45 @@ class DrawServiceTest {
                 .count();
 
         assertThat(count).isEqualTo(5);
+    }
+
+    @Test
+    @DisplayName("응모 리스트 조회 시 캐시 처리된다.")
+    void testCacheGetAvailableDraws(){
+        // given
+        drawService.getAvailableDraws();
+
+        // when
+        List<DrawDto> drawDtos = cacheManager.getCache("draws")
+            .get(SimpleKey.EMPTY, List.class);
+
+        // then
+        assertThat(drawDtos).isNotNull();
+    }
+
+    @Test
+    @DisplayName("응모 생성 시 캐시가 삭제된다.")
+    void testCacheEvictWhenCreateDraw(){
+        // given
+        drawService.getAvailableDraws();
+
+        Sneaker sneaker = sneakerRepository.save(validSneaker());
+        sneakerStockRepository.save(validSneakerStock(275, 10, sneaker));
+        sneakerStockRepository.save(validSneakerStock(285, 10, sneaker));
+
+        Map<Integer, Integer> sizeToQuantity = new HashMap<>(){{
+            put(275, 3);
+            put(285, 5);
+        }};
+
+        ServiceDrawSaveDto drawSaveDto = validDrawSaveDto(sneaker.getId(), 50, sizeToQuantity);
+
+        // when
+        drawService.save(drawSaveDto);
+
+        // then
+        ValueWrapper evicted = cacheManager.getCache("draws").get(SimpleKey.EMPTY);
+        assertThat(evicted).isNull();
     }
 
     private Sneaker validSneaker() {

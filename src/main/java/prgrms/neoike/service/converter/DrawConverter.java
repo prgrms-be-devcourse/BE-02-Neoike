@@ -1,9 +1,11 @@
 package prgrms.neoike.service.converter;
 
+import java.util.List;
 import org.springframework.stereotype.Component;
 import prgrms.neoike.domain.draw.Draw;
 import prgrms.neoike.domain.draw.DrawTicket;
 import prgrms.neoike.domain.sneaker.Sneaker;
+import prgrms.neoike.service.dto.drawdto.DrawDto;
 import prgrms.neoike.service.dto.drawdto.DrawResponse;
 import prgrms.neoike.service.dto.drawdto.ServiceDrawSaveDto;
 import prgrms.neoike.service.dto.drawticketdto.DrawTicketResponse;
@@ -35,4 +37,25 @@ public class DrawConverter {
                 .build();
     }
 
+    public DrawDto toDrawDto(Draw draw){
+        String thumbnailPath = draw.getSneaker().getSneakerImages()
+            .stream().toList().get(0).getPath();
+
+        return DrawDto.builder()
+                .drawId(draw.getId())
+                .startDate(draw.getStartDate())
+                .endDate(draw.getEndDate())
+                .winningDate(draw.getWinningDate())
+                .sneakerId(draw.getSneaker().getId())
+                .sneakerName(draw.getSneaker().getName())
+                .sneakerThumbnailPath(thumbnailPath)
+                .quantity(draw.getQuantity())
+                .build();
+    }
+
+    public List<DrawDto> toDrawDtos(List<Draw> draws) {
+        return draws.stream()
+                .map(this::toDrawDto)
+                .toList();
+    }
 }
