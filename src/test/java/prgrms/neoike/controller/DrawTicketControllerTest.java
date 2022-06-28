@@ -12,6 +12,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.test.web.servlet.MockMvc;
 import prgrms.neoike.common.config.SecurityConfig;
+import prgrms.neoike.config.SecurityApiTest;
 import prgrms.neoike.controller.mapper.DrawMapper;
 import prgrms.neoike.domain.draw.DrawStatus;
 import prgrms.neoike.service.DrawTicketService;
@@ -31,17 +32,8 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(
-        controllers = DrawTicketController.class,
-        excludeAutoConfiguration = SecurityAutoConfiguration.class,
-        excludeFilters = {
-                @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,
-                        classes = SecurityConfig.class)
-        })
-@AutoConfigureRestDocs
-class DrawTicketControllerTest {
-    @Autowired
-    MockMvc mockMvc;
+@WebMvcTest(controllers = DrawTicketController.class)
+class DrawTicketControllerTest extends SecurityApiTest {
 
     @Autowired
     ObjectMapper objectMapper;
