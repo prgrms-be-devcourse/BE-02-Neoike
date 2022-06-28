@@ -18,12 +18,12 @@ public class Email {
 
     private static final String EMAIL_REGEX = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?";
 
-    private String email;
+    private String address;
 
-    public Email(String email) {
-        String lowerCasedEmail = email.toLowerCase();
+    public Email(String emailAddress) {
+        String lowerCasedEmail = emailAddress.toLowerCase();
         validateEmailPattern(lowerCasedEmail);
-        this.email = lowerCasedEmail;
+        this.address = lowerCasedEmail;
     }
 
     private void validateEmailPattern(String email) {

@@ -9,8 +9,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import prgrms.neoike.controller.dto.memberdto.TokenResponse;
-import prgrms.neoike.service.dto.memberdto.LoginDto;
+import prgrms.neoike.controller.dto.member.TokenResponse;
+import prgrms.neoike.service.dto.member.LoginDto;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;

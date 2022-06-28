@@ -9,8 +9,8 @@ import prgrms.neoike.domain.member.Member;
 import prgrms.neoike.repository.MemberRepository;
 import prgrms.neoike.service.converter.MemberConverter;
 import prgrms.neoike.service.dto.drawticketdto.DrawTicketListResponse;
-import prgrms.neoike.service.dto.memberdto.MemberDto;
-import prgrms.neoike.service.dto.memberdto.MemberResponse;
+import prgrms.neoike.service.dto.member.MemberDto;
+import prgrms.neoike.service.dto.member.MemberResponse;
 
 import java.util.Optional;
 
@@ -18,7 +18,6 @@ import static java.text.MessageFormat.format;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class MemberService {
 
     private final MemberRepository memberRepository;
@@ -31,7 +30,16 @@ public class MemberService {
         Member member = MemberConverter.toMember(memberDto);
         Member savedMember = memberRepository.save(member);
 
-        return MemberConverter.toMemberResponse(savedMember.getId(), savedMember.getEmail().getEmail());
+        return MemberConverter.toMemberResponse(savedMember.getId(), savedMember.getEmail().getAddress());
+    }
+
+    @Transactional(readOnly = true)
+    public DrawTicketListResponse getMyDrawHistory() {
+        Optional<String> username = SecurityUtil.getCurrentUserName();
+        Member member = username.flatMap(memberRepository::findOneByEmail)
+                .orElseThrow(() -> new EntityNotFoundException(format("존재하지 않는 회원입니다. email : {0}", username)));
+
+        return drawTicketService.findByMember(member.getId());
     }
 
     private void validateDuplicatedMember(String email) {
@@ -39,13 +47,5 @@ public class MemberService {
         if (foundMember.isPresent()) {
             throw new IllegalArgumentException(format("이미 존재하는 회원입니다. email : {0}", email));
         }
-    }
-
-    public DrawTicketListResponse getMyDrawHistory() {
-        Optional<String> username = SecurityUtil.getCurrentUserName();
-        Member member = username.flatMap(memberRepository::findOneByEmail)
-                .orElseThrow(() -> new EntityNotFoundException(format("존재하지 않는 회원입니다. email : {0}", username)));
-
-        return drawTicketService.findByMember(member.getId());
     }
 }

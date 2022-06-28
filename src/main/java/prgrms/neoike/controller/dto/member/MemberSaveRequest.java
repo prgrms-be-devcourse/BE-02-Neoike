@@ -1,39 +1,40 @@
-package prgrms.neoike.controller.dto.memberdto;
+package prgrms.neoike.controller.dto.member;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import prgrms.neoike.domain.member.CountryType;
 import prgrms.neoike.domain.member.Gender;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public record MemberSaveRequest(
-        @NotNull
+        @NotBlank
         String email,
 
-        @NotNull
+        @NotBlank
         String password,
 
-        @NotNull
+        @NotBlank
         String name,
 
         @NotNull
-        @JsonFormat(shape =JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-        LocalDateTime birthday,
+        @JsonFormat(shape =JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+        LocalDate birthday,
 
-        @NotNull
+        @NotBlank
         String city,
 
-        @NotNull
+        @NotBlank
         String street,
 
-        @NotNull
+        @NotBlank
         String zipcode,
 
         @NotNull
         CountryType countryCode,
 
-        @NotNull
+        @NotBlank
         String phoneNumber,
 
         @NotNull

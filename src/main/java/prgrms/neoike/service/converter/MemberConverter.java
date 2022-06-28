@@ -4,8 +4,8 @@ import prgrms.neoike.domain.member.Email;
 import prgrms.neoike.domain.member.Member;
 import prgrms.neoike.domain.member.Password;
 import prgrms.neoike.domain.member.PhoneNumber;
-import prgrms.neoike.service.dto.memberdto.MemberDto;
-import prgrms.neoike.service.dto.memberdto.MemberResponse;
+import prgrms.neoike.service.dto.member.MemberDto;
+import prgrms.neoike.service.dto.member.MemberResponse;
 
 public class MemberConverter {
 
