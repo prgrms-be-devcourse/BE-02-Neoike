@@ -73,54 +73,54 @@ class MemberControllerTest extends SecurityApiTest {
     void joinMemberTest() throws Exception {
 
         String content = objectMapper.writeValueAsString(
-                new MemberSaveRequest(
-                        "test@gmail.com",
-                        "testPassword123!",
-                        "testUser",
-                        LocalDate.now(),
-                        "Seoul",
-                        "samsungro",
-                        "1234",
-                        CountryType.KOR,
-                        "01012345678",
-                        Gender.FEMALE
-                ));
+            new MemberSaveRequest(
+                "test@gmail.com",
+                "testPassword123!",
+                "testUser",
+                LocalDate.now(),
+                "Seoul",
+                "samsungro",
+                "1234",
+                CountryType.KOR,
+                "01012345678",
+                Gender.FEMALE
+            ));
 
         given(memberService.join(any()))
-                .willReturn(new MemberResponse(1L, "test@gmail.com"));
+            .willReturn(new MemberResponse(1L, "test@gmail.com"));
 
 
         ResultActions result = mockMvc.perform(post("/api/v1/members")
-                        .content(content)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .with(SecurityMockMvcRequestPostProcessors.csrf()))
-                .andExpect(status().isCreated())
-                .andDo(print());
+                .content(content)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .with(SecurityMockMvcRequestPostProcessors.csrf()))
+            .andExpect(status().isCreated())
+            .andDo(print());
 
         result.andExpect(status().isCreated())
-                .andDo(document("member-create",
-                        ApiDocumentUtil.getDocumentRequest(),
-                        ApiDocumentUtil.getDocumentResponse(),
-                        requestFields(
-                                fieldWithPath("email").type(JsonFieldType.STRING).description("이메일형식의 로그인아이디"),
-                                fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호"),
-                                fieldWithPath("name").type(JsonFieldType.STRING).description("이름"),
-                                fieldWithPath("birthday").type(JsonFieldType.STRING)
-                                        .attributes(key("format").value("yyyy-MM-dd hh:mm:ss"))
-                                        .description("생일"),
-                                fieldWithPath("city").type(JsonFieldType.STRING).description("거주도시명"),
-                                fieldWithPath("street").type(JsonFieldType.STRING).description("거주도로명"),
-                                fieldWithPath("zipcode").type(JsonFieldType.STRING).description("우편번호"),
-                                fieldWithPath("countryCode").type(JsonFieldType.STRING).description("휴대전화 국가코드"),
-                                fieldWithPath("phoneNumber").type(JsonFieldType.STRING).description("휴대전화번호"),
-                                fieldWithPath("gender").type(JsonFieldType.STRING).description("성별: MALE(남성)/FEMALE(여성)")
-                        ),
-                        responseFields(
-                                fieldWithPath("memberId").type(JsonFieldType.NUMBER).description("아이디"),
-                                fieldWithPath("email").type(JsonFieldType.STRING).description("로그인아이디")
-                        )
-                ));
+            .andDo(document("member-create",
+                ApiDocumentUtil.getDocumentRequest(),
+                ApiDocumentUtil.getDocumentResponse(),
+                requestFields(
+                    fieldWithPath("email").type(JsonFieldType.STRING).description("이메일형식의 로그인아이디"),
+                    fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호"),
+                    fieldWithPath("name").type(JsonFieldType.STRING).description("이름"),
+                    fieldWithPath("birthday").type(JsonFieldType.STRING)
+                        .attributes(key("format").value("yyyy-MM-dd hh:mm:ss"))
+                        .description("생일"),
+                    fieldWithPath("city").type(JsonFieldType.STRING).description("거주도시명"),
+                    fieldWithPath("street").type(JsonFieldType.STRING).description("거주도로명"),
+                    fieldWithPath("zipcode").type(JsonFieldType.STRING).description("우편번호"),
+                    fieldWithPath("countryCode").type(JsonFieldType.STRING).description("휴대전화 국가코드"),
+                    fieldWithPath("phoneNumber").type(JsonFieldType.STRING).description("휴대전화번호"),
+                    fieldWithPath("gender").type(JsonFieldType.STRING).description("성별: MALE(남성)/FEMALE(여성)")
+                ),
+                responseFields(
+                    fieldWithPath("memberId").type(JsonFieldType.NUMBER).description("아이디"),
+                    fieldWithPath("email").type(JsonFieldType.STRING).description("로그인아이디")
+                )
+            ));
     }
 
     @Test
@@ -141,25 +141,25 @@ class MemberControllerTest extends SecurityApiTest {
         DrawTicketListResponse myDrawHistory = new DrawTicketListResponse(drawTicketResponses);
 
         when(customUserDetailService.loadUserByUsername(email))
-                .thenReturn(dummy);
+            .thenReturn(dummy);
         when(memberService.getMyDrawHistory())
-                .thenReturn(myDrawHistory);
+            .thenReturn(myDrawHistory);
 
         ResultActions result = mockMvc.perform(get("/api/v1/members/draw-history")
-                        .headers(httpHeaders)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andDo(print());
+                .headers(httpHeaders)
+                .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andDo(print());
 
         result.andExpect(status().isOk())
-                .andDo(document("member-getDraw-History",
-                        ApiDocumentUtil.getDocumentRequest(),
-                        ApiDocumentUtil.getDocumentResponse(),
-                        responseFields(
-                                fieldWithPath("drawTicketResponses").type(JsonFieldType.ARRAY).description("응모이력"),
-                                fieldWithPath("drawTicketResponses[].drawTicketId").type(JsonFieldType.NUMBER).description("응모이력 아이디")
-                        )
-                ));
+            .andDo(document("member-getDraw-History",
+                ApiDocumentUtil.getDocumentRequest(),
+                ApiDocumentUtil.getDocumentResponse(),
+                responseFields(
+                    fieldWithPath("drawTicketResponses").type(JsonFieldType.ARRAY).description("응모이력"),
+                    fieldWithPath("drawTicketResponses[].drawTicketId").type(JsonFieldType.NUMBER).description("응모이력 아이디")
+                )
+            ));
     }
 
     @Test
@@ -167,11 +167,11 @@ class MemberControllerTest extends SecurityApiTest {
     void validateJwtTokenTest() throws Exception {
         DrawTicketListResponse drawTicketListResponse = new DrawTicketListResponse(List.of());
         when(memberService.getMyDrawHistory())
-                .thenReturn(drawTicketListResponse);
+            .thenReturn(drawTicketListResponse);
 
         mockMvc.perform(get("/api/v1/members/draw-history")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized())
-                .andDo(print());
+                .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isUnauthorized())
+            .andDo(print());
     }
 }

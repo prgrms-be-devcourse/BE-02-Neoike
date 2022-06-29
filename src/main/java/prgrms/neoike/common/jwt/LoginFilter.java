@@ -23,7 +23,6 @@ import java.util.Objects;
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
-
     private final TokenProvider tokenProvider;
 
     public LoginFilter(AuthenticationManagerBuilder authenticationManagerBuilder, TokenProvider tokenProvider) {
@@ -44,10 +43,10 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         }
         log.info("LoginDto {}", Objects.requireNonNull(loginDto).email());
         UsernamePasswordAuthenticationToken authenticationToken
-                = new UsernamePasswordAuthenticationToken(loginDto.email(), loginDto.password());
+            = new UsernamePasswordAuthenticationToken(loginDto.email(), loginDto.password());
 
         Authentication authentication
-                = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+            = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         return authentication;

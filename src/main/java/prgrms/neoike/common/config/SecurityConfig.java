@@ -19,7 +19,7 @@ import prgrms.neoike.common.jwt.TokenProvider;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
-public class SecurityConfig{
+public class SecurityConfig {
 
     private final TokenProvider tokenProvider;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
@@ -34,38 +34,38 @@ public class SecurityConfig{
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web
-                .ignoring()
-                .antMatchers(
-                        "/h2-console/**"
-                );
+            .ignoring()
+            .antMatchers(
+                "/h2-console/**"
+            );
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf().disable()
+            .csrf().disable()
 
-                .exceptionHandling()
-                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-                .accessDeniedHandler(jwtAccessDeniedHandler)
+            .exceptionHandling()
+            .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+            .accessDeniedHandler(jwtAccessDeniedHandler)
 
-                .and()
-                .headers()
-                .frameOptions()
-                .sameOrigin()
+            .and()
+            .headers()
+            .frameOptions()
+            .sameOrigin()
 
-                .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .and()
+            .sessionManagement()
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
-                .and()
-                .authorizeRequests()
-                    .antMatchers("/api/**/members/draw-history").authenticated()
-                .anyRequest()
-                    .permitAll()
+            .and()
+            .authorizeRequests()
+            .antMatchers("/api/**/members/draw-history").authenticated()
+            .anyRequest()
+            .permitAll()
 
-                .and()
-                .apply(new JwtSecurityConfig(tokenProvider, authenticationManagerBuilder));
+            .and()
+            .apply(new JwtSecurityConfig(tokenProvider, authenticationManagerBuilder));
 
         return http.build();
     }

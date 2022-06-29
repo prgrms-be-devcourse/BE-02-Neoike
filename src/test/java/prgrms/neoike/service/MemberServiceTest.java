@@ -64,7 +64,7 @@ class MemberServiceTest {
 
         when(member.getEmail()).thenReturn(new Email("test@gmail.com"));
         given(memberRepository.findOneByEmail(member.getEmail().getAddress()))
-                .willReturn(Optional.of(member));
+            .willReturn(Optional.of(member));
         //when
 
         //then
@@ -91,13 +91,13 @@ class MemberServiceTest {
 
     private MemberDto addTestMemberDto() {
         return MemberDto.builder()
-                .name("testUser")
-                .password("testPassword123!")
-                .phoneNumber("01023451234")
-                .birthday(LocalDate.now())
-                .email("test@gmail.com")
-                .address(new Address("seoul", "samsungro", "12345"))
-                .gender(Gender.FEMALE)
-                .build();
+            .name("testUser")
+            .password("testPassword123!")
+            .phoneNumber("01023451234")
+            .birthday(LocalDate.now())
+            .email("test@gmail.com")
+            .address(new Address("seoul", "samsungro", "12345"))
+            .gender(Gender.FEMALE)
+            .build();
     }
 }

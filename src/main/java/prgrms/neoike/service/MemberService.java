@@ -21,7 +21,6 @@ import static java.text.MessageFormat.format;
 public class MemberService {
 
     private final MemberRepository memberRepository;
-
     private final DrawTicketService drawTicketService;
 
     @Transactional
@@ -37,7 +36,7 @@ public class MemberService {
     public DrawTicketListResponse getMyDrawHistory() {
         Optional<String> username = SecurityUtil.getCurrentUserName();
         Member member = username.flatMap(memberRepository::findOneByEmail)
-                .orElseThrow(() -> new EntityNotFoundException(format("존재하지 않는 회원입니다. email : {0}", username)));
+            .orElseThrow(() -> new EntityNotFoundException(format("존재하지 않는 회원입니다. email : {0}", username)));
 
         return drawTicketService.findByMember(member.getId());
     }

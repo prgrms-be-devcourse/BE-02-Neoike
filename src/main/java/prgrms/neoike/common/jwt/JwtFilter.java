@@ -15,7 +15,6 @@ import java.io.IOException;
 public class JwtFilter extends GenericFilterBean {
 
     public static final String AUTHORIZATION_TYPE = "Bearer ";
-
     private TokenProvider tokenProvider;
 
     public JwtFilter(TokenProvider tokenProvider) {
@@ -44,6 +43,7 @@ public class JwtFilter extends GenericFilterBean {
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(AUTHORIZATION_TYPE)) {
             return bearerToken.substring(AUTHORIZATION_TYPE.length());
         }
+
         return null;
     }
 }

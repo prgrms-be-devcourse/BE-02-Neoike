@@ -11,6 +11,7 @@ import java.io.IOException;
 
 @Component
 public class JwtAccessDeniedHandler implements AccessDeniedHandler {
+
     @Override
     public void handle(HttpServletRequest request,
                        HttpServletResponse response,

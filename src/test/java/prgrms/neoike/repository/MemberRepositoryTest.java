@@ -23,14 +23,14 @@ class MemberRepositoryTest {
     @DisplayName("유효한 email을 통해 member를 조회할 수 있다.")
     void findOneByEmailTest() {
         Member member = Member.builder()
-                .email(new Email("test@gmail.com"))
-                .name("testMember")
-                .phoneNumber(new PhoneNumber(CountryType.KOR, "01012341234"))
-                .gender(Gender.FEMALE)
-                .address(new Address("city", "street", "12345"))
-                .password(new Password("123abcA!!"))
-                .birthDay(LocalDate.now())
-                .build();
+            .email(new Email("test@gmail.com"))
+            .name("testMember")
+            .phoneNumber(new PhoneNumber(CountryType.KOR, "01012341234"))
+            .gender(Gender.FEMALE)
+            .address(new Address("city", "street", "12345"))
+            .password(new Password("123abcA!!"))
+            .birthDay(LocalDate.now())
+            .build();
         Member savedMember = memberRepository.save(member);
 
         Optional<Member> oneByEmail = memberRepository.findOneByEmail(savedMember.getEmail().getAddress());

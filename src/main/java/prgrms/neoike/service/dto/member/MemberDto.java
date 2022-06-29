@@ -9,13 +9,13 @@ import java.time.LocalDate;
 
 @Builder
 public record MemberDto(
-        String email,
-        String password,
-        String name,
-        LocalDate birthday,
-        Address address,
-        CountryType countryCode,
-        String phoneNumber,
-        Gender gender
+    String email,
+    String password,
+    String name,
+    LocalDate birthday,
+    Address address,
+    CountryType countryCode,
+    String phoneNumber,
+    Gender gender
 ) {
 }

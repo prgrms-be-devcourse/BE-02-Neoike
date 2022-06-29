@@ -14,19 +14,21 @@ import javax.validation.Valid;
 import java.net.URI;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api/v1/members")
+@RequiredArgsConstructor
 public class MemberController {
 
     private final MemberService memberService;
 
     @PostMapping
-    public ResponseEntity<MemberResponse> joinMember(@Valid @RequestBody MemberSaveRequest memberSaveRequest) {
+    public ResponseEntity<MemberResponse> joinMember(
+        @Valid @RequestBody MemberSaveRequest memberSaveRequest
+    ) {
         MemberDto memberDto = MemberMapper.toMemberDto(memberSaveRequest);
         MemberResponse joinMemberResponse = memberService.join(memberDto);
 
         return ResponseEntity.created(
-                URI.create("/api/v1/loginHome")
+            URI.create("/api/v1/loginHome")
         ).body(joinMemberResponse);
     }
 
@@ -35,7 +37,7 @@ public class MemberController {
         DrawTicketListResponse myDrawHistory = memberService.getMyDrawHistory();
 
         return ResponseEntity
-                .ok()
-                .body(myDrawHistory);
+            .ok()
+            .body(myDrawHistory);
     }
 }

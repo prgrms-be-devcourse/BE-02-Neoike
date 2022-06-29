@@ -9,35 +9,35 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 public record MemberSaveRequest(
-        @NotBlank
-        String email,
+    @NotBlank
+    String email,
 
-        @NotBlank
-        String password,
+    @NotBlank
+    String password,
 
-        @NotBlank
-        String name,
+    @NotBlank
+    String name,
 
-        @NotNull
-        @JsonFormat(shape =JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-        LocalDate birthday,
+    @NotNull
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    LocalDate birthday,
 
-        @NotBlank
-        String city,
+    @NotBlank
+    String city,
 
-        @NotBlank
-        String street,
+    @NotBlank
+    String street,
 
-        @NotBlank
-        String zipcode,
+    @NotBlank
+    String zipcode,
 
-        @NotNull
-        CountryType countryCode,
+    @NotNull
+    CountryType countryCode,
 
-        @NotBlank
-        String phoneNumber,
+    @NotBlank
+    String phoneNumber,
 
-        @NotNull
-        Gender gender
+    @NotNull
+    Gender gender
 ) {
 }
