@@ -13,7 +13,7 @@ class RandomTicketIdCreatorTest {
 
     @Test
     @DisplayName("size =< max 경우 random 값을 만든다")
-    void makeRandomNumber () {
+    void makeRandomNumber() {
         // given
         int size = 5;
         int max1 = 5;
@@ -30,13 +30,13 @@ class RandomTicketIdCreatorTest {
 
     @Test
     @DisplayName("size > max 경우 예외를 발생시킨다.")
-    void sizeIsBiggerThanMax () {
+    void sizeIsBiggerThanMax() {
         // given
         int size = 10;
         int max = 5;
 
         // when // then
-        assertThatThrownBy(() ->  RandomTicketIdCreator.noDuplicationIdSet(size, max))
-                .isInstanceOf(RuntimeException.class);
+        assertThatThrownBy(() -> RandomTicketIdCreator.noDuplicationIdSet(size, max))
+            .isInstanceOf(RuntimeException.class);
     }
 }

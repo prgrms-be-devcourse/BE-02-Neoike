@@ -20,6 +20,7 @@ import prgrms.neoike.domain.sneaker.Sneaker;
 @Table(name = "draw")
 @NoArgsConstructor(access = PROTECTED)
 public class Draw extends BaseTimeEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -47,12 +48,12 @@ public class Draw extends BaseTimeEntity {
 
     @Builder
     public Draw(
-            Sneaker sneaker,
-            LocalDateTime startDate,
-            LocalDateTime endDate,
-            LocalDateTime winningDate,
-            int quantity)
-    {
+        Sneaker sneaker,
+        LocalDateTime startDate,
+        LocalDateTime endDate,
+        LocalDateTime winningDate,
+        int quantity
+    ) {
         validateQuantity(quantity);
         validateTimeOrder(startDate, endDate, winningDate);
         this.sneaker = sneaker;
@@ -68,15 +69,23 @@ public class Draw extends BaseTimeEntity {
         }
     }
 
-    private void validateTimeOrder(LocalDateTime startDate, LocalDateTime endDate, LocalDateTime winningDate) {
+    private void validateTimeOrder(
+        LocalDateTime startDate,
+        LocalDateTime endDate,
+        LocalDateTime winningDate
+    ) {
         boolean isStartBeforeEnd = startDate.isBefore(endDate);
         boolean isEndBeforeWinning = endDate.isBefore(winningDate);
 
         if (!(isStartBeforeEnd)) {
-            throw new IllegalArgumentException(format("입력된 날짜의 순서가 맞지 않습니다. (startDate : {0} , endDate : {1})", startDate, endDate));
+            throw new IllegalArgumentException(
+                format("입력된 날짜의 순서가 맞지 않습니다. (startDate : {0} , endDate : {1})",
+                    startDate, endDate));
         }
         if (!isEndBeforeWinning) {
-            throw new IllegalArgumentException(format("입력된 날짜의 순서가 맞지 않습니다. (endDate : {0} , winningDate : {1})", endDate, winningDate));
+            throw new IllegalArgumentException(
+                format("입력된 날짜의 순서가 맞지 않습니다. (endDate : {0} , winningDate : {1})",
+                    endDate, winningDate));
         }
     }
 
@@ -85,6 +94,7 @@ public class Draw extends BaseTimeEntity {
             quantity--;
             return true;
         }
-        throw new IllegalArgumentException(format("draw 의 수량이 0 이어서 더이상 ticket 발행이 안됩니다. drawId : {0}", id));
+        throw new IllegalArgumentException(
+            format("draw 의 수량이 0 이어서 더이상 ticket 발행이 안됩니다. drawId : {0}", id));
     }
 }

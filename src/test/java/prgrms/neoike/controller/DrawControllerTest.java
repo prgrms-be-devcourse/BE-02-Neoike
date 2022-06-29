@@ -27,15 +27,15 @@ import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.test.web.servlet.ResultActions;
 import prgrms.neoike.config.SecurityApiTest;
 import prgrms.neoike.controller.dto.drawdto.DrawSaveRequest;
-import prgrms.neoike.controller.dto.drawdto.ItemSizeAndQuantity;
+import prgrms.neoike.controller.dto.drawdto.StockInfo;
 import prgrms.neoike.controller.mapper.DrawMapper;
 import prgrms.neoike.domain.draw.DrawStatus;
 import prgrms.neoike.service.DrawService;
 import prgrms.neoike.service.DrawTicketService;
 import prgrms.neoike.service.dto.drawdto.DrawDto;
 import prgrms.neoike.service.dto.drawdto.DrawResponse;
-import prgrms.neoike.service.dto.drawdto.ServiceDrawSaveDto;
-import prgrms.neoike.service.dto.drawdto.ServiceItemDto;
+import prgrms.neoike.service.dto.drawdto.DrawSaveDto;
+import prgrms.neoike.service.dto.drawdto.StockInfoDto;
 import prgrms.neoike.service.dto.drawticketdto.DrawTicketResponse;
 import prgrms.neoike.service.dto.drawticketdto.DrawTicketsResponse;
 
@@ -59,58 +59,62 @@ class DrawControllerTest extends SecurityApiTest {
         LocalDateTime middleDate = LocalDateTime.of(2025, 06, 13, 12, 00, 00);
         LocalDateTime lateDate = LocalDateTime.of(2025, 06, 15, 12, 00, 00);
 
-        ItemSizeAndQuantity sneakerItems = new ItemSizeAndQuantity(275, 10);
-        ServiceItemDto sneakerItemsInService = new ServiceItemDto(275, 10);
+        StockInfo sneakerItems = new StockInfo(275, 10);
+        StockInfoDto sneakerItemsInService = new StockInfoDto(275,
+            10);
 
         DrawSaveRequest drawSaveRequest = DrawSaveRequest.builder()
-                .sneakerId(1L)
-                .startDate(fastDate)
-                .endDate(middleDate)
-                .winningDate(lateDate)
-                .sneakerItems(new ArrayList<>() {{
-                    add(sneakerItems);
-                }})
-                .quantity(50)
-                .build();
+            .sneakerId(1L)
+            .startDate(fastDate)
+            .endDate(middleDate)
+            .winningDate(lateDate)
+            .sneakerStocks(new ArrayList<>() {{
+                add(sneakerItems);
+            }})
+            .quantity(50)
+            .build();
 
-        ServiceDrawSaveDto serviceDrawSaveDto = ServiceDrawSaveDto.builder()
-                .sneakerId(2L)
-                .startDate(fastDate)
-                .endDate(middleDate)
-                .winningDate(lateDate)
-                .sneakerItems(new ArrayList<>() {{
-                    add(sneakerItemsInService);
-                }})
-                .quantity(50)
-                .build();
+        DrawSaveDto drawSaveDto = DrawSaveDto.builder()
+            .sneakerId(2L)
+            .startDate(fastDate)
+            .endDate(middleDate)
+            .winningDate(lateDate)
+            .sneakerStocks(new ArrayList<>() {{
+                add(sneakerItemsInService);
+            }})
+            .quantity(50)
+            .build();
 
         DrawResponse drawResponse = new DrawResponse(3L);
 
-        given(drawMapper.toDrawSaveDto(any(DrawSaveRequest.class))).willReturn(serviceDrawSaveDto);
-        given(drawService.save(any(ServiceDrawSaveDto.class))).willReturn(drawResponse);
+        given(drawMapper.toDrawSaveDto(any(DrawSaveRequest.class))).willReturn(drawSaveDto);
+        given(drawService.save(any(DrawSaveDto.class))).willReturn(drawResponse);
 
-        // when // then
-        mockMvc.perform(post("/api/v1/draws")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(drawSaveRequest))
-                )
-                .andExpect(status().isCreated())
-                .andDo(print())
-                .andDo(document("save-draw",
-                        requestFields(
-                                fieldWithPath("sneakerId").type(NUMBER).description("sneaker id"),
-                                fieldWithPath("startDate").type(STRING).description("응모 시작 날짜"),
-                                fieldWithPath("endDate").type(STRING).description("응모 종료 날짜"),
-                                fieldWithPath("winningDate").type(STRING).description("추첨 날짜"),
-                                fieldWithPath("quantity").type(NUMBER).description("응모 개수"),
-                                fieldWithPath("winningDate").type(STRING).description("추첨 날짜"),
-                                fieldWithPath("sneakerItems").type(ARRAY).description("응모 상품들"),
-                                fieldWithPath("sneakerItems[].size").type(NUMBER).description("응모 상품 사이즈"),
-                                fieldWithPath("sneakerItems[].quantity").type(NUMBER).description("응모 상품 응모 개수")
-                        ),
-                        responseFields(
-                                fieldWithPath("drawId").type(NUMBER).description("생성된 응모 id")
-                        )));
+        // when
+        ResultActions resultActions = mockMvc.perform(
+            post("/api/v1/draws").contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(drawSaveRequest)));
+
+        // then
+        resultActions
+            .andExpect(status().isCreated())
+            .andDo(print())
+            .andDo(document("save-draw",
+                requestFields(
+                    fieldWithPath("sneakerId").type(NUMBER).description("sneaker id"),
+                    fieldWithPath("startDate").type(STRING).description("응모 시작 날짜"),
+                    fieldWithPath("endDate").type(STRING).description("응모 종료 날짜"),
+                    fieldWithPath("winningDate").type(STRING).description("추첨 날짜"),
+                    fieldWithPath("quantity").type(NUMBER).description("응모 개수"),
+                    fieldWithPath("winningDate").type(STRING).description("추첨 날짜"),
+                    fieldWithPath("sneakerStocks").type(ARRAY).description("응모 상품들"),
+                    fieldWithPath("sneakerStocks[].size").type(NUMBER).description("응모 상품 사이즈"),
+                    fieldWithPath("sneakerStocks[].quantity").type(NUMBER)
+                        .description("응모 상품 응모 개수")
+                ),
+                responseFields(
+                    fieldWithPath("drawId").type(NUMBER).description("생성된 응모 id")
+                )));
     }
 
     @Test
@@ -118,36 +122,41 @@ class DrawControllerTest extends SecurityApiTest {
     void winDrawIdTest() throws Exception {
         // given
         DrawTicketsResponse drawTicketResponses = new DrawTicketsResponse(
-                Arrays.asList(
-                        DrawTicketResponse.builder()
-                                .drawTicketId(1L)
-                                .drawStatus(DrawStatus.WINNING)
-                                .sneakerName("air jordan")
-                                .price(27500)
-                                .code("AB1234")
-                                .size(275)
-                                .build()
-                )
+            Arrays.asList(
+                DrawTicketResponse.builder()
+                    .drawTicketId(1L)
+                    .drawStatus(DrawStatus.WINNING)
+                    .sneakerName("air jordan")
+                    .price(27500)
+                    .code("AB1234")
+                    .size(275)
+                    .build()
+            )
         );
 
         given(drawService.drawWinner(1L)).willReturn(drawTicketResponses);
 
-        // when // then
-        mockMvc.perform(post("/api/v1/draws/win")
-                        .param("drawId", String.valueOf(1L))
-                )
-                .andExpect(status().isOk())
-                .andDo(print())
-                .andDo(document("win-draw",
-                        responseFields(
-                                fieldWithPath("drawTicketResponses").type(ARRAY).description("응모권 배열"),
-                                fieldWithPath("drawTicketResponses[].drawTicketId").type(NUMBER).description("응모권 아이디"),
-                                fieldWithPath("drawTicketResponses[].drawStatus").type(STRING).description("응모권 상태"),
-                                fieldWithPath("drawTicketResponses[].sneakerName").type(STRING).description("신발 이름"),
-                                fieldWithPath("drawTicketResponses[].price").type(NUMBER).description("가격"),
-                                fieldWithPath("drawTicketResponses[].code").type(STRING).description("코드"),
-                                fieldWithPath("drawTicketResponses[].size").type(NUMBER).description("사이즈")
-                        )));
+        // when
+        ResultActions resultActions = mockMvc.perform(
+            post("/api/v1/draws/win").param("drawId", String.valueOf(1L)));
+
+        // then
+        resultActions
+            .andExpect(status().isOk())
+            .andDo(print())
+            .andDo(document("win-draw",
+                responseFields(
+                    fieldWithPath("drawTicketResponses").type(ARRAY).description("응모권 배열"),
+                    fieldWithPath("drawTicketResponses[].drawTicketId").type(NUMBER)
+                        .description("응모권 아이디"),
+                    fieldWithPath("drawTicketResponses[].drawStatus").type(STRING)
+                        .description("응모권 상태"),
+                    fieldWithPath("drawTicketResponses[].sneakerName").type(STRING)
+                        .description("신발 이름"),
+                    fieldWithPath("drawTicketResponses[].price").type(NUMBER).description("가격"),
+                    fieldWithPath("drawTicketResponses[].code").type(STRING).description("코드"),
+                    fieldWithPath("drawTicketResponses[].size").type(NUMBER).description("사이즈")
+                )));
 
     }
 
@@ -183,6 +192,7 @@ class DrawControllerTest extends SecurityApiTest {
                 .winningDate(LocalDateTime.of(2025, 06, 15, 12, 00, 00))
                 .quantity(50)
                 .build(),
+
             DrawDto.builder()
                 .drawId(2L)
                 .sneakerId(2L)

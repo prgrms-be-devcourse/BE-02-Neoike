@@ -26,6 +26,7 @@ import static java.text.MessageFormat.format;
 @Service
 @RequiredArgsConstructor
 public class DrawTicketService {
+
     private final DrawConverter drawConverter;
     private final DrawTicketRepository drawTicketRepository;
     private final DrawRepository drawRepository;
@@ -35,10 +36,12 @@ public class DrawTicketService {
     @Transactional
     public DrawTicketResponse save(Long memberId, Long drawId, int size) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new EntityNotFoundException(format("Member 엔티티를 id 로 찾을 수 없습니다. memberId : {0}", drawId)));
+            .orElseThrow(() -> new EntityNotFoundException(
+                format("Member 엔티티를 id 로 찾을 수 없습니다. memberId : {0}", drawId)));
 
         Draw draw = drawRepository.findByIdWithSneakerItem(drawId)
-                .orElseThrow(() -> new EntityNotFoundException(format("Draw 엔티티를 id 로 찾을 수 없습니다. drawId : {0}", drawId)));
+            .orElseThrow(() -> new EntityNotFoundException(
+                format("Draw 엔티티를 id 로 찾을 수 없습니다. drawId : {0}", drawId)));
 
         Sneaker sneaker = draw.getSneaker();
 
@@ -47,47 +50,48 @@ public class DrawTicketService {
         draw.reduceDrawQuantity(); // 응모권 재고가 0 이상인지 체크 + 응모권 차감
 
         DrawTicket save = drawTicketRepository.save(
-                DrawTicket.builder()
-                        .member(member)
-                        .draw(draw)
-                        .sneakerName(sneaker.getName())
-                        .price(sneaker.getPrice())
-                        .code(sneaker.getCode())
-                        .size(size)
-                        .build()
+            DrawTicket.builder()
+                .member(member)
+                .draw(draw)
+                .sneakerName(sneaker.getName())
+                .price(sneaker.getPrice())
+                .code(sneaker.getCode())
+                .size(size)
+                .build()
         );
 
         return drawConverter.toDrawTicketResponse(save);
     }
 
     private void validateSizeInput(Draw draw, int size) {
-        if(!sneakerItemRepository.findByDraw(draw).stream()
-                .anyMatch(sneakerItem -> sneakerItem.getSize() == size)
-        ){
+        if (!sneakerItemRepository.findByDraw(draw).stream()
+            .anyMatch(sneakerItem -> sneakerItem.getSize() == size)
+        ) {
             throw new IllegalArgumentException("입력 사이즈에 해당하는 신발이 존재하지 않습니다.");
         }
     }
 
     private void validateUniqueTicket(Member member, Draw draw) {
-        Optional<DrawTicket> drawTicketOptional = drawTicketRepository.findByMemberAndDraw(member, draw);
+        Optional<DrawTicket> drawTicketOptional = drawTicketRepository.findByMemberAndDraw(member,
+            draw);
         drawTicketOptional.ifPresent(d -> {
-                    throw new IllegalArgumentException("티켓응모를 이미 진행하였습니다.");
-                }
+                throw new IllegalArgumentException("티켓응모를 이미 진행하였습니다.");
+            }
         );
     }
 
     @Transactional(readOnly = true)
     public DrawTicketsResponse findByMemberId(Long memberId) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        format("Member 엔티티를 id 로 찾을 수 없습니다. memberId : {0}", memberId)));
+            .orElseThrow(() -> new EntityNotFoundException(
+                format("Member 엔티티를 id 로 찾을 수 없습니다. memberId : {0}", memberId)));
 
         List<DrawTicket> drawTickets = drawTicketRepository.findByMember(member);
 
         return new DrawTicketsResponse(
-                drawTickets.stream().map((drawTicket) ->
-                        drawConverter.toDrawTicketResponse(drawTicket)
-                ).collect(Collectors.toList())
+            drawTickets.stream().map((drawTicket) ->
+                drawConverter.toDrawTicketResponse(drawTicket)
+            ).collect(Collectors.toList())
         );
     }
 }

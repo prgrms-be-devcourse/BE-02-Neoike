@@ -14,11 +14,11 @@ public interface DrawRepository extends JpaRepository<Draw, Long> {
 
     @Query(
         """
-            select distinct d from Draw d
-            join fetch d.sneaker s
-            left join fetch s.sneakerImages
-            where d.winningDate > :now
-        """
+                select distinct d from Draw d
+                join fetch d.sneaker s
+                left join fetch s.sneakerImages
+                where d.winningDate > :now
+            """
     )
     List<Draw> findAllByWinningDateAfter(LocalDateTime now);
 }

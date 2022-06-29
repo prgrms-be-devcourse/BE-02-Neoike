@@ -29,7 +29,7 @@ import prgrms.neoike.repository.SneakerStockRepository;
 import prgrms.neoike.service.converter.DrawConverter;
 import prgrms.neoike.service.dto.drawdto.DrawDto;
 import prgrms.neoike.service.dto.drawdto.DrawResponse;
-import prgrms.neoike.service.dto.drawdto.ServiceDrawSaveDto;
+import prgrms.neoike.service.dto.drawdto.DrawSaveDto;
 import prgrms.neoike.service.dto.drawticketdto.DrawTicketResponse;
 import prgrms.neoike.service.dto.drawticketdto.DrawTicketsResponse;
 
@@ -45,7 +45,7 @@ public class DrawService {
 
     @Transactional
     @CacheEvict(value = "draws", allEntries = true)
-    public DrawResponse save(ServiceDrawSaveDto drawSaveRequest) {
+    public DrawResponse save(DrawSaveDto drawSaveRequest) {
         Long sneakerId = drawSaveRequest.sneakerId();
         Sneaker sneaker = sneakerRepository.findById(sneakerId)
                 .orElseThrow(() -> new EntityNotFoundException(format("Sneaker 엔티티를 id 로 찾을 수 없습니다. drawId : {0}", sneakerId)));
@@ -59,8 +59,8 @@ public class DrawService {
         return drawConverter.toDrawResponseDto(draw.getId());
     }
 
-    private void saveSneakerItem(ServiceDrawSaveDto drawSaveRequest, Long sneakerId, Sneaker sneaker, Draw draw) {
-        drawSaveRequest.sneakerItems().forEach(
+    private void saveSneakerItem(DrawSaveDto drawSaveRequest, Long sneakerId, Sneaker sneaker, Draw draw) {
+        drawSaveRequest.sneakerStocks().forEach(
                 (sneakerItem) -> {
                     int size = sneakerItem.size();
                     SneakerStock sneakerStock = sneakerStockRepository.findBySneakerAndSize(sneaker, size)
@@ -87,7 +87,8 @@ public class DrawService {
     @Transactional
     public DrawTicketsResponse drawWinner(Long drawId) {
         Draw draw = drawRepository.findById(drawId)
-                .orElseThrow(() -> new EntityNotFoundException(format("Draw 엔티티를 id 로 찾을 수 없습니다. drawId : {0}", drawId)));
+                .orElseThrow(() -> new EntityNotFoundException(
+                    format("Draw 엔티티를 id 로 찾을 수 없습니다. drawId : {0}", drawId)));
 
         List<SneakerItem> sneakerItems = sneakerItemRepository.findByDraw(draw);
         List<DrawTicket> drawTickets = drawTicketRepository.findByDraw(draw);
@@ -114,9 +115,10 @@ public class DrawService {
         return new DrawTicketsResponse(successDrawTickets);
     }
 
-    private List<DrawTicketResponse> drawWinnerBySize(List<DrawTicketResponse> successDrawTickets,
-                                                      SneakerItem sneakerItem,
-                                                      List<DrawTicket> ticketsBySize
+    private List<DrawTicketResponse> drawWinnerBySize(
+        List<DrawTicketResponse> successDrawTickets,
+        SneakerItem sneakerItem,
+        List<DrawTicket> ticketsBySize
     ) {
         int ticketQuantity = ticketsBySize.size();
 
@@ -128,10 +130,13 @@ public class DrawService {
                     }
             );
 
-            sneakerItem.reduceQuantity(ticketQuantity);// sneakerItem 의 재고를 감소시키고
+            // sneakerItem 의 재고를 감소시키고
+            sneakerItem.reduceQuantity(ticketQuantity);
             SneakerStock sneakerStock = sneakerItem.getSneakerStock();
-            sneakerStock.addQuantity(sneakerItem.getQuantity()); // 감소하고 남은 개수는 다시 SneakerStock 재고에 추가한다.
-            sneakerItem.changeQuantityZero(); // 재고 추가 후 최종 개수는 0이다.
+            // 감소하고 남은 개수는 다시 SneakerStock 재고에 추가한다.
+            sneakerStock.addQuantity(sneakerItem.getQuantity());
+            // 재고 추가 후 최종 개수는 0이다.
+            sneakerItem.changeQuantityZero();
 
             return successDrawTickets;
         }
@@ -145,7 +150,9 @@ public class DrawService {
                     successDrawTickets.add(drawConverter.toDrawTicketResponse(winTicket));
                 }
         );
-        sneakerItem.changeQuantityZero(); // sneakerItem 의 재고를 0 으로 바꾼다.
+        // sneakerItem 의 재고를 0 으로 바꾼다.
+        sneakerItem.changeQuantityZero();
+
         return successDrawTickets;
     }
 

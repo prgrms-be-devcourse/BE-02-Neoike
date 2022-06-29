@@ -9,7 +9,7 @@ import prgrms.neoike.controller.mapper.DrawMapper;
 import prgrms.neoike.service.DrawService;
 import prgrms.neoike.service.dto.drawdto.DrawDto;
 import prgrms.neoike.service.dto.drawdto.DrawResponse;
-import prgrms.neoike.service.dto.drawdto.ServiceDrawSaveDto;
+import prgrms.neoike.service.dto.drawdto.DrawSaveDto;
 import prgrms.neoike.service.dto.drawticketdto.DrawTicketsResponse;
 
 import javax.validation.Valid;
@@ -21,31 +21,32 @@ import static java.text.MessageFormat.format;
 @RequestMapping("/api/v1/draws")
 @RequiredArgsConstructor
 public class DrawController {
+
     private final DrawService drawService;
     private final DrawMapper drawMapper;
 
     @PostMapping
     public ResponseEntity<DrawResponse> saveDraw(
-            @Valid @RequestBody DrawSaveRequest saveRequest
+        @Valid @RequestBody DrawSaveRequest saveRequest
     ) {
-        ServiceDrawSaveDto serviceDrawSaveDto = drawMapper.toDrawSaveDto(saveRequest);
-        DrawResponse drawResponse = drawService.save(serviceDrawSaveDto);
+        DrawSaveDto drawSaveDto = drawMapper.toDrawSaveDto(saveRequest);
+        DrawResponse drawResponse = drawService.save(drawSaveDto);
 
         URI location = URI.create(format("/api/v1/draws/{0}", drawResponse.drawId()));
         return ResponseEntity
-                .created(location)
-                .body(drawResponse);
+            .created(location)
+            .body(drawResponse);
     }
 
     @PostMapping("/win")
     public ResponseEntity<DrawTicketsResponse> drawWinner(
-            @RequestParam Long drawId
+        @RequestParam Long drawId
     ) {
         DrawTicketsResponse winningTicketsResponse = drawService.drawWinner(drawId);
 
         return ResponseEntity
-                .ok()
-                .body(winningTicketsResponse);
+            .ok()
+            .body(winningTicketsResponse);
     }
 
     @GetMapping
