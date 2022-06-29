@@ -31,6 +31,7 @@ import prgrms.neoike.controller.dto.drawdto.StockInfo;
 import prgrms.neoike.domain.draw.DrawStatus;
 import prgrms.neoike.service.DrawService;
 import prgrms.neoike.service.DrawTicketService;
+import prgrms.neoike.service.DrawWinnnerService;
 import prgrms.neoike.service.dto.drawdto.DrawDto;
 import prgrms.neoike.service.dto.drawdto.DrawResponse;
 import prgrms.neoike.service.dto.drawdto.DrawSaveDto;
@@ -43,6 +44,9 @@ class DrawControllerTest extends SecurityApiTest {
 
     @MockBean
     DrawService drawService;
+
+    @MockBean
+    DrawWinnnerService drawWinnnerService;
 
     @MockBean
     DrawTicketService drawTicketService;
@@ -129,7 +133,7 @@ class DrawControllerTest extends SecurityApiTest {
             )
         );
 
-        given(drawService.drawWinner(1L)).willReturn(drawTicketResponses);
+        given(drawWinnnerService.drawWinner(1L)).willReturn(drawTicketResponses);
 
         // when
         ResultActions resultActions = mockMvc.perform(

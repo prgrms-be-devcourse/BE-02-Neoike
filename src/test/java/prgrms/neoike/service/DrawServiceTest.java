@@ -118,7 +118,7 @@ class DrawServiceTest {
 
     @Test
     @DisplayName("저장된 stock 의 사이즈와 입력 사이즈가 달라 Draw 엔티티를 저장할때 오류 발생")
-    void failSaveDrawTest() {
+    void failSaveDrawTest2() {
         // given
         Sneaker sneaker = sneakerRepository.save(validSneaker());
         sneakerStockRepository.save(validSneakerStock(275, 100, sneaker));
@@ -156,8 +156,8 @@ class DrawServiceTest {
                 .build()
         ))
             .hasMessageContaining(
-                format("입력된 날짜의 순서가 맞지 않습니다. (startDate : {0} , endDate : {1})", endDate,
-                    startDate))
+                format("입력된 날짜의 순서가 맞지 않습니다. (startDate : {0} , endDate : {1})"
+                    , endDate, startDate))
             .isInstanceOf(IllegalArgumentException.class);
 
         assertThatThrownBy(() -> drawService.save(
@@ -170,47 +170,9 @@ class DrawServiceTest {
                 .build()
         ))
             .hasMessageContaining(
-                format("입력된 날짜의 순서가 맞지 않습니다. (endDate : {0} , winningDate : {1})", winningDate,
-                    endDate))
+                format("입력된 날짜의 순서가 맞지 않습니다. (endDate : {0} , winningDate : {1})"
+                    , winningDate, endDate))
             .isInstanceOf(IllegalArgumentException.class);
-    }
-
-
-    @Test
-    @DisplayName("추첨을 진행한다")
-    void drawWinTest() {
-        // given
-        Sneaker sneaker = sneakerRepository.save(validSneaker());
-        sneakerStockRepository.save(validSneakerStock(275, 5, sneaker));
-
-        Map<Integer, Integer> sizeToQuantity = new HashMap<>() {{
-            put(275, 5);
-        }};
-
-        DrawSaveDto drawSaveDto = validDrawSaveDto(sneaker.getId(), 5, sizeToQuantity);
-        DrawResponse drawResponse = drawService.save(drawSaveDto);
-
-        List<Member> members = Stream.generate(() -> memberRepository.save(validMember()))
-            .limit(5)
-            .toList();
-
-        members.stream().forEach(
-            (member) -> drawTicketService.save(member.getId(), drawResponse.drawId(), 275)
-        );
-
-        // when
-        drawService.drawWinner(drawResponse.drawId());
-
-        // then
-        System.out.println(
-            drawTicketRepository.findByMember(members.get(0)).get(0).getDrawStatus());
-        long count = members.stream().map(
-                (member) -> drawTicketRepository.findByMember(member).get(0).getDrawStatus()
-            )
-            .filter((status) -> status == DrawStatus.WINNING)
-            .count();
-
-        assertThat(count).isEqualTo(5);
     }
 
     @Test
@@ -288,18 +250,6 @@ class DrawServiceTest {
             .winningDate(winningDate)
             .sneakerStocks(items)
             .quantity(quantity)
-            .build();
-    }
-
-    private Member validMember() {
-        return Member.builder()
-            .name("이용훈")
-            .password(new Password("123abcAB!!"))
-            .phoneNumber(new PhoneNumber(CountryType.KOR, "01012341566"))
-            .address(new Address("도시", "거리", "000222"))
-            .birthDay(LocalDateTime.now())
-            .email(new Email("test@test.com"))
-            .gender(Gender.MALE)
             .build();
     }
 }

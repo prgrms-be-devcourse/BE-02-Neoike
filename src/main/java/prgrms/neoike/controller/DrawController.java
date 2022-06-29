@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import prgrms.neoike.controller.dto.drawdto.DrawSaveRequest;
 import prgrms.neoike.controller.mapper.DrawMapper;
 import prgrms.neoike.service.DrawService;
+import prgrms.neoike.service.DrawWinnnerService;
 import prgrms.neoike.service.dto.drawdto.DrawDto;
 import prgrms.neoike.service.dto.drawdto.DrawResponse;
 import prgrms.neoike.service.dto.drawdto.DrawSaveDto;
@@ -23,6 +24,7 @@ import static java.text.MessageFormat.format;
 public class DrawController {
 
     private final DrawService drawService;
+    private final DrawWinnnerService drawWinnnerService;
 
     @PostMapping
     public ResponseEntity<DrawResponse> saveDraw(
@@ -41,7 +43,7 @@ public class DrawController {
     public ResponseEntity<DrawTicketsResponse> drawWinner(
         @RequestParam Long drawId
     ) {
-        DrawTicketsResponse winningTicketsResponse = drawService.drawWinner(drawId);
+        DrawTicketsResponse winningTicketsResponse = drawWinnnerService.drawWinner(drawId);
 
         return ResponseEntity
             .ok()
