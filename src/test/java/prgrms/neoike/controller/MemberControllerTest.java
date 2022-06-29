@@ -17,7 +17,6 @@ import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequ
 import org.springframework.test.web.servlet.ResultActions;
 import prgrms.neoike.common.jwt.JwtFilter;
 import prgrms.neoike.common.jwt.TokenProvider;
-import prgrms.neoike.config.ApiDocumentUtil;
 import prgrms.neoike.config.SecurityApiTest;
 import prgrms.neoike.controller.dto.member.MemberSaveRequest;
 import prgrms.neoike.domain.draw.DrawStatus;
@@ -60,7 +59,7 @@ class MemberControllerTest extends SecurityApiTest {
     @Test
     @WithMockUser
     @DisplayName("멤버 회원가입 요청을 테스트한다")
-    void joinMemberTest() throws Exception {
+    void postMember() throws Exception {
 
         String content = objectMapper.writeValueAsString(
             new MemberSaveRequest(
@@ -89,9 +88,7 @@ class MemberControllerTest extends SecurityApiTest {
             .andDo(print());
 
         result.andExpect(status().isCreated())
-            .andDo(document("member-create",
-                ApiDocumentUtil.getDocumentRequest(),
-                ApiDocumentUtil.getDocumentResponse(),
+            .andDo(document("{method-name}",
                 requestFields(
                     fieldWithPath("email").type(JsonFieldType.STRING).description("이메일형식의 로그인아이디"),
                     fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호"),
@@ -115,7 +112,7 @@ class MemberControllerTest extends SecurityApiTest {
 
     @Test
     @DisplayName("인증(로그인)이 유효하면 응모정보를 가져온다")
-    void getMyDrawHistoryTest() throws Exception {
+    void getDrawHistory() throws Exception {
         String email = "test@gmail.com";
         String password = "1234!abcD";
         UserDetails dummy = new User(email, password, List.of());
@@ -150,12 +147,15 @@ class MemberControllerTest extends SecurityApiTest {
             .andDo(print());
 
         result.andExpect(status().isOk())
-            .andDo(document("member-getDraw-History",
-                ApiDocumentUtil.getDocumentRequest(),
-                ApiDocumentUtil.getDocumentResponse(),
+            .andDo(document("{method-name}",
                 responseFields(
-                    fieldWithPath("drawTicketResponses").type(JsonFieldType.ARRAY).description("응모이력"),
-                    fieldWithPath("drawTicketResponses[].drawTicketId").type(JsonFieldType.NUMBER).description("응모이력 아이디")
+                    fieldWithPath("drawTicketResponses[]").type(JsonFieldType.ARRAY).description("응모이력"),
+                    fieldWithPath("drawTicketResponses[].drawTicketId").type(JsonFieldType.NUMBER).description("응모이력 아이디"),
+                    fieldWithPath("drawTicketResponses[].drawStatus").type(JsonFieldType.STRING).description("응모 상태"),
+                    fieldWithPath("drawTicketResponses[].sneakerName").type(JsonFieldType.STRING).description("응모 신발명"),
+                    fieldWithPath("drawTicketResponses[].price").type(JsonFieldType.NUMBER).description("응모 신발 가격"),
+                    fieldWithPath("drawTicketResponses[].code").type(JsonFieldType.STRING).description("응모 신발 코드"),
+                    fieldWithPath("drawTicketResponses[].size").type(JsonFieldType.NUMBER).description("응모 신발 사이즈")
                 )
             ));
     }
