@@ -23,13 +23,12 @@ import static java.text.MessageFormat.format;
 public class DrawController {
 
     private final DrawService drawService;
-    private final DrawMapper drawMapper;
 
     @PostMapping
     public ResponseEntity<DrawResponse> saveDraw(
         @Valid @RequestBody DrawSaveRequest saveRequest
     ) {
-        DrawSaveDto drawSaveDto = drawMapper.toDrawSaveDto(saveRequest);
+        DrawSaveDto drawSaveDto = DrawMapper.toDrawSaveDto(saveRequest);
         DrawResponse drawResponse = drawService.save(drawSaveDto);
 
         URI location = URI.create(format("/api/v1/draws/{0}", drawResponse.drawId()));

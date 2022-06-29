@@ -28,7 +28,6 @@ import org.springframework.test.web.servlet.ResultActions;
 import prgrms.neoike.config.SecurityApiTest;
 import prgrms.neoike.controller.dto.drawdto.DrawSaveRequest;
 import prgrms.neoike.controller.dto.drawdto.StockInfo;
-import prgrms.neoike.controller.mapper.DrawMapper;
 import prgrms.neoike.domain.draw.DrawStatus;
 import prgrms.neoike.service.DrawService;
 import prgrms.neoike.service.DrawTicketService;
@@ -47,9 +46,6 @@ class DrawControllerTest extends SecurityApiTest {
 
     @MockBean
     DrawTicketService drawTicketService;
-
-    @MockBean
-    DrawMapper drawMapper;
 
     @Test
     @DisplayName("/api/v1/draws 에서 draws 저장")
@@ -87,7 +83,6 @@ class DrawControllerTest extends SecurityApiTest {
 
         DrawResponse drawResponse = new DrawResponse(3L);
 
-        given(drawMapper.toDrawSaveDto(any(DrawSaveRequest.class))).willReturn(drawSaveDto);
         given(drawService.save(any(DrawSaveDto.class))).willReturn(drawResponse);
 
         // when

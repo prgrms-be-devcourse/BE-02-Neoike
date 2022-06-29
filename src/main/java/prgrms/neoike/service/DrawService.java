@@ -41,7 +41,6 @@ public class DrawService {
     private final SneakerRepository sneakerRepository;
     private final SneakerItemRepository sneakerItemRepository;
     private final SneakerStockRepository sneakerStockRepository;
-    private final DrawConverter drawConverter;
 
     @Transactional
     @CacheEvict(value = "draws", allEntries = true)
@@ -50,13 +49,13 @@ public class DrawService {
         Sneaker sneaker = sneakerRepository.findById(sneakerId)
                 .orElseThrow(() -> new EntityNotFoundException(format("Sneaker 엔티티를 id 로 찾을 수 없습니다. drawId : {0}", sneakerId)));
 
-        Draw draw = drawConverter.toDraw(drawSaveRequest, sneaker);
+        Draw draw = DrawConverter.toDraw(drawSaveRequest, sneaker);
         drawRepository.save(draw);
 
         // 해당 sneakerId 에 해당하는 SneakerItem 들을 생성한 후 저장한다.
         saveSneakerItem(drawSaveRequest, sneakerId, sneaker, draw);
 
-        return drawConverter.toDrawResponseDto(draw.getId());
+        return DrawConverter.toDrawResponseDto(draw.getId());
     }
 
     private void saveSneakerItem(DrawSaveDto drawSaveRequest, Long sneakerId, Sneaker sneaker, Draw draw) {
@@ -126,7 +125,7 @@ public class DrawService {
             ticketsBySize.forEach(DrawTicket::changeToWinner);
             ticketsBySize.forEach((drawTicket) -> {
                         drawTicket.changeToWinner();
-                        successDrawTickets.add(drawConverter.toDrawTicketResponse(drawTicket));
+                        successDrawTickets.add(DrawConverter.toDrawTicketResponse(drawTicket));
                     }
             );
 
@@ -147,7 +146,7 @@ public class DrawService {
         randomSet.forEach((id) -> {
                     DrawTicket winTicket = ticketsBySize.get(id);
                     winTicket.changeToWinner();
-                    successDrawTickets.add(drawConverter.toDrawTicketResponse(winTicket));
+                    successDrawTickets.add(DrawConverter.toDrawTicketResponse(winTicket));
                 }
         );
         // sneakerItem 의 재고를 0 으로 바꾼다.
@@ -161,6 +160,6 @@ public class DrawService {
     public List<DrawDto> getAvailableDraws() {
         List<Draw> availableDraws = drawRepository.findAllByWinningDateAfter(LocalDateTime.now());
 
-        return drawConverter.toDrawDtos(availableDraws);
+        return DrawConverter.toDrawDtos(availableDraws);
     }
 }

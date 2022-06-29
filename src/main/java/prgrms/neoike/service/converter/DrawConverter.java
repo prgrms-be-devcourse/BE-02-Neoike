@@ -1,7 +1,9 @@
 package prgrms.neoike.service.converter;
 
+import static lombok.AccessLevel.PRIVATE;
+
 import java.util.List;
-import org.springframework.stereotype.Component;
+import lombok.NoArgsConstructor;
 import prgrms.neoike.domain.draw.Draw;
 import prgrms.neoike.domain.draw.DrawTicket;
 import prgrms.neoike.domain.sneaker.Sneaker;
@@ -10,10 +12,10 @@ import prgrms.neoike.service.dto.drawdto.DrawResponse;
 import prgrms.neoike.service.dto.drawdto.DrawSaveDto;
 import prgrms.neoike.service.dto.drawticketdto.DrawTicketResponse;
 
-@Component
+@NoArgsConstructor(access = PRIVATE)
 public class DrawConverter {
 
-    public Draw toDraw(DrawSaveDto drawSaveRequest, Sneaker sneaker) {
+    public static Draw toDraw(DrawSaveDto drawSaveRequest, Sneaker sneaker) {
         return Draw.builder()
             .sneaker(sneaker)
             .startDate(drawSaveRequest.startDate())
@@ -23,11 +25,11 @@ public class DrawConverter {
             .build();
     }
 
-    public DrawResponse toDrawResponseDto(Long id) {
+    public static DrawResponse toDrawResponseDto(Long id) {
         return new DrawResponse(id);
     }
 
-    public DrawTicketResponse toDrawTicketResponse(DrawTicket drawTicket) {
+    public static DrawTicketResponse toDrawTicketResponse(DrawTicket drawTicket) {
         return DrawTicketResponse.builder()
             .drawTicketId(drawTicket.getId())
             .drawStatus(drawTicket.getDrawStatus())
@@ -38,7 +40,7 @@ public class DrawConverter {
             .build();
     }
 
-    public DrawDto toDrawDto(Draw draw) {
+    public static DrawDto toDrawDto(Draw draw) {
         String thumbnailPath = draw.getSneaker().getSneakerImages()
             .stream().toList().get(0).getPath();
 
@@ -54,9 +56,9 @@ public class DrawConverter {
             .build();
     }
 
-    public List<DrawDto> toDrawDtos(List<Draw> draws) {
+    public static List<DrawDto> toDrawDtos(List<Draw> draws) {
         return draws.stream()
-            .map(this::toDrawDto)
+            .map(DrawConverter::toDrawDto)
             .toList();
     }
 }

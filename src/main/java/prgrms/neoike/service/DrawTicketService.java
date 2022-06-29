@@ -12,8 +12,8 @@ import prgrms.neoike.repository.DrawRepository;
 import prgrms.neoike.repository.DrawTicketRepository;
 import prgrms.neoike.repository.MemberRepository;
 import prgrms.neoike.repository.SneakerItemRepository;
-import prgrms.neoike.service.dto.drawticketdto.DrawTicketResponse;
 import prgrms.neoike.service.converter.DrawConverter;
+import prgrms.neoike.service.dto.drawticketdto.DrawTicketResponse;
 import prgrms.neoike.service.dto.drawticketdto.DrawTicketsResponse;
 
 import java.util.List;
@@ -27,7 +27,6 @@ import static java.text.MessageFormat.format;
 @RequiredArgsConstructor
 public class DrawTicketService {
 
-    private final DrawConverter drawConverter;
     private final DrawTicketRepository drawTicketRepository;
     private final DrawRepository drawRepository;
     private final MemberRepository memberRepository;
@@ -60,7 +59,7 @@ public class DrawTicketService {
                 .build()
         );
 
-        return drawConverter.toDrawTicketResponse(save);
+        return DrawConverter.toDrawTicketResponse(save);
     }
 
     private void validateSizeInput(Draw draw, int size) {
@@ -90,7 +89,7 @@ public class DrawTicketService {
 
         return new DrawTicketsResponse(
             drawTickets.stream().map((drawTicket) ->
-                drawConverter.toDrawTicketResponse(drawTicket)
+                DrawConverter.toDrawTicketResponse(drawTicket)
             ).collect(Collectors.toList())
         );
     }

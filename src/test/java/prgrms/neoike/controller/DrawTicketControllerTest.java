@@ -6,7 +6,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.ResultActions;
 import prgrms.neoike.config.SecurityApiTest;
-import prgrms.neoike.controller.mapper.DrawMapper;
 import prgrms.neoike.domain.draw.DrawStatus;
 import prgrms.neoike.service.DrawTicketService;
 import prgrms.neoike.service.dto.drawticketdto.DrawTicketResponse;
@@ -30,9 +29,6 @@ class DrawTicketControllerTest extends SecurityApiTest {
 
     @MockBean
     DrawTicketService drawTicketService;
-
-    @MockBean
-    DrawMapper drawMapper;
 
     @Test
     @DisplayName("/api/v1/draw-sneakers 에서 응모권 저장")
