@@ -20,7 +20,6 @@ import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
 @Getter
 @Entity
-@NoArgsConstructor(access = PROTECTED)
 @Table(
     uniqueConstraints = {
         @UniqueConstraint(
@@ -29,6 +28,7 @@ import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
         )
     }
 )
+@NoArgsConstructor(access = PROTECTED)
 public class Sneaker extends BaseTimeEntity {
 
     @Id

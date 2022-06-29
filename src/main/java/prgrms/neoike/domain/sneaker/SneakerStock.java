@@ -13,6 +13,7 @@ import static lombok.AccessLevel.PROTECTED;
 
 @Getter
 @Entity
+@Table
 @NoArgsConstructor(access = PROTECTED)
 public class SneakerStock extends BaseTimeEntity {
 
