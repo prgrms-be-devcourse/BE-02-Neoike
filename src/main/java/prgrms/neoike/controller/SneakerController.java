@@ -2,7 +2,6 @@ package prgrms.neoike.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import prgrms.neoike.controller.dto.sneaker.SneakerRegisterRequest;
 import prgrms.neoike.controller.dto.sneaker.SneakerStockRequest;
@@ -19,7 +18,6 @@ import java.net.URI;
 import static java.text.MessageFormat.format;
 import static prgrms.neoike.controller.mapper.SneakerMapper.*;
 
-@Validated
 @RestController
 @RequestMapping("/api/v1/sneakers")
 @RequiredArgsConstructor
