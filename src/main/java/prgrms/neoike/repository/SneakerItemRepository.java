@@ -9,5 +9,4 @@ import java.util.List;
 public interface SneakerItemRepository extends JpaRepository<SneakerItem, Long> {
 
     List<SneakerItem> findByDraw(Draw draw);
-
 }

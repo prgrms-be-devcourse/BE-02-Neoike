@@ -63,8 +63,8 @@ public class DrawTicketService {
     }
 
     private void validateSizeInput(Draw draw, int size) {
-        if (!sneakerItemRepository.findByDraw(draw).stream()
-            .anyMatch(sneakerItem -> sneakerItem.getSize() == size)
+        if (sneakerItemRepository.findByDraw(draw).stream()
+            .noneMatch(sneakerItem -> sneakerItem.getSize() == size)
         ) {
             throw new IllegalArgumentException("입력 사이즈에 해당하는 신발이 존재하지 않습니다.");
         }
@@ -88,9 +88,9 @@ public class DrawTicketService {
         List<DrawTicket> drawTickets = drawTicketRepository.findByMember(member);
 
         return new DrawTicketsResponse(
-            drawTickets.stream().map((drawTicket) ->
-                DrawConverter.toDrawTicketResponse(drawTicket)
-            ).collect(Collectors.toList())
+            drawTickets.stream()
+                .map(DrawConverter::toDrawTicketResponse)
+                .collect(Collectors.toList())
         );
     }
 }

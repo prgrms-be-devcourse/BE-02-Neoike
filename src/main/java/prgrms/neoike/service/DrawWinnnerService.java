@@ -49,11 +49,12 @@ public class DrawWinnnerService {
         for (Map.Entry<Integer, SneakerItem> entry : sizeToSneakerItem.entrySet()) {
             Integer size = entry.getKey();
             SneakerItem sneakerItem = entry.getValue();
+
             List<DrawTicket> ticketsBySize = drawTickets.stream()
                 .filter(drawTicket -> drawTicket.getSize() == size)
                 .toList();
 
-            successDrawTickets = drawWinnerBySize(successDrawTickets, sneakerItem, ticketsBySize);
+            drawWinnerBySize(successDrawTickets, sneakerItem, ticketsBySize);
         }
 
         drawTickets.forEach(DrawTicket::drawQuit);
