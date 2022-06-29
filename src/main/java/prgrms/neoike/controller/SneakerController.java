@@ -56,7 +56,7 @@ public class SneakerController {
     public ResponseEntity<PageResponse<SneakerResponse>> getSneakers(
         @RequestParam(defaultValue = "1") String page,
         @RequestParam(defaultValue = "20") String size,
-        @RequestParam(defaultValue = "createdAt.desc") String sortBy,
+        @RequestParam(defaultValue = "createdAt") String sortBy,
         @RequestParam(defaultValue = "desc") String direction
     ) {
         PageResponse<SneakerResponse> sneakers = sneakerService.getSneakers(toPagingDto(page, size, sortBy, direction));
