@@ -30,13 +30,10 @@ public class SneakerController {
         @RequestBody @Valid SneakerRegisterRequest registerRequest
     ) {
         SneakerIdResponse response = sneakerService.registerSneaker(toSneakerRegisterDto(registerRequest));
+        URI uri = URI.create(format("/api/v1/sneakers/{0}/{1}", response.sneakerId(), response.code()));
 
         return ResponseEntity
-            .created(
-                URI.create(
-                    format("/api/v1/sneakers/{0}/{1}", response.sneakerId(), response.code())
-                )
-            )
+            .created(uri)
             .body(response);
     }
 
