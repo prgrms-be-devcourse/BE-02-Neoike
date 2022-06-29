@@ -1,12 +1,12 @@
 package prgrms.neoike.controller.mapper;
 
 import lombok.NoArgsConstructor;
-import prgrms.neoike.controller.dto.sneaker.request.SneakerRegisterRequest;
-import prgrms.neoike.controller.dto.sneaker.request.SneakerRequest;
-import prgrms.neoike.controller.dto.sneaker.request.SneakerStockRequest;
-import prgrms.neoike.service.dto.sneaker.SneakerDto;
-import prgrms.neoike.service.dto.sneaker.SneakerRegisterDto;
-import prgrms.neoike.service.dto.sneaker.SneakerStockDto;
+import prgrms.neoike.controller.dto.sneaker.SneakerRegisterRequest;
+import prgrms.neoike.controller.dto.sneaker.SneakerRequest;
+import prgrms.neoike.controller.dto.sneaker.SneakerStockRequest;
+import prgrms.neoike.service.dto.sneaker.SneakerStockUpdateDto;
+import prgrms.neoike.service.dto.page.PageableDto;
+import prgrms.neoike.service.dto.sneaker.*;
 
 import java.util.List;
 
@@ -41,5 +41,17 @@ public class SneakerMapper {
             .stream()
             .map(i -> new SneakerStockDto(i.size(), i.quantity()))
             .toList();
+    }
+
+    public static SneakerDetailDto toSneakerDetailDto(Long sneakerId, String code) {
+        return new SneakerDetailDto(sneakerId, code);
+    }
+
+    public static PageableDto toPagingDto(String page, String size, String sortBy, String direction) {
+        return new PageableDto(page, size, sortBy, direction);
+    }
+
+    public static SneakerStockUpdateDto toSneakerStockUpdateDto(Long stockId, SneakerStockRequest stockRequest) {
+        return new SneakerStockUpdateDto(stockId, stockRequest.size(), stockRequest.quantity());
     }
 }

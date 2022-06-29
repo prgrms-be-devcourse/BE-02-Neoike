@@ -1,4 +1,4 @@
-package prgrms.neoike.controller.dto.sneaker.request;
+package prgrms.neoike.controller.dto.sneaker;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;

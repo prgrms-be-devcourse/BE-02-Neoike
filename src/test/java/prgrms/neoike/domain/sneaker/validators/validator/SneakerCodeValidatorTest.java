@@ -4,7 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import prgrms.neoike.controller.dto.sneaker.request.SneakerRequest;
+import prgrms.neoike.controller.dto.sneaker.SneakerRequest;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;

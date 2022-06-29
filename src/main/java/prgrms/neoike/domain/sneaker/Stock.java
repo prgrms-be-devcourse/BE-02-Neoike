@@ -27,7 +27,7 @@ public class Stock {
 
     public void decreaseQuantityBy(int value) {
         if (this.quantity < value) {
-            throw new IllegalStateException(
+            throw new IllegalArgumentException(
                 format("재고가 부족합니다. (현재재고: {0})", this.quantity)
             );
         }

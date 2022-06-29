@@ -35,17 +35,30 @@ public class DrawTicket extends BaseTimeEntity {
     @NotNull
     private DrawStatus drawStatus;
 
-    public DrawTicket(Member member, Draw draw, DrawStatus drawStatus) {
-        this.member = member;
-        this.draw = draw;
-        this.drawStatus = drawStatus;
-    }
+    @Column(name = "name", length = 50, updatable = false)
+    @NotNull
+    private String sneakerName;
+
+    @Column(name = "price")
+    @NotNull
+    private int price;
+
+    @Column(name = "code")
+    @NotNull
+    private String code;
+
+    @Column(name = "size")
+    private int size;
 
     @Builder
-    public DrawTicket(Member member, Draw draw) {
+    public DrawTicket(Member member, Draw draw, String sneakerName, int price, String code, int size) {
         this.member = member;
         this.draw = draw;
         this.drawStatus = DrawStatus.WAITING;
+        this.sneakerName = sneakerName;
+        this.price = price;
+        this.code = code;
+        this.size = size;
     }
 
     public void changeToWinner() {

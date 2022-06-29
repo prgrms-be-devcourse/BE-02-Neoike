@@ -2,12 +2,11 @@ package prgrms.neoike.controller.dto.drawdto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
-
 import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.List;
 
 public record DrawSaveRequest(
         @NotNull
@@ -29,11 +28,11 @@ public record DrawSaveRequest(
         LocalDateTime winningDate,
 
         @NotNull
-        @PositiveOrZero
-        int quantity,
+        List<ItemSizeAndQuantity> sneakerItems,
 
         @NotNull
-        ArrayList<DrawItem> sneakerItems
+        @PositiveOrZero
+        int quantity
 ) {
     @Builder
     public DrawSaveRequest {

@@ -8,9 +8,9 @@ import prgrms.neoike.common.jwt.SecurityUtil;
 import prgrms.neoike.domain.member.Member;
 import prgrms.neoike.repository.MemberRepository;
 import prgrms.neoike.service.converter.MemberConverter;
-import prgrms.neoike.service.dto.drawticketdto.DrawTicketListResponse;
 import prgrms.neoike.service.dto.member.MemberDto;
 import prgrms.neoike.service.dto.member.MemberResponse;
+import prgrms.neoike.service.dto.drawticketdto.DrawTicketsResponse;
 
 import java.util.Optional;
 
@@ -33,12 +33,12 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public DrawTicketListResponse getMyDrawHistory() {
+    public DrawTicketsResponse getMyDrawHistory() {
         Optional<String> username = SecurityUtil.getCurrentUserName();
         Member member = username.flatMap(memberRepository::findOneByEmail)
             .orElseThrow(() -> new EntityNotFoundException(format("존재하지 않는 회원입니다. email : {0}", username)));
 
-        return drawTicketService.findByMember(member.getId());
+        return drawTicketService.findByMemberId(member.getId());
     }
 
     private void validateDuplicatedMember(String email) {

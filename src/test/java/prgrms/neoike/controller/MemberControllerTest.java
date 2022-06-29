@@ -1,13 +1,10 @@
 package prgrms.neoike.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
@@ -17,19 +14,19 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import prgrms.neoike.common.jwt.JwtFilter;
 import prgrms.neoike.common.jwt.TokenProvider;
 import prgrms.neoike.config.ApiDocumentUtil;
 import prgrms.neoike.config.SecurityApiTest;
 import prgrms.neoike.controller.dto.member.MemberSaveRequest;
+import prgrms.neoike.domain.draw.DrawStatus;
 import prgrms.neoike.domain.member.CountryType;
 import prgrms.neoike.domain.member.Gender;
 import prgrms.neoike.service.CustomUserDetailService;
 import prgrms.neoike.service.MemberService;
-import prgrms.neoike.service.dto.drawticketdto.DrawTicketListResponse;
 import prgrms.neoike.service.dto.drawticketdto.DrawTicketResponse;
+import prgrms.neoike.service.dto.drawticketdto.DrawTicketsResponse;
 import prgrms.neoike.service.dto.member.MemberResponse;
 
 import java.time.LocalDate;
@@ -47,16 +44,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(MemberController.class)
-@MockBean(JpaMetamodelMappingContext.class)
-@AutoConfigureRestDocs
+
+@WebMvcTest(controllers = MemberController.class)
 class MemberControllerTest extends SecurityApiTest {
-
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @MockBean
     private MemberService memberService;
@@ -135,10 +125,18 @@ class MemberControllerTest extends SecurityApiTest {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(HttpHeaders.AUTHORIZATION, JwtFilter.AUTHORIZATION_TYPE + token);
 
-        DrawTicketResponse drawTicketResponse = new DrawTicketResponse(1L);
+        DrawTicketResponse size = DrawTicketResponse.builder()
+            .drawTicketId(1L)
+            .drawStatus(DrawStatus.WAITING)
+            .sneakerName("테스트 신발")
+            .price(100000)
+            .code("TEST_CODE")
+            .size(250)
+            .build();
+
         List<DrawTicketResponse> drawTicketResponses = new ArrayList<>();
-        drawTicketResponses.add(drawTicketResponse);
-        DrawTicketListResponse myDrawHistory = new DrawTicketListResponse(drawTicketResponses);
+        drawTicketResponses.add(size);
+        DrawTicketsResponse myDrawHistory = new DrawTicketsResponse(drawTicketResponses);
 
         when(customUserDetailService.loadUserByUsername(email))
             .thenReturn(dummy);
@@ -165,7 +163,7 @@ class MemberControllerTest extends SecurityApiTest {
     @Test
     @DisplayName("헤더에 토큰이 없으면 history api에 접근 할 수 없다")
     void validateJwtTokenTest() throws Exception {
-        DrawTicketListResponse drawTicketListResponse = new DrawTicketListResponse(List.of());
+        DrawTicketsResponse drawTicketListResponse = new DrawTicketsResponse(List.of());
         when(memberService.getMyDrawHistory())
             .thenReturn(drawTicketListResponse);
 

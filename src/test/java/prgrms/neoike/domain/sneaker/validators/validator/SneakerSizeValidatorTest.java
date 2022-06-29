@@ -3,7 +3,7 @@ package prgrms.neoike.domain.sneaker.validators.validator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import prgrms.neoike.controller.dto.sneaker.request.SneakerStockRequest;
+import prgrms.neoike.controller.dto.sneaker.SneakerStockRequest;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -44,7 +44,7 @@ class SneakerSizeValidatorTest {
     void testValidSizeUnits(SneakerStockRequest request) {
         Set<ConstraintViolation<SneakerStockRequest>> validate = validator.validate(request);
 
-        assertThat(validate.size()).isZero();
+        assertThat(validate).isEmpty();
     }
 
     static List<SneakerStockRequest> testValidSizeUnitsSource() {

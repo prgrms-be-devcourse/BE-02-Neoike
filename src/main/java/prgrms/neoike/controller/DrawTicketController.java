@@ -3,11 +3,9 @@ package prgrms.neoike.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import prgrms.neoike.controller.mapper.DrawMapper;
 import prgrms.neoike.service.DrawTicketService;
 import prgrms.neoike.service.dto.drawticketdto.DrawTicketResponse;
-import prgrms.neoike.service.dto.drawticketdto.DrawTicketListResponse;
-
+import prgrms.neoike.service.dto.drawticketdto.DrawTicketsResponse;
 import java.net.URI;
 
 import static java.text.MessageFormat.format;
@@ -17,14 +15,14 @@ import static java.text.MessageFormat.format;
 @RequiredArgsConstructor
 public class DrawTicketController {
     private final DrawTicketService drawTicketService;
-    private final DrawMapper drawMapper;
 
     @PostMapping
     public ResponseEntity<DrawTicketResponse> saveDrawTicket(
             @RequestParam Long memberId,
-            @RequestParam Long drawId
+            @RequestParam Long drawId,
+            @RequestParam int size
     ) {
-        DrawTicketResponse drawTicketResponse = drawTicketService.save(memberId, drawId);
+        DrawTicketResponse drawTicketResponse = drawTicketService.save(memberId, drawId, size);
         URI location = URI.create(format("/api/v1/draw-sneakers/{0}", drawTicketResponse.drawTicketId()));
 
         return ResponseEntity
@@ -33,10 +31,10 @@ public class DrawTicketController {
     }
 
     @GetMapping("/{memberId}")
-    public ResponseEntity<DrawTicketListResponse> findByMemberId(
+    public ResponseEntity<DrawTicketsResponse> findByMemberId(
             @PathVariable Long memberId
     ) {
-        DrawTicketListResponse drawTicketResponses = drawTicketService.findByMember(memberId);
+        DrawTicketsResponse drawTicketResponses = drawTicketService.findByMemberId(memberId);
 
         return ResponseEntity
                 .ok()

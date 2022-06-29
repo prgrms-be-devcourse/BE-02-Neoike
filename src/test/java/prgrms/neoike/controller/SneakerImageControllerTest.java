@@ -1,19 +1,17 @@
 package prgrms.neoike.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import prgrms.neoike.config.SecurityApiTest;
 import prgrms.neoike.service.dto.sneakerimage.SneakerImageResponse;
 import prgrms.neoike.service.image.SneakerImageService;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
@@ -32,15 +30,11 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@AutoConfigureRestDocs
-@WebMvcTest(SneakerImageController.class)
-class SneakerImageControllerTest {
+@WebMvcTest(controllers = SneakerImageController.class)
+class SneakerImageControllerTest extends SecurityApiTest {
 
     @Autowired
     MockMvc mvc;
-
-    @Autowired
-    ObjectMapper objectMapper;
 
     @MockBean
     SneakerImageService sneakerImageService;
@@ -61,7 +55,7 @@ class SneakerImageControllerTest {
             .andExpect(status().isOk())
             .andDo(document("image-upload",
                 responseFields(
-                    fieldWithPath("paths").type(ARRAY).description("신발 이미지 경로")
+                    fieldWithPath("imagePaths").type(ARRAY).description("신발 이미지 경로")
                 ))
             ).andReturn();
 
@@ -71,13 +65,13 @@ class SneakerImageControllerTest {
 
         assertThat(response).isNotNull();
         assertAll(
-            () -> assertThat(response.paths().size()).isOne(),
-            () -> assertThat(response.paths().get(0)).isEqualTo(expectedResponse.paths().get(0))
+            () -> assertThat(response.imagePaths().size()).isOne(),
+            () -> assertThat(response.imagePaths().get(0)).isEqualTo(expectedResponse.imagePaths().get(0))
         );
     }
 
     private MockMultipartFile getTestMultipartFile() throws IOException {
-        FileInputStream fis = new FileInputStream(new File(System.getProperty("user.dir") + "/src/test/resources/test.PNG"));
+        FileInputStream fis = new FileInputStream(System.getProperty("user.dir") + "/src/test/resources/test.PNG");
 
         return new MockMultipartFile("test", "test.PNG", IMAGE_PNG_VALUE, fis);
     }
