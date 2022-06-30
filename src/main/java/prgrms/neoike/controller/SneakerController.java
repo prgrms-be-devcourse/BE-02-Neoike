@@ -38,7 +38,7 @@ public class SneakerController {
     }
 
     @GetMapping("/{sneakerId}/{code}")
-    public ResponseEntity<SneakerDetailResponse> getSneakerDetail(
+    public ResponseEntity<SneakerDetailResponse> getSneaker(
         @PathVariable Long sneakerId,
         @PathVariable String code
     ) {
