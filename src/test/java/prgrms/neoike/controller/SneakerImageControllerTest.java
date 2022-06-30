@@ -37,7 +37,7 @@ class SneakerImageControllerTest extends SecurityApiTest {
 
     @Test
     @DisplayName("신발 이미지 저장이 성공적으로 이루어진다.")
-    void testUploadSneakerImages() throws Exception {
+    void postSneakerImage() throws Exception {
         MockMultipartFile testMultipartFile = getTestMultipartFile();
         SneakerImageResponse response = new SneakerImageResponse(List.of("/src/main/resources/sneaker/images/" + randomUUID() + ".PNG"));
 
@@ -57,7 +57,7 @@ class SneakerImageControllerTest extends SecurityApiTest {
             .andExpectAll(
                 status().isOk(),
                 content().json(objectMapper.writeValueAsString(response)))
-            .andDo(document("image-upload",
+            .andDo(document(COMMON_DOCS_NAME,
                 requestHeaders(contentType(), host()),
                 requestPartBody("files"),
                 responseHeaders(contentType()),

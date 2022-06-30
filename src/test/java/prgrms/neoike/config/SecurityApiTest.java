@@ -34,6 +34,8 @@ public abstract class SecurityApiTest {
     @RegisterExtension
     RestDocumentationExtension restDocumentation = new RestDocumentationExtension();
 
+    protected static final String COMMON_DOCS_NAME = "{method-name}";
+
     @BeforeEach
     void setUp(WebApplicationContext context, RestDocumentationContextProvider restDocumentation) {
         mockMvc = MockMvcBuilders.webAppContextSetup(context)

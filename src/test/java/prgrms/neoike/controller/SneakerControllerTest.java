@@ -48,7 +48,7 @@ class SneakerControllerTest extends SecurityApiTest {
 
     @Test
     @DisplayName("신발 생성이 정상적으로 이루어진다.")
-    void testRegisterNewSneaker() throws Exception {
+    void postSneaker() throws Exception {
         SneakerRegisterRequest registerRequest = createRegisterRequest();
         String requestString = objectMapper.writeValueAsString(registerRequest);
         SneakerIdResponse response = new SneakerIdResponse(1L, "DS-1234567");
@@ -70,7 +70,7 @@ class SneakerControllerTest extends SecurityApiTest {
                 status().isCreated(),
                 content().json(objectMapper.writeValueAsString(response)))
             .andDo(
-                document("sneaker-register",
+                document(COMMON_DOCS_NAME,
                     requestHeaders(commonHeaders()).and(host()),
                     requestFields(imagePaths())
                         .andWithPrefix(SNEAKER_PREFIX, commonSneaker())
@@ -81,7 +81,7 @@ class SneakerControllerTest extends SecurityApiTest {
 
     @Test
     @DisplayName("신발 아이디와 코드로 신발을 상세조회 할 수 있다.")
-    void testGetSneakerDetail() throws Exception {
+    void getSneaker() throws Exception {
         SneakerDetailResponse response = createDetailResponse();
 
         //given
@@ -99,7 +99,7 @@ class SneakerControllerTest extends SecurityApiTest {
                 status().isOk(),
                 content().json(objectMapper.writeValueAsString(response)))
             .andDo(
-                document("sneaker-detail",
+                document(COMMON_DOCS_NAME,
                     pathParameters(sneakerIdPath(), codePath()),
                     responseHeaders(commonHeaders()),
                     responseFields()
@@ -113,7 +113,7 @@ class SneakerControllerTest extends SecurityApiTest {
 
     @Test
     @DisplayName("신발을 페이징 처리를 하여 전체조회 할 수 있다.")
-    void testGetSneakers() throws Exception {
+    void getSneakers() throws Exception {
         PageResponse<SneakerResponse> response = createPageResponseWithSneakerResponse();
 
         //given
@@ -135,7 +135,7 @@ class SneakerControllerTest extends SecurityApiTest {
                 status().isOk(),
                 content().json(objectMapper.writeValueAsString(response)))
             .andDo(
-                document("sneaker-sneakers",
+                document(COMMON_DOCS_NAME,
                     requestParameters(pageParam()),
                     responseHeaders(commonHeaders()),
                     responseFields(subsectionWithPath("contents").type(ARRAY).description("페이징 컨텐츠"))
@@ -144,7 +144,7 @@ class SneakerControllerTest extends SecurityApiTest {
 
     @Test
     @DisplayName("입력된 신발 재고의 아이디와 사이즈에 맞는 재고를 찾아서 입력된 수량만큼 감소시킨다.")
-    void testDecreaseSneakerStock() throws Exception {
+    void putSneakerStockDecrease() throws Exception {
         SneakerStockRequest stockRequest = createTestStockRequest(250, 10);
         String requestString = objectMapper.writeValueAsString(stockRequest);
         SneakerStockResponse response = new SneakerStockResponse(1L, 250, 0, 2L);
@@ -166,7 +166,7 @@ class SneakerControllerTest extends SecurityApiTest {
                 status().isOk(),
                 content().json(objectMapper.writeValueAsString(response)))
             .andDo(
-                document("sneaker-stock_out",
+                document(COMMON_DOCS_NAME,
                     requestHeaders(commonHeaders()).and(host()),
                     pathParameters(stockIdPath()),
                     requestFields(sneakerStock()),
@@ -176,7 +176,7 @@ class SneakerControllerTest extends SecurityApiTest {
 
     @Test
     @DisplayName("입력된 신발 재고의 아이디와 사이즈에 맞는 재고를 찾아서 입력된 수량만큼 증가시킨다.")
-    void testIncreaseSneakerStock() throws Exception {
+    void putSneakerStockIncrease() throws Exception {
         SneakerStockRequest stockRequest = createTestStockRequest(270, 100);
         String requestString = objectMapper.writeValueAsString(stockRequest);
         SneakerStockResponse response = new SneakerStockResponse(1L, 270, 110, 2L);
@@ -198,7 +198,7 @@ class SneakerControllerTest extends SecurityApiTest {
                 status().isOk(),
                 content().json(objectMapper.writeValueAsString(response)))
             .andDo(
-                document("sneaker-stock_in",
+                document(COMMON_DOCS_NAME,
                     requestHeaders(commonHeaders()).and(host()),
                     pathParameters(stockIdPath()),
                     requestFields(sneakerStock()),
