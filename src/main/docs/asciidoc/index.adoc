@@ -10,3 +10,7 @@ endif::[]
 = Neoike API v1
 
 == Overview
+
+include::sneaker.adoc[]
+
+include::sneaker-image.adoc[]
