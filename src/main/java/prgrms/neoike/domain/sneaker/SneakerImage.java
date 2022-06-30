@@ -31,8 +31,8 @@ public class SneakerImage extends BaseTimeEntity {
     @Column(name = "sneaker_image_id", nullable = false, updatable = false)
     private Long id;
 
-    @Column(name = "path", nullable = false)
-    String path;
+    @Column(name = "path", length = 150, nullable = false)
+    private String path;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "sneaker_id")

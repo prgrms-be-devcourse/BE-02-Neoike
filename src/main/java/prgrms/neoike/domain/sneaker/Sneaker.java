@@ -54,7 +54,7 @@ public class Sneaker extends BaseTimeEntity {
     @Column(name = "description", nullable = false)
     private String description;
 
-    @Column(name = "code", nullable = false)
+    @Column(name = "code", length = 10, nullable = false)
     private String code;
 
     @Column(name = "release_date", nullable = false)
