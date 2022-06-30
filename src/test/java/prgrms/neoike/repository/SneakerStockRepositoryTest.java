@@ -2,6 +2,7 @@ package prgrms.neoike.repository;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -38,6 +39,7 @@ class SneakerStockRepositoryTest {
     }
 
     @Test
+    @DisplayName("신발 아이디와 코드로 신발을 상세조회한다.")
     void testFindByIdAndCode() {
         SneakerStock savedSneakerStock = sneakerStockRepository.save(sneakerStock);
 
@@ -50,6 +52,7 @@ class SneakerStockRepositoryTest {
     }
 
     @Test
+    @DisplayName("재고 아이디와 사이즈로 재고상태를 조회한다.")
     void testFindByIdAndSize() {
         SneakerStock savedSneakerStock = sneakerStockRepository.save(sneakerStock);
 
