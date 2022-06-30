@@ -1,0 +1,19 @@
+== 신발 이미지
+=== 업로드
+
+HTTP request
+
+[source]
+----
+POST /api/v1/images HTTP/1.1
+Content-Type: multipart/form-data; boundary=6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
+Host: neoike.com
+
+--6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
+Content-Disposition: form-data; name=files; filename=test.PNG
+Content-Type: image/png
+
+지원하는 이미지 파일 형식 = *.PNG, *.JPEG, *.JPG
+----
+
+operation::post-sneaker-image[snippets='http-response,response-fields']
