@@ -11,7 +11,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.test.annotation.Rollback;
 import prgrms.neoike.common.exception.EntityNotFoundException;
 import prgrms.neoike.domain.sneaker.Sneaker;
 import prgrms.neoike.domain.sneaker.SneakerStock;
@@ -34,8 +33,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.mock;
 import static prgrms.neoike.domain.sneaker.MemberCategory.MEN;
 import static prgrms.neoike.domain.sneaker.SneakerCategory.JORDAN;
 
@@ -60,7 +59,7 @@ class SneakerServiceTest {
         Sneaker sneaker = mock(Sneaker.class);
 
         given(sneakerRepository.save(any())).willReturn(sneaker);
-        when(sneaker.getId()).thenReturn(sneakerId);
+        given(sneaker.getId()).willReturn(sneakerId);
 
         //when
         SneakerIdResponse sneakerIdResponse = sneakerService.registerSneaker(registerDto);
@@ -155,7 +154,6 @@ class SneakerServiceTest {
     }
 
     @Test
-    @Rollback
     @DisplayName("입력된 신발 재고의 아이디와 사이즈에 맞는 재고를 찾아서 입력된 수량만큼 감소시킨다.")
     void testDecreaseSneakerStock() {
         //given
@@ -166,8 +164,8 @@ class SneakerServiceTest {
         Sneaker sneaker = mock(Sneaker.class);
         SneakerStock sneakerStock = mock(SneakerStock.class);
 
-        when(sneakerStock.getSneaker()).thenReturn(sneaker);
-        when(sneakerStock.getStock()).thenReturn(new Stock(originQuantity));
+        given(sneakerStock.getSneaker()).willReturn(sneaker);
+        given(sneakerStock.getStock()).willReturn(new Stock(originQuantity));
         given(sneakerStockRepository.findByIdAndSize(anyLong(), anyInt()))
             .willReturn(Optional.of(sneakerStock));
 
@@ -180,7 +178,6 @@ class SneakerServiceTest {
     }
 
     @Test
-    @Rollback
     @DisplayName("입력된 신발 재고의 아이디와 사이즈에 맞는 재고를 찾아서 입력된 수량만큼 증가시킨다.")
     void testIncreaseSneakerStock() {
         //given
@@ -191,8 +188,8 @@ class SneakerServiceTest {
         Sneaker sneaker = mock(Sneaker.class);
         SneakerStock sneakerStock = mock(SneakerStock.class);
 
-        when(sneakerStock.getSneaker()).thenReturn(sneaker);
-        when(sneakerStock.getStock()).thenReturn(new Stock(originQuantity));
+        given(sneakerStock.getSneaker()).willReturn(sneaker);
+        given(sneakerStock.getStock()).willReturn(new Stock(originQuantity));
         given(sneakerStockRepository.findByIdAndSize(anyLong(), anyInt()))
             .willReturn(Optional.of(sneakerStock));
 
@@ -212,10 +209,9 @@ class SneakerServiceTest {
         int decreaseQuantity = 100;
 
         SneakerStockUpdateDto updateDto = new SneakerStockUpdateDto(2L, 250, decreaseQuantity);
-        Sneaker sneaker = mock(Sneaker.class);
         SneakerStock sneakerStock = mock(SneakerStock.class);
 
-        when(sneakerStock.getStock()).thenReturn(new Stock(originQuantity));
+        given(sneakerStock.getStock()).willReturn(new Stock(originQuantity));
         given(sneakerStockRepository.findByIdAndSize(anyLong(), anyInt()))
             .willReturn(Optional.of(sneakerStock));
 
