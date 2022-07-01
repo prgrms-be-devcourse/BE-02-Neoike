@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -35,6 +34,7 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
@@ -79,11 +79,12 @@ class MemberControllerTest extends SecurityApiTest {
             .willReturn(new MemberResponse(1L, "test@gmail.com"));
 
 
-        ResultActions result = mockMvc.perform(post("/api/v1/members")
-                .content(content)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .with(SecurityMockMvcRequestPostProcessors.csrf()))
+        ResultActions result = mockMvc
+            .perform(
+                post("/api/v1/members")
+                    .content(content)
+                    .accept(APPLICATION_JSON)
+                    .with(SecurityMockMvcRequestPostProcessors.csrf()))
             .andExpect(status().isCreated())
             .andDo(print());
 
@@ -140,9 +141,11 @@ class MemberControllerTest extends SecurityApiTest {
         when(memberService.getMyDrawHistory())
             .thenReturn(myDrawHistory);
 
-        ResultActions result = mockMvc.perform(get("/api/v1/members/draw-history")
-                .headers(httpHeaders)
-                .contentType(MediaType.APPLICATION_JSON))
+        ResultActions result = mockMvc
+            .perform(
+                get("/api/v1/members/draw-history")
+                    .headers(httpHeaders)
+                    .contentType(APPLICATION_JSON))
             .andExpect(status().isOk())
             .andDo(print());
 
@@ -158,18 +161,5 @@ class MemberControllerTest extends SecurityApiTest {
                     fieldWithPath("drawTicketResponses[].size").type(JsonFieldType.NUMBER).description("응모 신발 사이즈")
                 )
             ));
-    }
-
-    @Test
-    @DisplayName("헤더에 토큰이 없으면 history api에 접근 할 수 없다")
-    void validateJwtTokenTest() throws Exception {
-        DrawTicketsResponse drawTicketListResponse = new DrawTicketsResponse(List.of());
-        when(memberService.getMyDrawHistory())
-            .thenReturn(drawTicketListResponse);
-
-        mockMvc.perform(get("/api/v1/members/draw-history")
-                .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isUnauthorized())
-            .andDo(print());
     }
 }

@@ -10,3 +10,6 @@ endif::[]
 = Neoike API v1
 
 == Overview
+include::http-status-code.adoc[]
+
+include::member.adoc[]

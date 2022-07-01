@@ -1,0 +1,9 @@
+== 멤버
+
+=== 회원가입
+operation::post-member[snippets='http-request,request-fields,http-response,response-fields']
+'''
+
+=== 응모이력 조회
+operation::get-draw-history[snippets='http-request,http-response,response-fields']
+'''
