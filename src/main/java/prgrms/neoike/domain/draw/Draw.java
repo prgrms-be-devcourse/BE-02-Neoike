@@ -92,6 +92,7 @@ public class Draw extends BaseTimeEntity {
     public boolean reduceDrawQuantity() {
         if (quantity > 0) {
             quantity--;
+
             return true;
         }
         throw new IllegalArgumentException(

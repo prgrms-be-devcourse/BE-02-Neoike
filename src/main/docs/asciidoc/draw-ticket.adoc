@@ -1,0 +1,9 @@
+== 응모티켓
+
+=== 저장
+operation::post-draw-ticket[snippets='http-request,request-fields,http-response,response-fields']
+'''
+
+=== 조회
+operation::get-draw-tickets[snippets='http-request,request-fields,http-response,response-fields']
+'''

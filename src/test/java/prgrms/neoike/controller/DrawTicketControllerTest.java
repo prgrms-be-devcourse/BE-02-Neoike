@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.ResultActions;
 import prgrms.neoike.config.SecurityApiTest;
 import prgrms.neoike.domain.draw.DrawStatus;
@@ -14,6 +15,8 @@ import prgrms.neoike.service.dto.drawticketdto.DrawTicketsResponse;
 import java.util.Arrays;
 
 import static org.mockito.BDDMockito.given;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
@@ -32,7 +35,7 @@ class DrawTicketControllerTest extends SecurityApiTest {
 
     @Test
     @DisplayName("/api/v1/draw-sneakers 에서 응모권 저장")
-    void saveDrawTicketTest() throws Exception {
+    void postDrawTicket() throws Exception {
         // given
         DrawTicketResponse drawTicketResponse = validDrawTicketResponse();
 
@@ -49,7 +52,10 @@ class DrawTicketControllerTest extends SecurityApiTest {
         resultActions
             .andExpect(status().isCreated())
             .andDo(print())
-            .andDo(document("save-draw-ticket",
+            .andDo(document(COMMON_DOCS_NAME,
+                requestHeaders(
+                    headerWithName(HttpHeaders.HOST).description("호스트")
+                ),
                 responseFields(
                     fieldWithPath("drawTicketId").type(NUMBER).description("발행된 응모권 id"),
                     fieldWithPath("drawStatus").type(STRING).description("발행된 응모권 상태"),
@@ -62,7 +68,7 @@ class DrawTicketControllerTest extends SecurityApiTest {
 
     @Test
     @DisplayName("/api/v1/draw-sneakers/{id} 에서 멤버 아이디를 통해 멤버가 응모한 응모권목록을 확인한다")
-    void findDrawTicketsByMemberIdTest() throws Exception {
+    void getDrawTickets() throws Exception {
         // given
         DrawTicketsResponse drawTicketResponses = new DrawTicketsResponse(
             Arrays.asList(
@@ -79,7 +85,10 @@ class DrawTicketControllerTest extends SecurityApiTest {
         resultActions
             .andExpect(status().isOk())
             .andDo(print())
-            .andDo(document("find-drawTickets-by-memberId",
+            .andDo(document(COMMON_DOCS_NAME,
+                requestHeaders(
+                    headerWithName(HttpHeaders.HOST).description("호스트")
+                ),
                 responseFields(
                     fieldWithPath("drawTicketResponses").type(ARRAY).description("응모권 배열"),
                     fieldWithPath("drawTicketResponses[].drawTicketId").type(NUMBER)

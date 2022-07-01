@@ -36,11 +36,11 @@ public class DrawTicketService {
     public DrawTicketResponse save(Long memberId, Long drawId, int size) {
         Member member = memberRepository.findById(memberId)
             .orElseThrow(() -> new EntityNotFoundException(
-                format("Member 엔티티를 id 로 찾을 수 없습니다. memberId : {0}", drawId)));
+                format("Member 엔티티를 찾을 수 없습니다. memberId : {0}", drawId)));
 
         Draw draw = drawRepository.findByIdWithSneakerItem(drawId)
             .orElseThrow(() -> new EntityNotFoundException(
-                format("Draw 엔티티를 id 로 찾을 수 없습니다. drawId : {0}", drawId)));
+                format("Draw 엔티티를 찾을 수 없습니다. drawId : {0}", drawId)));
 
         Sneaker sneaker = draw.getSneaker();
 

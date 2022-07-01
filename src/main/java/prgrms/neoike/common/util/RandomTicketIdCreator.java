@@ -8,7 +8,6 @@ import java.util.Set;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class RandomTicketIdCreator {
-
     /**
      * @param itemQuantity    : sneaker item 의 응모용 재고
      * @param ticketsQuantity : 해당 아이템에 응모한 응모권 개수 : maximumNumber

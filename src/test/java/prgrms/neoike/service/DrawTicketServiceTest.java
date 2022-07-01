@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @SpringBootTest
 @Transactional
 class DrawTicketServiceTest {
+
     @Autowired
     DrawTicketService drawTicketService;
 
@@ -100,10 +101,10 @@ class DrawTicketServiceTest {
 
         // then
         assertThatThrownBy(() ->
-                drawTicketService.save(member.getId(), draw.getId(), 285)
+            drawTicketService.save(member.getId(), draw.getId(), 285)
         )
-                .hasMessageContaining("티켓응모를 이미 진행하였습니다.")
-                .isInstanceOf(IllegalArgumentException.class);
+            .hasMessageContaining("티켓응모를 이미 진행하였습니다.")
+            .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -119,10 +120,11 @@ class DrawTicketServiceTest {
 
         // when // then
         assertThatThrownBy(() ->
-                drawTicketService.save(member.getId(), draw.getId(), 275)
+            drawTicketService.save(member.getId(), draw.getId(), 275)
         )
-                .hasMessageContaining(format("draw 의 수량이 0 이어서 더이상 ticket 발행이 안됩니다. drawId : {0}", draw.getId()))
-                .isInstanceOf(IllegalArgumentException.class);
+            .hasMessageContaining(
+                format("draw 의 수량이 0 이어서 더이상 ticket 발행이 안됩니다. drawId : {0}", draw.getId()))
+            .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -141,10 +143,10 @@ class DrawTicketServiceTest {
 
         // then
         assertThatThrownBy(() ->
-                drawTicketService.save(member.getId(), draw.getId(), 275)
+            drawTicketService.save(member.getId(), draw.getId(), 275)
         )
-                .hasMessageContaining("티켓응모를 이미 진행하였습니다.")
-                .isInstanceOf(IllegalArgumentException.class);
+            .hasMessageContaining("티켓응모를 이미 진행하였습니다.")
+            .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -160,10 +162,10 @@ class DrawTicketServiceTest {
 
         // when // then
         assertThatThrownBy(() ->
-                drawTicketService.save(member.getId(), draw.getId(), 285)
+            drawTicketService.save(member.getId(), draw.getId(), 285)
         )
-                .hasMessageContaining("입력 사이즈에 해당하는 신발이 존재하지 않습니다.")
-                .isInstanceOf(IllegalArgumentException.class);
+            .hasMessageContaining("입력 사이즈에 해당하는 신발이 존재하지 않습니다.")
+            .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -193,63 +195,68 @@ class DrawTicketServiceTest {
 
         assertThat(drawTicketResponses.drawTicketResponses()).hasSize(2);
         assertAll(
-                () -> assertThat(drawTicketResponses.drawTicketResponses().get(0).drawStatus()).isEqualTo(DrawStatus.WAITING),
-                () -> assertThat(drawTicketResponses.drawTicketResponses().get(0).sneakerName()).isEqualTo("air jordan"),
-                () -> assertThat(drawTicketResponses.drawTicketResponses().get(0).price()).isEqualTo(75000),
-                () -> assertThat(drawTicketResponses.drawTicketResponses().get(0).code()).isEqualTo("AB1234"),
-                () -> assertThat(drawTicketResponses.drawTicketResponses().get(0).size()).isEqualTo(275)
+            () -> assertThat(drawTicketResponses.drawTicketResponses().get(0).drawStatus())
+                .isEqualTo(DrawStatus.WAITING),
+            () -> assertThat(drawTicketResponses.drawTicketResponses().get(0).sneakerName())
+                .isEqualTo("air jordan"),
+            () -> assertThat(drawTicketResponses.drawTicketResponses().get(0).price())
+                .isEqualTo(75000),
+            () -> assertThat(drawTicketResponses.drawTicketResponses().get(0).code())
+                .isEqualTo("AB1234"),
+            () -> assertThat(drawTicketResponses.drawTicketResponses().get(0).size())
+                .isEqualTo(275)
         );
 
     }
 
     private Draw validDraw(int quantity, Sneaker sneaker) {
         return Draw.builder()
-                .sneaker(sneaker)
-                .startDate(startDate)
-                .endDate(endDate)
-                .winningDate(winningDate)
-                .quantity(quantity)
-                .build();
+            .sneaker(sneaker)
+            .startDate(startDate)
+            .endDate(endDate)
+            .winningDate(winningDate)
+            .quantity(quantity)
+            .build();
     }
 
     private Sneaker validSneaker() {
         return Sneaker.builder()
-                .memberCategory(MemberCategory.MEN)
-                .sneakerCategory(SneakerCategory.BASKETBALL)
-                .name("air jordan")
-                .price(75000)
-                .description("1")
-                .code("AB1234")
-                .releaseDate(LocalDateTime.now())
-                .build();
+            .memberCategory(MemberCategory.MEN)
+            .sneakerCategory(SneakerCategory.BASKETBALL)
+            .name("air jordan")
+            .price(75000)
+            .description("1")
+            .code("AB1234")
+            .releaseDate(LocalDateTime.now())
+            .build();
     }
 
     private Member validMember() {
         return Member.builder()
-                .name("이용훈")
-                .password(new Password("123abcAB!!"))
-                .phoneNumber(new PhoneNumber(CountryType.KOR, "01012341566"))
-                .address(new Address("도시", "거리", "000222"))
-                .birthDay(LocalDateTime.now())
-                .email(new Email("test@test.com"))
-                .gender(Gender.MALE)
-                .build();
+            .name("이용훈")
+            .password(new Password("123abcAB!!"))
+            .phoneNumber(new PhoneNumber(CountryType.KOR, "01012341566"))
+            .address(new Address("도시", "거리", "000222"))
+            .birthDay(LocalDateTime.now())
+            .email(new Email("test@test.com"))
+            .gender(Gender.MALE)
+            .build();
     }
 
     private SneakerItem validItem(SneakerStock sneakerStock, Draw draw, int size, int quantity) {
         return SneakerItem.builder()
-                .sneakerStock(sneakerStock)
-                .draw(draw)
-                .size(size)
-                .quantity(quantity)
-                .build();
+            .sneakerStock(sneakerStock)
+            .draw(draw)
+            .size(size)
+            .quantity(quantity)
+            .build();
     }
 
     private SneakerStock validStock(Sneaker sneaker, int size, int quantity) {
         SneakerStock stock = SneakerStock.builder()
-                .size(size)
-                .stock(new Stock(quantity))
-                .build();
+            .size(size)
+            .stock(new Stock(quantity))
+            .build();
         stock.setSneaker(sneaker);
 
         return stock;

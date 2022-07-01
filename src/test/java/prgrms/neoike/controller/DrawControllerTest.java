@@ -2,6 +2,8 @@ package prgrms.neoike.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
@@ -22,7 +24,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.headers.HeaderDescriptor;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.test.web.servlet.ResultActions;
 import prgrms.neoike.config.SecurityApiTest;
@@ -53,7 +57,7 @@ class DrawControllerTest extends SecurityApiTest {
 
     @Test
     @DisplayName("/api/v1/draws 에서 draws 저장")
-    void saveDrawTest() throws Exception {
+    void postDraw() throws Exception {
         // given
         LocalDateTime fastDate = LocalDateTime.of(2025, 06, 12, 12, 00, 00);
         LocalDateTime middleDate = LocalDateTime.of(2025, 06, 13, 12, 00, 00);
@@ -91,14 +95,20 @@ class DrawControllerTest extends SecurityApiTest {
 
         // when
         ResultActions resultActions = mockMvc.perform(
-            post("/api/v1/draws").contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(drawSaveRequest)));
+            post("/api/v1/draws")
+                .content(objectMapper.writeValueAsString(drawSaveRequest))
+                .contentType(MediaType.APPLICATION_JSON));
 
         // then
         resultActions
             .andExpect(status().isCreated())
             .andDo(print())
-            .andDo(document("save-draw",
+            .andDo(document(COMMON_DOCS_NAME,
+                requestHeaders(
+                    headerWithName(HttpHeaders.CONTENT_TYPE).description("컨텐츠 타입"),
+                    headerWithName(HttpHeaders.CONTENT_LENGTH).description("컨텐츠 길이"),
+                    headerWithName(HttpHeaders.HOST).description("호스트")
+                ),
                 requestFields(
                     fieldWithPath("sneakerId").type(NUMBER).description("sneaker id"),
                     fieldWithPath("startDate").type(STRING).description("응모 시작 날짜"),
@@ -118,7 +128,7 @@ class DrawControllerTest extends SecurityApiTest {
 
     @Test
     @DisplayName("/api/v1/draws/win 에서 추첨을 진행한다")
-    void winDrawIdTest() throws Exception {
+    void postDrawWinner() throws Exception {
         // given
         DrawTicketsResponse drawTicketResponses = new DrawTicketsResponse(
             Arrays.asList(
@@ -143,7 +153,10 @@ class DrawControllerTest extends SecurityApiTest {
         resultActions
             .andExpect(status().isOk())
             .andDo(print())
-            .andDo(document("win-draw",
+            .andDo(document(COMMON_DOCS_NAME,
+                requestHeaders(
+                    headerWithName(HttpHeaders.HOST).description("호스트")
+                ),
                 responseFields(
                     fieldWithPath("drawTicketResponses").type(ARRAY).description("응모권 배열"),
                     fieldWithPath("drawTicketResponses[].drawTicketId").type(NUMBER)
@@ -172,7 +185,10 @@ class DrawControllerTest extends SecurityApiTest {
         resultActions
             .andExpect(status().isOk())
             .andDo(
-                document("{method-name}",
+                document(COMMON_DOCS_NAME,
+                    requestHeaders(
+                        headerWithName(HttpHeaders.HOST).description("호스트")
+                    ),
                     responseFields()
                         .andWithPrefix("[]", drawDtoDescriptors())
                 )
@@ -215,6 +231,14 @@ class DrawControllerTest extends SecurityApiTest {
             fieldWithPath("sneakerId").type(NUMBER).description("신발 아이디"),
             fieldWithPath("sneakerName").type(STRING).description("신발 이름"),
             fieldWithPath("sneakerThumbnailPath").type(STRING).description("신발 사진 파일 주소")
+        );
+    }
+
+    private List<HeaderDescriptor> commonHeaders() {
+        return List.of(
+            headerWithName(HttpHeaders.CONTENT_TYPE).description("컨텐츠 타입"),
+            headerWithName(HttpHeaders.CONTENT_LENGTH).description("컨텐츠 길이"),
+            headerWithName(HttpHeaders.HOST).description("호스트")
         );
     }
 }

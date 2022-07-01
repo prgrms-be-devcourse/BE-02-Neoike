@@ -10,3 +10,7 @@ endif::[]
 = Neoike API v1
 
 == Overview
+
+include::draw.adoc[]
+
+include::draw-ticket.adoc[]

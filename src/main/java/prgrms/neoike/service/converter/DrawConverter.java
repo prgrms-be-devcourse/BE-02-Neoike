@@ -15,7 +15,7 @@ import prgrms.neoike.service.dto.drawticketdto.DrawTicketResponse;
 @NoArgsConstructor(access = PRIVATE)
 public class DrawConverter {
 
-    public static Draw toDraw(DrawSaveDto drawSaveRequest, Sneaker sneaker) {
+    public static Draw toDraws(DrawSaveDto drawSaveRequest, Sneaker sneaker) {
         return Draw.builder()
             .sneaker(sneaker)
             .startDate(drawSaveRequest.startDate())
@@ -25,7 +25,7 @@ public class DrawConverter {
             .build();
     }
 
-    public static DrawResponse toDrawResponseDto(Long id) {
+    public static DrawResponse toDrawResponse(Long id) {
         return new DrawResponse(id);
     }
 
@@ -40,7 +40,7 @@ public class DrawConverter {
             .build();
     }
 
-    public static DrawDto toDrawDto(Draw draw) {
+    public static DrawDto toDraws(Draw draw) {
         String thumbnailPath = draw.getSneaker().getSneakerImages()
             .stream().toList().get(0).getPath();
 
@@ -56,9 +56,9 @@ public class DrawConverter {
             .build();
     }
 
-    public static List<DrawDto> toDrawDtos(List<Draw> draws) {
+    public static List<DrawDto> toDraws(List<Draw> draws) {
         return draws.stream()
-            .map(DrawConverter::toDrawDto)
+            .map(DrawConverter::toDraws)
             .toList();
     }
 }

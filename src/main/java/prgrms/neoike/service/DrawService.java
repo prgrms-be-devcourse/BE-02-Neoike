@@ -39,15 +39,15 @@ public class DrawService {
         Long sneakerId = drawSaveRequest.sneakerId();
         Sneaker sneaker = sneakerRepository.findById(sneakerId)
             .orElseThrow(() -> new EntityNotFoundException(
-                format("Sneaker 엔티티를 id 로 찾을 수 없습니다. drawId : {0}", sneakerId)));
+                format("Sneaker 엔티티를 찾을 수 없습니다. drawId : {0}", sneakerId)));
 
-        Draw draw = DrawConverter.toDraw(drawSaveRequest, sneaker);
+        Draw draw = DrawConverter.toDraws(drawSaveRequest, sneaker);
         drawRepository.save(draw);
 
         // 해당 sneakerId 에 해당하는 SneakerItem 들을 생성한 후 저장한다.
         saveSneakerItem(drawSaveRequest, sneakerId, sneaker, draw);
 
-        return DrawConverter.toDrawResponseDto(draw.getId());
+        return DrawConverter.toDrawResponse(draw.getId());
     }
 
     private void saveSneakerItem(DrawSaveDto drawSaveRequest, Long sneakerId, Sneaker sneaker, Draw draw) {
@@ -57,7 +57,7 @@ public class DrawService {
                 SneakerStock foundSneakerStock = sneakerStockRepository.findBySneakerAndSize(sneaker, size)
                     .orElseThrow(() -> new EntityNotFoundException(
                         format(
-                            "SneakerStock 엔티티를 sneaker 와 size 로 찾을 수 없습니다. sneakerId : {0}, size : {1}",
+                            "SneakerStock 엔티티를 찾을 수 없습니다. sneakerId : {0}, size : {1}",
                             sneakerId, size)));
 
                 // SneakerStock 에서 재고를 가지고와 SneakerItem 을 만든다.
@@ -82,6 +82,6 @@ public class DrawService {
     public List<DrawDto> getAvailableDraws() {
         List<Draw> availableDraws = drawRepository.findAllByWinningDateAfter(LocalDateTime.now());
 
-        return DrawConverter.toDrawDtos(availableDraws);
+        return DrawConverter.toDraws(availableDraws);
     }
 }

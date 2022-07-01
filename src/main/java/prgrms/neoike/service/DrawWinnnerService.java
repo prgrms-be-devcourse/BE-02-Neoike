@@ -35,7 +35,7 @@ public class DrawWinnnerService {
     public DrawTicketsResponse drawWinner(Long drawId) {
         Draw draw = drawRepository.findById(drawId)
             .orElseThrow(() -> new EntityNotFoundException(
-                format("Draw 엔티티를 id 로 찾을 수 없습니다. drawId : {0}", drawId)));
+                format("Draw 엔티티를 찾을 수 없습니다. drawId : {0}", drawId)));
 
         List<SneakerItem> sneakerItems = sneakerItemRepository.findByDraw(draw);
         List<DrawTicket> drawTickets = drawTicketRepository.findByDraw(draw);

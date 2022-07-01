@@ -134,7 +134,7 @@ class DrawServiceTest {
         // when // then
         assertThatThrownBy(() -> drawService.save(drawSaveDto))
             .hasMessageContaining(
-                format("SneakerStock 엔티티를 sneaker 와 size 로 찾을 수 없습니다. sneakerId : {0}, size : {1}",
+                format("SneakerStock 엔티티를 찾을 수 없습니다. sneakerId : {0}, size : {1}",
                     sneaker.getId(), 295))
             .isInstanceOf(EntityNotFoundException.class);
     }
