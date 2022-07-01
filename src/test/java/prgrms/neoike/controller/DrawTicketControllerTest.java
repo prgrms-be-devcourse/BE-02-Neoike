@@ -17,6 +17,7 @@ import java.util.Arrays;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
@@ -88,6 +89,10 @@ class DrawTicketControllerTest extends SecurityApiTest {
             .andDo(document(COMMON_DOCS_NAME,
                 requestHeaders(
                     headerWithName(HttpHeaders.HOST).description("호스트")
+                ),
+                responseHeaders(
+                    headerWithName(HttpHeaders.LOCATION).description("로케이션"),
+                    headerWithName(HttpHeaders.CONTENT_TYPE).description("컨텐츠 타입")
                 ),
                 responseFields(
                     fieldWithPath("drawTicketResponses").type(ARRAY).description("응모권 배열"),

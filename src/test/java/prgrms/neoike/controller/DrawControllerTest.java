@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
@@ -121,6 +122,10 @@ class DrawControllerTest extends SecurityApiTest {
                     fieldWithPath("sneakerStocks[].quantity").type(NUMBER)
                         .description("응모 상품 응모 개수")
                 ),
+                responseHeaders(
+                    headerWithName(HttpHeaders.LOCATION).description("로케이션"),
+                    headerWithName(HttpHeaders.CONTENT_TYPE).description("컨텐츠 타입")
+                ),
                 responseFields(
                     fieldWithPath("drawId").type(NUMBER).description("생성된 응모 id")
                 )));
@@ -157,6 +162,10 @@ class DrawControllerTest extends SecurityApiTest {
                 requestHeaders(
                     headerWithName(HttpHeaders.HOST).description("호스트")
                 ),
+                responseHeaders(
+                    headerWithName(HttpHeaders.LOCATION).description("로케이션"),
+                    headerWithName(HttpHeaders.CONTENT_TYPE).description("컨텐츠 타입")
+                ),
                 responseFields(
                     fieldWithPath("drawTicketResponses").type(ARRAY).description("응모권 배열"),
                     fieldWithPath("drawTicketResponses[].drawTicketId").type(NUMBER)
@@ -188,6 +197,10 @@ class DrawControllerTest extends SecurityApiTest {
                 document(COMMON_DOCS_NAME,
                     requestHeaders(
                         headerWithName(HttpHeaders.HOST).description("호스트")
+                    ),
+                    responseHeaders(
+                        headerWithName(HttpHeaders.LOCATION).description("로케이션"),
+                        headerWithName(HttpHeaders.CONTENT_TYPE).description("컨텐츠 타입")
                     ),
                     responseFields()
                         .andWithPrefix("[]", drawDtoDescriptors())
