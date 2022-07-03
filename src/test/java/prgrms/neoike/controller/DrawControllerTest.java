@@ -163,7 +163,6 @@ class DrawControllerTest extends SecurityApiTest {
                     headerWithName(HttpHeaders.HOST).description("호스트")
                 ),
                 responseHeaders(
-                    headerWithName(HttpHeaders.LOCATION).description("로케이션"),
                     headerWithName(HttpHeaders.CONTENT_TYPE).description("컨텐츠 타입")
                 ),
                 responseFields(
@@ -178,7 +177,6 @@ class DrawControllerTest extends SecurityApiTest {
                     fieldWithPath("drawTicketResponses[].code").type(STRING).description("코드"),
                     fieldWithPath("drawTicketResponses[].size").type(NUMBER).description("사이즈")
                 )));
-
     }
 
     @Test
@@ -199,7 +197,6 @@ class DrawControllerTest extends SecurityApiTest {
                         headerWithName(HttpHeaders.HOST).description("호스트")
                     ),
                     responseHeaders(
-                        headerWithName(HttpHeaders.LOCATION).description("로케이션"),
                         headerWithName(HttpHeaders.CONTENT_TYPE).description("컨텐츠 타입")
                     ),
                     responseFields()

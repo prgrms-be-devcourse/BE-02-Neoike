@@ -91,7 +91,6 @@ class DrawTicketControllerTest extends SecurityApiTest {
                     headerWithName(HttpHeaders.HOST).description("호스트")
                 ),
                 responseHeaders(
-                    headerWithName(HttpHeaders.LOCATION).description("로케이션"),
                     headerWithName(HttpHeaders.CONTENT_TYPE).description("컨텐츠 타입")
                 ),
                 responseFields(
