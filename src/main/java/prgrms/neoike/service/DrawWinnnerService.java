@@ -54,7 +54,13 @@ public class DrawWinnnerService {
                 .filter(drawTicket -> drawTicket.getSize() == size)
                 .toList();
 
-            drawWinnerBySize(successDrawTickets, sneakerItem, ticketsBySize);
+            int ticketQuantity = ticketsBySize.size();
+
+            if(sneakerItem.isLargerOrEqualThan(ticketQuantity)){
+                drawWinnerWithoutRandom(successDrawTickets, sneakerItem, ticketsBySize, ticketQuantity);
+                continue;
+            }
+            drawWinnerWithRandom(successDrawTickets, sneakerItem, ticketsBySize);
         }
 
         drawTickets.forEach(DrawTicket::drawQuit);
@@ -62,32 +68,8 @@ public class DrawWinnnerService {
         return new DrawTicketsResponse(successDrawTickets);
     }
 
-    private List<DrawTicketResponse> drawWinnerBySize(
-        List<DrawTicketResponse> successDrawTickets,
-        SneakerItem sneakerItem,
-        List<DrawTicket> ticketsBySize
-    ) {
-        int ticketQuantity = ticketsBySize.size();
-
-        if (sneakerItem.isLargerOrEqualThan(ticketQuantity)) {
-            ticketsBySize.forEach(DrawTicket::changeToWinner);
-            ticketsBySize.forEach(drawTicket -> {
-                    drawTicket.changeToWinner();
-                    successDrawTickets.add(DrawConverter.toDrawTicketResponse(drawTicket));
-                }
-            );
-
-            // sneakerItem 의 재고를 감소시키고
-            sneakerItem.reduceQuantity(ticketQuantity);
-            SneakerStock sneakerStock = sneakerItem.getSneakerStock();
-            // 감소하고 남은 개수는 다시 SneakerStock 재고에 추가한다.
-            sneakerStock.addQuantity(sneakerItem.getQuantity());
-            // 재고 추가 후 최종 개수는 0이다.
-            sneakerItem.changeQuantityZero();
-
-            return successDrawTickets;
-        }
-
+    private void drawWinnerWithRandom(List<DrawTicketResponse> successDrawTickets, SneakerItem sneakerItem,
+        List<DrawTicket> ticketsBySize) {
         Set<Integer> randomSet = RandomTicketIdCreator
             .noDuplicationIdSet(sneakerItem.getQuantity(), ticketsBySize.size());
 
@@ -99,7 +81,23 @@ public class DrawWinnnerService {
         );
         // sneakerItem 의 재고를 0 으로 바꾼다.
         sneakerItem.changeQuantityZero();
-
-        return successDrawTickets;
     }
+
+    private void drawWinnerWithoutRandom(List<DrawTicketResponse> successDrawTickets, SneakerItem sneakerItem,
+        List<DrawTicket> ticketsBySize, int ticketQuantity) {
+        ticketsBySize.forEach(drawTicket -> {
+                drawTicket.changeToWinner();
+                successDrawTickets.add(DrawConverter.toDrawTicketResponse(drawTicket));
+            }
+        );
+
+        // sneakerItem 의 재고를 감소시키고
+        sneakerItem.reduceQuantity(ticketQuantity);
+        SneakerStock sneakerStock = sneakerItem.getSneakerStock();
+        // 감소하고 남은 개수는 다시 SneakerStock 재고에 추가한다.
+        sneakerStock.addQuantity(sneakerItem.getQuantity());
+        // 재고 추가 후 최종 개수는 0이다.
+        sneakerItem.changeQuantityZero();
+    }
+
 }
