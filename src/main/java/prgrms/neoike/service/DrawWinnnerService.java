@@ -1,12 +1,5 @@
 package prgrms.neoike.service;
 
-import static java.text.MessageFormat.format;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +15,10 @@ import prgrms.neoike.repository.SneakerItemRepository;
 import prgrms.neoike.service.converter.DrawConverter;
 import prgrms.neoike.service.dto.drawticketdto.DrawTicketResponse;
 import prgrms.neoike.service.dto.drawticketdto.DrawTicketsResponse;
+
+import java.util.*;
+
+import static java.text.MessageFormat.format;
 
 @Service
 @RequiredArgsConstructor
@@ -91,12 +88,12 @@ public class DrawWinnnerService {
             }
         );
 
-        // sneakerItem 의 재고를 감소시키고
+//         sneakerItem 의 재고를 감소시키고
         sneakerItem.reduceQuantity(ticketQuantity);
         SneakerStock sneakerStock = sneakerItem.getSneakerStock();
-        // 감소하고 남은 개수는 다시 SneakerStock 재고에 추가한다.
-        sneakerStock.addQuantity(sneakerItem.getQuantity());
-        // 재고 추가 후 최종 개수는 0이다.
+//         감소하고 남은 개수는 다시 SneakerStock 재고에 추가한다.
+        sneakerStock.manageStockQuantity(sneakerItem.getQuantity());
+//         재고 추가 후 최종 개수는 0이다.
         sneakerItem.changeQuantityZero();
     }
 

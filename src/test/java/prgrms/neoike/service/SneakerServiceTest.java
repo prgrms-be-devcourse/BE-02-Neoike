@@ -154,51 +154,47 @@ class SneakerServiceTest {
     }
 
     @Test
-    @DisplayName("입력된 신발 재고의 아이디와 사이즈에 맞는 재고를 찾아서 입력된 수량만큼 감소시킨다.")
-    void testDecreaseSneakerStock() {
+    @DisplayName("입력된 신발 재고의 아이디와 사이즈에 맞는 재고를 찾아서 입력된 수량이 음수면 재고를 감소시킨다.")
+    void testSneakerStockDecrement() {
         //given
         int originQuantity = 10;
-        int decreaseQuantity = 5;
+        int decreaseQuantity = -5;
 
         SneakerStockUpdateDto updateDto = new SneakerStockUpdateDto(2L, 250, decreaseQuantity);
+        SneakerStock sneakerStock = new SneakerStock(250, new Stock(10));
         Sneaker sneaker = mock(Sneaker.class);
-        SneakerStock sneakerStock = mock(SneakerStock.class);
+        sneakerStock.setSneaker(sneaker);
 
-        given(sneakerStock.getSneaker()).willReturn(sneaker);
-        given(sneakerStock.getStock()).willReturn(new Stock(originQuantity));
         given(sneakerStockRepository.findByIdAndSize(anyLong(), anyInt()))
             .willReturn(Optional.of(sneakerStock));
 
         //when
-        SneakerStockResponse decreasedSneakerStock = sneakerService.decreaseSneakerStock(updateDto);
+        SneakerStockResponse decreasedSneakerStock = sneakerService.manageSneakerStock(updateDto);
 
         //then
-        assertThat(decreasedSneakerStock.size()).isEqualTo(sneakerStock.getSize());
-        assertThat(decreasedSneakerStock.quantity()).isEqualTo(originQuantity - decreaseQuantity);
+        assertThat(decreasedSneakerStock.quantity()).isEqualTo(originQuantity - Math.abs(decreaseQuantity));
     }
 
     @Test
     @DisplayName("입력된 신발 재고의 아이디와 사이즈에 맞는 재고를 찾아서 입력된 수량만큼 증가시킨다.")
-    void testIncreaseSneakerStock() {
+    void testSneakerStockIncrement() {
         //given
         int originQuantity = 10;
         int increaseQuantity = 5;
 
         SneakerStockUpdateDto updateDto = new SneakerStockUpdateDto(2L, 250, increaseQuantity);
+        SneakerStock sneakerStock = new SneakerStock(250, new Stock(10));
         Sneaker sneaker = mock(Sneaker.class);
-        SneakerStock sneakerStock = mock(SneakerStock.class);
+        sneakerStock.setSneaker(sneaker);
 
-        given(sneakerStock.getSneaker()).willReturn(sneaker);
-        given(sneakerStock.getStock()).willReturn(new Stock(originQuantity));
         given(sneakerStockRepository.findByIdAndSize(anyLong(), anyInt()))
             .willReturn(Optional.of(sneakerStock));
 
         //when
-        SneakerStockResponse increasedSneakerStock = sneakerService.increaseSneakerStock(updateDto);
+        SneakerStockResponse decreasedSneakerStock = sneakerService.manageSneakerStock(updateDto);
 
         //then
-        assertThat(increasedSneakerStock.size()).isEqualTo(sneakerStock.getSize());
-        assertThat(increasedSneakerStock.quantity()).isEqualTo(originQuantity + increaseQuantity);
+        assertThat(decreasedSneakerStock.quantity()).isEqualTo(originQuantity + increaseQuantity);
     }
 
     @Test
@@ -206,21 +202,23 @@ class SneakerServiceTest {
     void testNotEnoughStockQuantity() {
         //given
         int originQuantity = 10;
-        int decreaseQuantity = 100;
+        int decreaseQuantity = -100;
 
         SneakerStockUpdateDto updateDto = new SneakerStockUpdateDto(2L, 250, decreaseQuantity);
-        SneakerStock sneakerStock = mock(SneakerStock.class);
+        SneakerStock sneakerStock = new SneakerStock(250, new Stock(10));
+        Sneaker sneaker = mock(Sneaker.class);
+        sneakerStock.setSneaker(sneaker);
 
-        given(sneakerStock.getStock()).willReturn(new Stock(originQuantity));
         given(sneakerStockRepository.findByIdAndSize(anyLong(), anyInt()))
             .willReturn(Optional.of(sneakerStock));
 
         //when, then
         assertThatThrownBy(
-            () -> sneakerService.decreaseSneakerStock(updateDto))
+            () -> sneakerService.manageSneakerStock(updateDto))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage(MessageFormat.format("재고가 부족합니다. (현재재고: {0})", originQuantity));
     }
+
 
     private SneakerRegisterDto createRegisterDto() {
         return new SneakerRegisterDto(

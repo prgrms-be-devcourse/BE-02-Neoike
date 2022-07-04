@@ -21,17 +21,17 @@ public class Stock {
         this.quantity = quantity;
     }
 
-    public void increaseQuantityBy(int value) {
-        this.quantity += value;
+    public void increaseQuantity(int quantity) {
+        this.quantity += quantity;
     }
 
-    public void decreaseQuantityBy(int value) {
-        if (this.quantity < value) {
+    public void decreaseQuantity(int quantity) {
+        if (this.quantity < quantity) {
             throw new IllegalArgumentException(
                 format("재고가 부족합니다. (현재재고: {0})", this.quantity)
             );
         }
 
-        this.quantity -= value;
+        this.quantity -= quantity;
     }
 }

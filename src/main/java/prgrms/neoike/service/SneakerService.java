@@ -62,17 +62,9 @@ public class SneakerService {
     }
 
     @Transactional
-    public SneakerStockResponse decreaseSneakerStock(SneakerStockUpdateDto stockUpdateDto) {
+    public SneakerStockResponse manageSneakerStock(SneakerStockUpdateDto stockUpdateDto) {
         SneakerStock sneakerStock = getSneakerStock(stockUpdateDto.stockId(), stockUpdateDto.size());
-        sneakerStock.getStock().decreaseQuantityBy(stockUpdateDto.quantity());
-
-        return toSneakerStockResponse(sneakerStock);
-    }
-
-    @Transactional
-    public SneakerStockResponse increaseSneakerStock(SneakerStockUpdateDto stockUpdateDto) {
-        SneakerStock sneakerStock = getSneakerStock(stockUpdateDto.stockId(), stockUpdateDto.size());
-        sneakerStock.getStock().increaseQuantityBy(stockUpdateDto.quantity());
+        sneakerStock.manageStockQuantity(stockUpdateDto.quantity());
 
         return toSneakerStockResponse(sneakerStock);
     }

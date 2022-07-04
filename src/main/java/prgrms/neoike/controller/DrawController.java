@@ -1,6 +1,5 @@
 package prgrms.neoike.controller;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +14,7 @@ import prgrms.neoike.service.dto.drawticketdto.DrawTicketsResponse;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.List;
 
 import static java.text.MessageFormat.format;
 

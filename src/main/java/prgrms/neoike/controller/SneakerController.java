@@ -59,24 +59,13 @@ public class SneakerController {
         return ResponseEntity.ok(sneakers);
     }
 
-    @PutMapping("/out/stocks/{stockId}")
-    public ResponseEntity<SneakerStockResponse> decreaseSneakerStock(
+    @PutMapping("/stocks/{stockId}")
+    public ResponseEntity<SneakerStockResponse> manageSneakerStock(
         @PathVariable Long stockId,
         @RequestBody @Valid SneakerStockRequest stockRequest
     ) {
         SneakerStockResponse sneakerStockResponse = sneakerService
-            .decreaseSneakerStock(toSneakerStockUpdateDto(stockId, stockRequest));
-
-        return ResponseEntity.ok(sneakerStockResponse);
-    }
-
-    @PutMapping("/in/stocks/{stockId}")
-    public ResponseEntity<SneakerStockResponse> increaseSneakerStock(
-        @PathVariable Long stockId,
-        @RequestBody @Valid SneakerStockRequest stockRequest
-    ) {
-        SneakerStockResponse sneakerStockResponse = sneakerService
-            .increaseSneakerStock(toSneakerStockUpdateDto(stockId, stockRequest));
+            .manageSneakerStock(toSneakerStockUpdateDto(stockId, stockRequest));
 
         return ResponseEntity.ok(sneakerStockResponse);
     }
