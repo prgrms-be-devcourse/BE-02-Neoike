@@ -51,7 +51,14 @@ public class DrawTicket extends BaseTimeEntity {
     private int size;
 
     @Builder
-    public DrawTicket(Member member, Draw draw, String sneakerName, int price, String code, int size) {
+    public DrawTicket(
+        Member member,
+        Draw draw,
+        String sneakerName,
+        int price,
+        String code,
+        int size
+    ) {
         this.member = member;
         this.draw = draw;
         this.drawStatus = DrawStatus.WAITING;

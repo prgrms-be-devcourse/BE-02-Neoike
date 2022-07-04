@@ -9,15 +9,15 @@ public class SneakerSizeValidator implements ConstraintValidator<SneakerSize, In
 
     @Override
     public boolean isValid(Integer value, ConstraintValidatorContext context) {
-        return validateSizeRange(value)
-            && validateSizeUnits(value);
+        return isValidSizeRange(value)
+            && isValidSizeUnits(value);
     }
 
-    private boolean validateSizeRange(int value) {
+    private boolean isValidSizeRange(int value) {
         return value >= 0 && value <= 400;
     }
 
-    private boolean validateSizeUnits(int value) {
+    private boolean isValidSizeUnits(int value) {
         return value % 5 == 0;
     }
 }

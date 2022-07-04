@@ -3,9 +3,10 @@ package prgrms.neoike.controller.dto.drawdto;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
 
-public record DrawItem(
+public record StockInfo(
     @NotNull
-    Long sneakerItemId,
+    @PositiveOrZero
+    int size,
 
     @NotNull
     @PositiveOrZero

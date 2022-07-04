@@ -11,7 +11,6 @@ import prgrms.neoike.domain.sneaker.SneakerStock;
 import prgrms.neoike.repository.SneakerRepository;
 import prgrms.neoike.repository.SneakerStockRepository;
 import prgrms.neoike.service.converter.SneakerConverter;
-import prgrms.neoike.service.dto.sneaker.SneakerStockUpdateDto;
 import prgrms.neoike.service.dto.page.PageResponse;
 import prgrms.neoike.service.dto.page.PageableDto;
 import prgrms.neoike.service.dto.sneaker.*;
@@ -43,7 +42,14 @@ public class SneakerService {
 
     @Transactional(readOnly = true)
     public SneakerDetailResponse getSneakerDetail(SneakerDetailDto detailDto) {
-        List<SneakerStock> sneakerStocks = validateEmptySneakerDetails(detailDto.sneakerId(), detailDto.code());
+        List<SneakerStock> sneakerStocks = sneakerStockRepository
+            .findByIdAndCode(detailDto.sneakerId(), detailDto.code());
+
+        if (sneakerStocks.isEmpty()) {
+            throw new EntityNotFoundException(
+                format("요청한 신발 정보를 찾을 수 없습니다. (신발코드: {0})", detailDto.code())
+            );
+        }
 
         return toSneakerDetailResponse(sneakerStocks);
     }
@@ -57,7 +63,7 @@ public class SneakerService {
 
     @Transactional
     public SneakerStockResponse decreaseSneakerStock(SneakerStockUpdateDto stockUpdateDto) {
-        SneakerStock sneakerStock = validateEmptySneakerStock(stockUpdateDto.stockId(), stockUpdateDto.size());
+        SneakerStock sneakerStock = getSneakerStock(stockUpdateDto.stockId(), stockUpdateDto.size());
         sneakerStock.getStock().decreaseQuantityBy(stockUpdateDto.quantity());
 
         return toSneakerStockResponse(sneakerStock);
@@ -65,39 +71,10 @@ public class SneakerService {
 
     @Transactional
     public SneakerStockResponse increaseSneakerStock(SneakerStockUpdateDto stockUpdateDto) {
-        SneakerStock sneakerStock = validateEmptySneakerStock(stockUpdateDto.stockId(), stockUpdateDto.size());
+        SneakerStock sneakerStock = getSneakerStock(stockUpdateDto.stockId(), stockUpdateDto.size());
         sneakerStock.getStock().increaseQuantityBy(stockUpdateDto.quantity());
 
         return toSneakerStockResponse(sneakerStock);
-    }
-
-    private SneakerStock validateEmptySneakerStock(Long stockId, int size) {
-        return sneakerStockRepository
-            .findByIdAndSize(stockId, size)
-            .orElseThrow(
-                () -> new EntityNotFoundException(
-                    format("요청한 신발의 재고정보를 찾을 수 없습니다. (재고 아이디: {0})", stockId)
-                )
-            );
-    }
-
-    private List<SneakerStock> validateEmptySneakerDetails(Long sneakerId, String code) {
-        List<SneakerStock> sneakerStocks = sneakerStockRepository
-            .findByIdAndCode(sneakerId, code);
-
-        if (sneakerStocks.isEmpty()) {
-            throw new EntityNotFoundException(
-                format("요청한 신발 정보를 찾을 수 없습니다. (신발코드: {0})", code)
-            );
-        }
-
-        return sneakerStocks;
-    }
-
-    private void saveSneakerStocks(SneakerRegisterDto registerDto, Sneaker retrievedSneaker) {
-        List<SneakerStock> sneakerStocks = toSneakerStockEntities(registerDto.stockDto());
-        sneakerStocks.forEach(s -> s.setSneaker(retrievedSneaker));
-        sneakerStockRepository.saveAll(sneakerStocks);
     }
 
     private Sneaker saveSneaker(SneakerRegisterDto registerDto) {
@@ -106,6 +83,22 @@ public class SneakerService {
         sneaker.attachImages(sneakerImages);
 
         return sneakerRepository.save(sneaker);
+    }
+
+    private void saveSneakerStocks(SneakerRegisterDto registerDto, Sneaker retrievedSneaker) {
+        List<SneakerStock> sneakerStocks = toSneakerStockEntities(registerDto.stockDto());
+        sneakerStocks.forEach(s -> s.setSneaker(retrievedSneaker));
+        sneakerStockRepository.saveAll(sneakerStocks);
+    }
+
+    private SneakerStock getSneakerStock(Long stockId, int size) {
+        return sneakerStockRepository
+            .findByIdAndSize(stockId, size)
+            .orElseThrow(
+                () -> new EntityNotFoundException(
+                    format("요청한 신발의 재고정보를 찾을 수 없습니다. (재고 아이디: {0})", stockId)
+                )
+            );
     }
 
     private void validateDuplicatedSneaker(String code) {

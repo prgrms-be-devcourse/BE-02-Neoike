@@ -1,0 +1,21 @@
+== 신발
+
+=== 등록
+operation::post-sneaker[snippets='http-request,request-fields,http-response,response-fields']
+'''
+
+=== 상세 조회
+operation::get-sneaker[snippets='http-request,path-parameters,http-response,response-fields']
+'''
+
+=== 전체 조회
+operation::get-sneakers[snippets='http-request,http-response,response-fields']
+'''
+
+=== 재고 증가
+operation::put-sneaker-stock-increase[snippets='http-request,path-parameters,request-fields,http-response,response-fields']
+'''
+
+=== 재고 감소
+operation::put-sneaker-stock-decrease[snippets='http-request,path-parameters,request-fields,http-response,response-fields']
+''''
