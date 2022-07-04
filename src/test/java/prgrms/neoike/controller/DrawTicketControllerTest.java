@@ -1,10 +1,12 @@
 package prgrms.neoike.controller;
 
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
+import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.test.web.servlet.ResultActions;
 import prgrms.neoike.config.SecurityApiTest;
 import prgrms.neoike.domain.draw.DrawStatus;
@@ -57,14 +59,8 @@ class DrawTicketControllerTest extends SecurityApiTest {
                 requestHeaders(
                     headerWithName(HttpHeaders.HOST).description("호스트")
                 ),
-                responseFields(
-                    fieldWithPath("drawTicketId").type(NUMBER).description("발행된 응모권 id"),
-                    fieldWithPath("drawStatus").type(STRING).description("발행된 응모권 상태"),
-                    fieldWithPath("sneakerName").type(STRING).description("신발 이름"),
-                    fieldWithPath("price").type(NUMBER).description("신발 가격"),
-                    fieldWithPath("code").type(STRING).description("신발 코드"),
-                    fieldWithPath("size").type(NUMBER).description("신발 사이즈")
-                )));
+                responseFields(commonDrawTicket())
+            ));
     }
 
     @Test
@@ -93,18 +89,9 @@ class DrawTicketControllerTest extends SecurityApiTest {
                 responseHeaders(
                     headerWithName(HttpHeaders.CONTENT_TYPE).description("컨텐츠 타입")
                 ),
-                responseFields(
-                    fieldWithPath("drawTicketResponses").type(ARRAY).description("응모권 배열"),
-                    fieldWithPath("drawTicketResponses[].drawTicketId").type(NUMBER)
-                        .description("응모권 아이디"),
-                    fieldWithPath("drawTicketResponses[].drawStatus").type(STRING)
-                        .description("응모권 상태"),
-                    fieldWithPath("drawTicketResponses[].sneakerName").type(STRING)
-                        .description("신발 이름"),
-                    fieldWithPath("drawTicketResponses[].price").type(NUMBER).description("가격"),
-                    fieldWithPath("drawTicketResponses[].code").type(STRING).description("코드"),
-                    fieldWithPath("drawTicketResponses[].size").type(NUMBER).description("사이즈")
-                )));
+                responseFields()
+                    .andWithPrefix("drawTicketResponses[].", commonDrawTicket())
+            ));
     }
 
     private DrawTicketResponse validDrawTicketResponse() {
@@ -116,5 +103,16 @@ class DrawTicketControllerTest extends SecurityApiTest {
             .size(275)
             .sneakerName("air jordan")
             .build();
+    }
+
+    private List<FieldDescriptor> commonDrawTicket() {
+        return List.of(
+            fieldWithPath("drawTicketId").type(NUMBER).description("응모권 아이디"),
+            fieldWithPath("drawStatus").type(STRING).description("응모권 상태"),
+            fieldWithPath("sneakerName").type(STRING).description("신발 이름"),
+            fieldWithPath("price").type(NUMBER).description("가격"),
+            fieldWithPath("code").type(STRING).description("코드"),
+            fieldWithPath("size").type(NUMBER).description("사이즈")
+        );
     }
 }

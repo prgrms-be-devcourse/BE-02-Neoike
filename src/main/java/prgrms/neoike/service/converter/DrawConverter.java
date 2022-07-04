@@ -40,7 +40,7 @@ public class DrawConverter {
             .build();
     }
 
-    public static DrawDto toDraws(Draw draw) {
+    public static DrawDto toDrawDto(Draw draw) {
         String thumbnailPath = draw.getSneaker().getSneakerImages()
             .stream().toList().get(0).getPath();
 
@@ -56,9 +56,9 @@ public class DrawConverter {
             .build();
     }
 
-    public static List<DrawDto> toDraws(List<Draw> draws) {
+    public static List<DrawDto> toDrawDtos(List<Draw> draws) {
         return draws.stream()
-            .map(DrawConverter::toDraws)
+            .map(DrawConverter::toDrawDto)
             .toList();
     }
 }

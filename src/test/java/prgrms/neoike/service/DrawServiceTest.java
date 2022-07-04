@@ -1,15 +1,18 @@
 package prgrms.neoike.service;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cache.Cache.ValueWrapper;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.interceptor.SimpleKey;
 import org.springframework.transaction.annotation.Transactional;
 import prgrms.neoike.common.exception.EntityNotFoundException;
+import prgrms.neoike.domain.draw.Draw;
 import prgrms.neoike.domain.draw.DrawStatus;
 import prgrms.neoike.domain.member.*;
 import prgrms.neoike.domain.sneaker.*;
@@ -66,10 +69,10 @@ class DrawServiceTest {
 
     @AfterEach
     void afterEach() {
-        drawTicketRepository.deleteAll();
-        drawRepository.deleteAll();
-        memberRepository.deleteAll();
         sneakerRepository.deleteAll();
+        memberRepository.deleteAll();
+        drawRepository.deleteAll();
+        drawTicketRepository.deleteAll();
         sneakerStockRepository.deleteAll();
     }
 

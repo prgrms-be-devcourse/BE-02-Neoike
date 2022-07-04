@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
+import javax.transaction.Transactional;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,7 @@ import prgrms.neoike.domain.sneaker.Sneaker;
 import prgrms.neoike.domain.sneaker.SneakerCategory;
 import prgrms.neoike.domain.sneaker.SneakerStock;
 import prgrms.neoike.domain.sneaker.Stock;
+import prgrms.neoike.repository.DrawRepository;
 import prgrms.neoike.repository.DrawTicketRepository;
 import prgrms.neoike.repository.MemberRepository;
 import prgrms.neoike.repository.SneakerRepository;
@@ -34,6 +37,7 @@ import prgrms.neoike.service.dto.drawdto.DrawSaveDto;
 import prgrms.neoike.service.dto.drawdto.StockInfoDto;
 
 @SpringBootTest
+@Transactional
 class DrawWinnnerServiceTest {
 
     @Autowired
@@ -55,11 +59,23 @@ class DrawWinnnerServiceTest {
     SneakerRepository sneakerRepository;
 
     @Autowired
+    DrawRepository drawRepository;
+
+    @Autowired
     SneakerStockRepository sneakerStockRepository;
 
     LocalDateTime startDate = LocalDateTime.of(2025, 06, 12, 12, 00, 00);
     LocalDateTime endDate = LocalDateTime.of(2025, 06, 13, 12, 00, 00);
     LocalDateTime winningDate = LocalDateTime.of(2025, 06, 14, 12, 00, 00);
+
+    @AfterEach
+    void afterEach() {
+        sneakerRepository.deleteAll();
+        memberRepository.deleteAll();
+        drawRepository.deleteAll();
+        drawTicketRepository.deleteAll();
+        sneakerStockRepository.deleteAll();
+    }
 
     @Test
     @DisplayName("추첨을 진행한다")

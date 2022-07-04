@@ -105,11 +105,7 @@ class DrawControllerTest extends SecurityApiTest {
             .andExpect(status().isCreated())
             .andDo(print())
             .andDo(document(COMMON_DOCS_NAME,
-                requestHeaders(
-                    headerWithName(HttpHeaders.CONTENT_TYPE).description("컨텐츠 타입"),
-                    headerWithName(HttpHeaders.CONTENT_LENGTH).description("컨텐츠 길이"),
-                    headerWithName(HttpHeaders.HOST).description("호스트")
-                ),
+                requestHeaders(commonHeaders()),
                 requestFields(
                     fieldWithPath("sneakerId").type(NUMBER).description("sneaker id"),
                     fieldWithPath("startDate").type(STRING).description("응모 시작 날짜"),

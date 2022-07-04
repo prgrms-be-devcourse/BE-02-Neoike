@@ -82,6 +82,6 @@ public class DrawService {
     public List<DrawDto> getAvailableDraws() {
         List<Draw> availableDraws = drawRepository.findAllByWinningDateAfter(LocalDateTime.now());
 
-        return DrawConverter.toDraws(availableDraws);
+        return DrawConverter.toDrawDtos(availableDraws);
     }
 }
