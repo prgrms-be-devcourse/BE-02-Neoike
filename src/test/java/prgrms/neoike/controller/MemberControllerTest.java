@@ -35,6 +35,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
@@ -83,6 +85,7 @@ class MemberControllerTest extends SecurityApiTest {
             .perform(
                 post("/api/v1/members")
                     .content(content)
+                    .contentType(APPLICATION_JSON)
                     .accept(APPLICATION_JSON)
                     .with(SecurityMockMvcRequestPostProcessors.csrf()))
             .andExpect(status().isCreated())
@@ -103,6 +106,10 @@ class MemberControllerTest extends SecurityApiTest {
                     fieldWithPath("countryCode").type(JsonFieldType.STRING).description("휴대전화 국가코드"),
                     fieldWithPath("phoneNumber").type(JsonFieldType.STRING).description("휴대전화번호"),
                     fieldWithPath("gender").type(JsonFieldType.STRING).description("성별: MALE(남성)/FEMALE(여성)")
+                ),
+                responseHeaders(
+                    headerWithName(HttpHeaders.LOCATION).description("로케이션"),
+                    headerWithName(HttpHeaders.CONTENT_TYPE).description("컨텐츠 타입")
                 ),
                 responseFields(
                     fieldWithPath("memberId").type(JsonFieldType.NUMBER).description("아이디"),
