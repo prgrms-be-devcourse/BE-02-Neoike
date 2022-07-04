@@ -43,8 +43,8 @@ public class MemberService {
 
     private void validateDuplicatedMember(String email) {
         Optional<Member> foundMember = memberRepository.findOneByEmail(email);
-        if (foundMember.isPresent()) {
+        foundMember.ifPresent(member -> {
             throw new IllegalArgumentException(format("이미 존재하는 회원입니다. email : {0}", email));
-        }
+        });
     }
 }
