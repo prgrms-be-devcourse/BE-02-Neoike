@@ -62,7 +62,7 @@ public class DrawService {
 
                 // SneakerStock 에서 재고를 가지고와 SneakerItem 을 만든다.
                 Stock stock = foundSneakerStock.getStock();
-                stock.decreaseQuantityBy(sneakerStock.quantity());
+                stock.decreaseQuantity(sneakerStock.quantity());
                 sneakerStockRepository.flush();
 
                 sneakerItemRepository.save(
