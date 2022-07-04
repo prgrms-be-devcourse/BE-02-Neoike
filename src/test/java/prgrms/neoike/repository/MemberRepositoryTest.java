@@ -33,10 +33,10 @@ class MemberRepositoryTest {
             .build();
         Member savedMember = memberRepository.save(member);
 
-        Optional<Member> oneByEmail = memberRepository.findOneByEmail(savedMember.getEmail().getAddress());
+        Optional<Member> oneByEmail = memberRepository.findOneByEmail(savedMember.getEmail());
 
         assertThat(oneByEmail).isNotEmpty();
-        assertThat(oneByEmail.get().getEmail().getAddress()).isEqualTo(member.getEmail().getAddress());
+        assertThat(oneByEmail.get().getEmail()).isEqualTo(member.getEmail());
     }
 
     @Test

@@ -29,7 +29,7 @@ public class MemberService {
         Member member = MemberConverter.toMember(memberDto);
         Member savedMember = memberRepository.save(member);
 
-        return MemberConverter.toMemberResponse(savedMember.getId(), savedMember.getEmail().getAddress());
+        return MemberConverter.toMemberResponse(savedMember.getId(), savedMember.getEmail());
     }
 
     @Transactional(readOnly = true)

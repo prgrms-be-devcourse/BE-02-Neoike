@@ -46,7 +46,7 @@ class MemberServiceTest {
 
         given(memberRepository.save(any())).willReturn(member);
         when(member.getId()).thenReturn(1L);
-        when(member.getEmail()).thenReturn(new Email("test@gmail.com"));
+        when(member.getEmail()).thenReturn("test@gmail.com");
 
         //when
         MemberResponse joinMemberResponse = memberService.join(memberDto);
@@ -62,8 +62,8 @@ class MemberServiceTest {
         MemberDto memberDto = addTestMemberDto();
         Member member = mock(Member.class);
 
-        when(member.getEmail()).thenReturn(new Email("test@gmail.com"));
-        given(memberRepository.findOneByEmail(member.getEmail().getAddress()))
+        when(member.getEmail()).thenReturn("test@gmail.com");
+        given(memberRepository.findOneByEmail(member.getEmail()))
             .willReturn(Optional.of(member));
         //when
 
