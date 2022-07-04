@@ -40,7 +40,7 @@ class MemberRepositoryTest {
     }
 
     @Test
-    @DisplayName("유효한 email을 통해 member를 조회할 수 있다.")
+    @DisplayName("유효하지 않은 email로 조회하면 결과가 없다")
     void findOneByInValidEmailTest() {
         Optional<Member> oneByEmail = memberRepository.findOneByEmail("invalidTestEmail@gmail.com");
 
