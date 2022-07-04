@@ -23,16 +23,16 @@ public class SneakerCodeValidator implements ConstraintValidator<SneakerCode, St
     public boolean isValid(String value, ConstraintValidatorContext context) {
         return isNotBlank(value)
             && isSameWithLength(value)
-            && validatePrefix(value)
+            && isValidPrefix(value)
             && isContainsHyphen(value)
-            && validatePostfix(value);
+            && isValidPostfix(value);
     }
 
     private boolean isSameWithLength(String value) {
         return value.length() == length;
     }
 
-    private boolean validatePrefix(String value) {
+    private boolean isValidPrefix(String value) {
         String prefix = value.substring(0, 2);
 
         return isAllUpperCase(prefix) && isAlpha(prefix);
@@ -42,7 +42,7 @@ public class SneakerCodeValidator implements ConstraintValidator<SneakerCode, St
         return value.contains("-");
     }
 
-    private boolean validatePostfix(String value) {
+    private boolean isValidPostfix(String value) {
         return isDigits(value.substring(3));
     }
 }
