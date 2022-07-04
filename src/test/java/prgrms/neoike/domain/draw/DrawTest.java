@@ -11,9 +11,10 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 class DrawTest {
+
     @Test
     @DisplayName("draw 를 생성한다")
-    void creatDrawTest () {
+    void creatDrawTest() {
         // given
         LocalDateTime fastDate = LocalDateTime.of(2022, 06, 12, 12, 00, 00);
         LocalDateTime middleDate = LocalDateTime.of(2022, 06, 13, 12, 00, 00);
@@ -22,18 +23,18 @@ class DrawTest {
 
         // when
         Draw draw = Draw.builder()
-                .startDate(fastDate)
-                .endDate(middleDate)
-                .winningDate(lastDate)
-                .quantity(quantity)
-                .build();
+            .startDate(fastDate)
+            .endDate(middleDate)
+            .winningDate(lastDate)
+            .quantity(quantity)
+            .build();
 
         // then
         assertAll(
-                () -> Assertions.assertThat(draw.getStartDate()).isEqualTo(fastDate),
-                () -> Assertions.assertThat(draw.getEndDate()).isEqualTo(middleDate),
-                () -> Assertions.assertThat(draw.getWinningDate()).isEqualTo(lastDate),
-                () -> Assertions.assertThat(draw.getQuantity()).isEqualTo(quantity)
+            () -> Assertions.assertThat(draw.getStartDate()).isEqualTo(fastDate),
+            () -> Assertions.assertThat(draw.getEndDate()).isEqualTo(middleDate),
+            () -> Assertions.assertThat(draw.getWinningDate()).isEqualTo(lastDate),
+            () -> Assertions.assertThat(draw.getQuantity()).isEqualTo(quantity)
         );
     }
 
@@ -49,13 +50,13 @@ class DrawTest {
 
         // when // then
         assertThatThrownBy(() -> Draw.builder()
-                .startDate(fastDate)
-                .endDate(middleDate)
-                .winningDate(lastDate)
-                .quantity(invalidQuantity)
-                .build())
-                .hasMessage("입력된 수량이 음수 입니다.")
-                .isInstanceOf(IllegalArgumentException.class);
+            .startDate(fastDate)
+            .endDate(middleDate)
+            .winningDate(lastDate)
+            .quantity(invalidQuantity)
+            .build())
+            .hasMessage("입력된 수량이 음수 입니다.")
+            .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -69,42 +70,43 @@ class DrawTest {
 
         // when // then
         assertThatThrownBy(() -> Draw.builder()
-                .startDate(middleDate)
-                .endDate(fastDate)
-                .winningDate(lastDate)
-                .quantity(quantity)
-                .build())
-                .hasMessage(format("입력된 날짜의 순서가 맞지 않습니다. (startDate : {0} , endDate : {1})", middleDate, fastDate))
-                .isInstanceOf(IllegalArgumentException.class);
+            .startDate(middleDate)
+            .endDate(fastDate)
+            .winningDate(lastDate)
+            .quantity(quantity)
+            .build())
+            .hasMessage(format("입력된 날짜의 순서가 맞지 않습니다. (startDate : {0} , endDate : {1})", middleDate,
+                fastDate))
+            .isInstanceOf(IllegalArgumentException.class);
 
         assertThatThrownBy(() -> Draw.builder()
-                .startDate(middleDate)
-                .endDate(lastDate)
-                .winningDate(fastDate)
-                .quantity(quantity)
-                .build())
-                .hasMessage(format("입력된 날짜의 순서가 맞지 않습니다. (endDate : {0} , winningDate : {1})", lastDate, fastDate))
-                .isInstanceOf(IllegalArgumentException.class);
+            .startDate(middleDate)
+            .endDate(lastDate)
+            .winningDate(fastDate)
+            .quantity(quantity)
+            .build())
+            .hasMessage(format("입력된 날짜의 순서가 맞지 않습니다. (endDate : {0} , winningDate : {1})", lastDate,
+                fastDate))
+            .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     @DisplayName("해당 응모 남은개수가 0일때 응모권을 생성할 수 없다")
-    void invalidCreateDrawTicketTest () {
+    void invalidCreateDrawTicketTest() {
         // given
         LocalDateTime fastDate = LocalDateTime.of(2022, 06, 12, 12, 00, 00);
         LocalDateTime middleDate = LocalDateTime.of(2022, 06, 13, 12, 00, 00);
         LocalDateTime lastDate = LocalDateTime.of(2022, 06, 14, 12, 00, 00);
 
         Draw draw = Draw.builder()
-                .startDate(fastDate)
-                .endDate(middleDate)
-                .winningDate(lastDate)
-                .quantity(0)
-                .build();
-
+            .startDate(fastDate)
+            .endDate(middleDate)
+            .winningDate(lastDate)
+            .quantity(0)
+            .build();
 
         // when // then
         assertThatThrownBy(() -> draw.reduceDrawQuantity())
-                .isInstanceOf(IllegalArgumentException.class);
+            .isInstanceOf(IllegalArgumentException.class);
     }
 }

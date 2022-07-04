@@ -1,31 +1,34 @@
 package prgrms.neoike.controller.mapper;
 
+import static lombok.AccessLevel.PRIVATE;
+
+import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 import prgrms.neoike.controller.dto.drawdto.DrawSaveRequest;
-import prgrms.neoike.controller.dto.drawdto.ItemSizeAndQuantity;
-import prgrms.neoike.service.dto.drawdto.ServiceDrawSaveDto;
-import prgrms.neoike.service.dto.drawdto.ServiceItemDto;
+import prgrms.neoike.controller.dto.drawdto.StockInfo;
+import prgrms.neoike.service.dto.drawdto.DrawSaveDto;
+import prgrms.neoike.service.dto.drawdto.StockInfoDto;
 
-@Component
+@NoArgsConstructor(access = PRIVATE)
 public class DrawMapper {
-    public ServiceDrawSaveDto toDrawSaveDto(DrawSaveRequest drawSaveRequest) {
-        return new ServiceDrawSaveDto(
-                drawSaveRequest.sneakerId(),
-                drawSaveRequest.startDate(),
-                drawSaveRequest.endDate(),
-                drawSaveRequest.winningDate(),
-                drawSaveRequest.sneakerItems().stream()
-                        .map(this::toItemDto)
-                        .toList(),
-                drawSaveRequest.quantity()
-        );
 
+    public static DrawSaveDto toDrawSaveDto(DrawSaveRequest drawSaveRequest) {
+        return new DrawSaveDto(
+            drawSaveRequest.sneakerId(),
+            drawSaveRequest.startDate(),
+            drawSaveRequest.endDate(),
+            drawSaveRequest.winningDate(),
+            drawSaveRequest.sneakerStocks().stream()
+                .map(DrawMapper::toItemDto)
+                .toList(),
+            drawSaveRequest.quantity()
+        );
     }
 
-    private ServiceItemDto toItemDto(ItemSizeAndQuantity itemSizeAndQuantity){
-        return new ServiceItemDto(
-                itemSizeAndQuantity.size(),
-                itemSizeAndQuantity.quantity()
+    private static StockInfoDto toItemDto(StockInfo stockInfo) {
+        return new StockInfoDto(
+            stockInfo.size(),
+            stockInfo.quantity()
         );
     }
 }

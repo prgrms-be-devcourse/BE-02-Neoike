@@ -9,34 +9,35 @@ import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.*;
 
 class DrawTicketTest {
+
     @Test
     @DisplayName("drawTicket을 생성한다")
-    void creatDrawTest () {
+    void creatDrawTest() {
         // given
         LocalDateTime fastDate = LocalDateTime.of(2022, 06, 12, 12, 00, 00);
         LocalDateTime middleDate = LocalDateTime.of(2022, 06, 13, 12, 00, 00);
         LocalDateTime lastDate = LocalDateTime.of(2022, 06, 14, 12, 00, 00);
 
         Draw draw = Draw.builder()
-                .startDate(fastDate)
-                .endDate(middleDate)
-                .winningDate(lastDate)
-                .quantity(50)
-                .build();
+            .startDate(fastDate)
+            .endDate(middleDate)
+            .winningDate(lastDate)
+            .quantity(50)
+            .build();
 
         Member member = Member.builder()
-                .name("이용훈")
-                .build();
+            .name("이용훈")
+            .build();
 
         // when
         DrawTicket drawTicket = DrawTicket.builder()
-                .member(member)
-                .draw(draw)
-                .sneakerName("airjordan")
-                .price(27500)
-                .code("AB1234")
-                .size(275)
-                .build();
+            .member(member)
+            .draw(draw)
+            .sneakerName("airjordan")
+            .price(27500)
+            .code("AB1234")
+            .size(275)
+            .build();
 
         // then
         assertEquals(drawTicket.getDraw().getStartDate(), fastDate);

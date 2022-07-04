@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface DrawTicketRepository extends JpaRepository<DrawTicket, Long> {
+
     Optional<DrawTicket> findByMemberAndDraw(Member member, Draw draw);
 
     List<DrawTicket> findByMember(Member member);
