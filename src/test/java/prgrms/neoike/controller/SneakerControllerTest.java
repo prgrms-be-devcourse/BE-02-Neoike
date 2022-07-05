@@ -1,15 +1,14 @@
 package prgrms.neoike.controller;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpHeaders;
+import org.springframework.restdocs.headers.HeaderDescriptor;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.request.ParameterDescriptor;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 import prgrms.neoike.config.SecurityApiTest;
 import prgrms.neoike.controller.dto.sneaker.SneakerRegisterRequest;
 import prgrms.neoike.controller.dto.sneaker.SneakerRequest;
@@ -21,19 +20,19 @@ import prgrms.neoike.service.dto.sneaker.SneakerIdResponse;
 import prgrms.neoike.service.dto.sneaker.SneakerResponse;
 import prgrms.neoike.service.dto.sneaker.SneakerStockResponse;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
-import static java.time.LocalDateTime.of;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.JsonFieldType.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static prgrms.neoike.domain.sneaker.MemberCategory.MEN;
 import static prgrms.neoike.domain.sneaker.SneakerCategory.JORDAN;
@@ -41,187 +40,170 @@ import static prgrms.neoike.domain.sneaker.SneakerCategory.JORDAN;
 @WebMvcTest(controllers = SneakerController.class)
 class SneakerControllerTest extends SecurityApiTest {
 
-    @Autowired
-    MockMvc mvc;
+    private static final String SNEAKER_PREFIX = "sneaker.";
+    private static final String SNEAKER_STOCKS_PREFIX = "sneakerStocks[*].";
 
     @MockBean
     SneakerService sneakerService;
 
     @Test
     @DisplayName("신발 생성이 정상적으로 이루어진다.")
-    void testRegisterNewSneaker() throws Exception {
+    void postSneaker() throws Exception {
         SneakerRegisterRequest registerRequest = createRegisterRequest();
-        String requestJson = objectMapper.writeValueAsString(registerRequest);
+        String requestString = objectMapper.writeValueAsString(registerRequest);
+        SneakerIdResponse response = new SneakerIdResponse(1L, "DS-1234567");
 
+        //given
         given(sneakerService.registerSneaker(any()))
-            .willReturn(new SneakerIdResponse(1L, "DS-1234567"));
+            .willReturn(response);
 
-        MvcResult result = mvc.perform(
-            post("/api/v1/sneakers")
-                .content(requestJson)
-                .contentType(APPLICATION_JSON))
-            .andExpect(status().isCreated())
+        //when
+        ResultActions resultActions = mockMvc
+            .perform(
+                post("/api/v1/sneakers")
+                    .content(requestString)
+                    .contentType(APPLICATION_JSON));
+
+        //then
+        resultActions
+            .andExpectAll(
+                status().isCreated(),
+                content().json(objectMapper.writeValueAsString(response)))
             .andDo(
-                document("sneaker-register",
+                document(COMMON_DOCS_NAME,
+                    requestHeaders(commonHeaders()).and(host()),
                     requestFields(imagePaths())
-                        .andWithPrefix("sneaker.", sneaker())
-                        .andWithPrefix("sneakerStocks[*].", sneakerStock()),
-                    responseFields(sneakerId(), sneakerCode())))
-            .andReturn();
-
-        String resultString = result.getResponse().getContentAsString();
-        SneakerIdResponse response = objectMapper.readValue(resultString, SneakerIdResponse.class);
-
-        assertThat(response).isNotNull();
-        assertAll(
-            () -> assertThat(response.sneakerId()).isEqualTo(1L),
-            () -> assertThat(response.code()).isEqualTo("DS-1234567")
-        );
+                        .andWithPrefix(SNEAKER_PREFIX, commonSneaker())
+                        .andWithPrefix(SNEAKER_STOCKS_PREFIX, sneakerStock()),
+                    responseHeaders(commonHeaders()).and(location()),
+                    responseFields(sneakerId(), sneakerCode())));
     }
 
     @Test
     @DisplayName("신발 아이디와 코드로 신발을 상세조회 할 수 있다.")
-    void testGetSneakerDetail() throws Exception {
+    void getSneaker() throws Exception {
+        SneakerDetailResponse response = createDetailResponse();
+
+        //given
         given(sneakerService.getSneakerDetail(any()))
-            .willReturn(createDetailResponse());
+            .willReturn(response);
 
-        MvcResult result = mvc
-            .perform(get("/api/v1/sneakers/{sneakerId}/{code}", 1, "DS-1234567"))
-            .andExpect(status().isOk())
+        //when
+        ResultActions resultActions = mockMvc
+            .perform(
+                get("/api/v1/sneakers/{sneakerId}/{code}", 1, "DS-1234567"));
+
+        //then
+        resultActions
+            .andExpectAll(
+                status().isOk(),
+                content().json(objectMapper.writeValueAsString(response)))
             .andDo(
-                document("sneaker-detail",
+                document(COMMON_DOCS_NAME,
                     pathParameters(sneakerIdPath(), codePath()),
+                    responseHeaders(commonHeaders()),
                     responseFields()
-                        .andWithPrefix("sneakerStocks.[*].", sneakerStock())
-                        .andWithPrefix("sneakerStocks.[*].", sneakerId(), stockId())
-                        .andWithPrefix("sneaker.", sneaker())
-                        .andWithPrefix("sneaker.", sneakerId(), imagePaths())))
-            .andReturn();
-
-        String resultString = result.getResponse().getContentAsString();
-        SneakerDetailResponse response = objectMapper.readValue(resultString, SneakerDetailResponse.class);
-
-        assertThat(response).isNotNull();
-
-        SneakerResponse sneakerResponse = response.sneaker();
-        List<SneakerStockResponse> sneakerStockResponses = response.sneakerStocks();
-
-        assertAll(
-            () -> assertThat(sneakerResponse.code()).isEqualTo("DS-1234567"),
-            () -> assertThat(sneakerResponse.imagePaths().size()).isOne(),
-            () -> assertThat(sneakerResponse.price()).isNotNegative(),
-            () -> assertThat(sneakerStockResponses).contains(new SneakerStockResponse(1L, 250, 10, 2L))
-        );
+                        .andWithPrefix(SNEAKER_STOCKS_PREFIX, sneakerId())
+                        .andWithPrefix(SNEAKER_STOCKS_PREFIX, sneakerStock())
+                        .andWithPrefix(SNEAKER_STOCKS_PREFIX, stockId())
+                        .andWithPrefix(SNEAKER_PREFIX, sneakerId())
+                        .andWithPrefix(SNEAKER_PREFIX, commonSneaker())
+                        .andWithPrefix(SNEAKER_PREFIX, imagePaths())));
     }
 
     @Test
     @DisplayName("신발을 페이징 처리를 하여 전체조회 할 수 있다.")
-    void testGetSneakers() throws Exception {
-        given(sneakerService.getSneakers(any()))
-            .willReturn(createPageResponseWithSneakerResponse());
+    void getSneakers() throws Exception {
+        PageResponse<SneakerResponse> response = createPageResponseWithSneakerResponse();
 
-        MvcResult result = mvc
+        //given
+        given(sneakerService.getSneakers(any()))
+            .willReturn(response);
+
+        //when
+        ResultActions resultActions = mockMvc
             .perform(
                 get("/api/v1/sneakers")
                     .queryParam("page", "1")
                     .queryParam("size", "1")
                     .queryParam("sortBy", "createdAt")
-                    .queryParam("direction", "desc"))
-            .andExpect(status().isOk())
+                    .queryParam("direction", "desc"));
+
+        //then
+        resultActions
+            .andExpectAll(
+                status().isOk(),
+                content().json(objectMapper.writeValueAsString(response)))
             .andDo(
-                document("sneaker-sneakers",
+                document(COMMON_DOCS_NAME,
                     requestParameters(pageParam()),
-                    responseFields(page())
-                        .and(subsectionWithPath("contents").type(ARRAY).description("페이징 컨텐츠"))))
-            .andReturn();
-
-        String resultString = result.getResponse().getContentAsString();
-        PageResponse<SneakerResponse> pageResponse = objectMapper
-            .readValue(resultString, new TypeReference<>() {});
-
-        assertAll(
-            () -> assertThat(pageResponse.page()).isEqualTo(1),
-            () -> assertThat(pageResponse.isFirst()).isTrue(),
-            () -> assertThat(pageResponse.sorted()).isTrue(),
-            () -> assertThat(pageResponse.size()).isEqualTo(1)
-        );
-
-        List<SneakerResponse> contents = pageResponse.contents();
-
-        assertThat(contents).isNotEmpty();
-        assertAll(
-            () -> assertThat(contents).hasSize(1),
-            () -> assertThat(contents).containsExactly(createSneakerResponse()),
-            () -> assertThat(contents.get(0)).isInstanceOf(SneakerResponse.class),
-            () -> assertThat(contents.get(0).sneakerId()).isEqualTo(1)
-        );
+                    responseHeaders(commonHeaders()),
+                    responseFields(subsectionWithPath("contents").type(ARRAY).description("페이징 컨텐츠"))
+                        .and(page())));
     }
 
     @Test
     @DisplayName("입력된 신발 재고의 아이디와 사이즈에 맞는 재고를 찾아서 입력된 수량만큼 감소시킨다.")
-    void testDecreaseSneakerStock() throws Exception {
+    void putSneakerStockDecrease() throws Exception {
         SneakerStockRequest stockRequest = createTestStockRequest(250, 10);
         String requestString = objectMapper.writeValueAsString(stockRequest);
+        SneakerStockResponse response = new SneakerStockResponse(1L, 250, 0, 2L);
 
+        //given
         given(sneakerService.decreaseSneakerStock(any()))
-            .willReturn(new SneakerStockResponse(1L, 250, 0, 2L));
+            .willReturn(response);
 
-        MvcResult result = mvc
+        //when
+        ResultActions resultActions = mockMvc
             .perform(
                 put("/api/v1/sneakers/out/stocks/{stockId}", 1L)
                     .content(requestString)
-                    .contentType(APPLICATION_JSON))
-            .andExpect(status().isOk())
+                    .contentType(APPLICATION_JSON));
+
+        //then
+        resultActions
+            .andExpectAll(
+                status().isOk(),
+                content().json(objectMapper.writeValueAsString(response)))
             .andDo(
-                document("sneaker-stock_out",
+                document(COMMON_DOCS_NAME,
+                    requestHeaders(commonHeaders()).and(host()),
                     pathParameters(stockIdPath()),
                     requestFields(sneakerStock()),
-                    responseFields(sneakerStock()).and(sneakerId(), stockId())))
-            .andReturn();
-
-        String resultString = result.getResponse().getContentAsString();
-        SneakerStockResponse leftSneakerStockResponse = objectMapper.readValue(resultString, SneakerStockResponse.class);
-
-        assertThat(leftSneakerStockResponse).isNotNull();
-        assertAll(
-            () -> assertThat(leftSneakerStockResponse.stockId()).isEqualTo(1),
-            () -> assertThat(leftSneakerStockResponse.sneakerId()).isEqualTo(2),
-            () -> assertThat(leftSneakerStockResponse.quantity()).isZero(),
-            () -> assertThat(leftSneakerStockResponse.size()).isEqualTo(250)
-        );
+                    responseHeaders(commonHeaders()),
+                    responseFields(stockId()).and(sneakerStock()).and(sneakerId())));
     }
 
     @Test
     @DisplayName("입력된 신발 재고의 아이디와 사이즈에 맞는 재고를 찾아서 입력된 수량만큼 증가시킨다.")
-    void testIncreaseSneakerStock() throws Exception {
+    void putSneakerStockIncrease() throws Exception {
         SneakerStockRequest stockRequest = createTestStockRequest(270, 100);
         String requestString = objectMapper.writeValueAsString(stockRequest);
+        SneakerStockResponse response = new SneakerStockResponse(1L, 270, 110, 2L);
 
+        //given
         given(sneakerService.increaseSneakerStock(any()))
-            .willReturn(new SneakerStockResponse(1L, 270, 110, 2L));
+            .willReturn(response);
 
-        MvcResult result = mvc
+        //when
+        ResultActions resultActions = mockMvc
             .perform(
                 put("/api/v1/sneakers/in/stocks/{stockId}", 1L)
                     .content(requestString)
-                    .contentType(APPLICATION_JSON))
-            .andExpect(status().isOk())
+                    .contentType(APPLICATION_JSON));
+
+        //then
+        resultActions
+            .andExpectAll(
+                status().isOk(),
+                content().json(objectMapper.writeValueAsString(response)))
             .andDo(
-                document("sneaker-stock_in",
+                document(COMMON_DOCS_NAME,
+                    requestHeaders(commonHeaders()).and(host()),
+                    pathParameters(stockIdPath()),
                     requestFields(sneakerStock()),
-                    responseFields(sneakerStock()).and(stockId(), sneakerId())))
-            .andReturn();
-
-        String resultString = result.getResponse().getContentAsString();
-        SneakerStockResponse leftSneakerStockResponse = objectMapper.readValue(resultString, SneakerStockResponse.class);
-
-        assertThat(leftSneakerStockResponse).isNotNull();
-        assertAll(
-            () -> assertThat(leftSneakerStockResponse.stockId()).isEqualTo(1),
-            () -> assertThat(leftSneakerStockResponse.sneakerId()).isEqualTo(2),
-            () -> assertThat(leftSneakerStockResponse.quantity()).isEqualTo(110),
-            () -> assertThat(leftSneakerStockResponse.size()).isEqualTo(270)
-        );
+                    responseHeaders(commonHeaders()),
+                    responseFields(stockId()).and(sneakerStock()).and(sneakerId())));
     }
 
     private SneakerStockRequest createTestStockRequest(int size, int quantity) {
@@ -260,7 +242,7 @@ class SneakerControllerTest extends SecurityApiTest {
             .price(100000)
             .description("this is test jordan.")
             .code("DS-1234567")
-            .releaseDate(of(2022, 10, 10, 10, 0, 0))
+            .releaseDate(LocalDateTime.of(2022, 10, 10, 10, 0, 0))
             .imagePaths(List.of("/src/main/~"))
             .build();
     }
@@ -276,7 +258,7 @@ class SneakerControllerTest extends SecurityApiTest {
                 .price(100000)
                 .description("this is test jordan.")
                 .code("DS-1234567")
-                .releaseDate(of(2022, 10, 10, 10, 0, 0))
+                .releaseDate(LocalDateTime.of(2022, 10, 10, 10, 0, 0))
                 .build(),
             List.of(
                 createTestStockRequest(250, 10),
@@ -284,36 +266,63 @@ class SneakerControllerTest extends SecurityApiTest {
         );
     }
 
-    private FieldDescriptor sneakerId() { return fieldWithPath("sneakerId").type(NUMBER).description("신발 아이디"); }
-
-    private FieldDescriptor sneakerCode() { return fieldWithPath("code").type(STRING).description("코드"); }
-
-    private FieldDescriptor stockId() {
-        return fieldWithPath("stockId").type(NUMBER).description("신발 재고 아이디");
-    }
-
-    private FieldDescriptor imagePaths() { return fieldWithPath("imagePaths").type(ARRAY).description("신발 이미지 경로"); }
-
-    private ParameterDescriptor codePath() { return parameterWithName("code").description("코드"); }
-
-    private ParameterDescriptor stockIdPath() { return parameterWithName("stockId").description("신발 재고 아이디"); }
-
-    private ParameterDescriptor sneakerIdPath() { return parameterWithName("sneakerId").description("신발 아이디"); }
-
-    private List<FieldDescriptor> sneakerStock() {
+    private List<HeaderDescriptor> commonHeaders() {
         return List.of(
-            fieldWithPath("size").type(NUMBER).description("신발 사이즈"),
-            fieldWithPath("quantity").type(NUMBER).description("수량")
+            headerWithName(HttpHeaders.CONTENT_TYPE).description("컨텐츠 타입"),
+            headerWithName(HttpHeaders.CONTENT_LENGTH).description("컨텐츠 길이")
         );
     }
 
-    private List<FieldDescriptor> sneaker() {
+    private HeaderDescriptor location() {
+        return headerWithName(HttpHeaders.LOCATION).description("리다이렉트 주소");
+    }
+
+    private HeaderDescriptor host() {
+        return headerWithName(HttpHeaders.HOST).description("호스트");
+    }
+
+    private FieldDescriptor imagePaths() {
+        return fieldWithPath("imagePaths").type(ARRAY).description("신발 이미지 경로").optional();
+    }
+
+    private ParameterDescriptor codePath() {
+        return parameterWithName("code").description("코드");
+    }
+
+    private ParameterDescriptor stockIdPath() {
+        return parameterWithName("stockId").description("재고 아이디");
+    }
+
+    private ParameterDescriptor sneakerIdPath() {
+        return parameterWithName("sneakerId").description("신발 아이디");
+    }
+
+    private FieldDescriptor sneakerId() {
+        return fieldWithPath("sneakerId").type(NUMBER).description("신발 아이디");
+    }
+
+    private FieldDescriptor sneakerCode() {
+        return fieldWithPath("code").type(STRING).description("코드");
+    }
+
+    private FieldDescriptor stockId() {
+        return fieldWithPath("stockId").type(NUMBER).description("재고 아이디");
+    }
+
+    private List<FieldDescriptor> sneakerStock() {
+        return List.of(
+            fieldWithPath("size").type(NUMBER).description("재고 사이즈"),
+            fieldWithPath("quantity").type(NUMBER).description("재고 수량")
+        );
+    }
+
+    private List<FieldDescriptor> commonSneaker() {
         return List.of(
             fieldWithPath("memberCategory").type(STRING).description("멤버 카테고리"),
             fieldWithPath("sneakerCategory").type(STRING).description("신발 카테고리"),
             fieldWithPath("name").type(STRING).description("이름"),
             fieldWithPath("price").type(NUMBER).description("가격"),
-            fieldWithPath("description").type(STRING).description("상품설명"),
+            fieldWithPath("description").type(STRING).description("설명"),
             fieldWithPath("code").type(STRING).description("코드"),
             fieldWithPath("releaseDate").type(STRING).description("출시일자")
         );
@@ -325,18 +334,18 @@ class SneakerControllerTest extends SecurityApiTest {
             fieldWithPath("size").type(NUMBER).description("페이지 사이즈"),
             fieldWithPath("totalPages").type(NUMBER).description("전체 페이지수"),
             fieldWithPath("totalElements").type(NUMBER).description("전체 컨텐츠수"),
-            fieldWithPath("sorted").type(BOOLEAN).description("정렬상태"),
-            fieldWithPath("isFirst").type(BOOLEAN).description("첫 번째 페이지"),
+            fieldWithPath("sorted").type(BOOLEAN).description("정렬 상태"),
+            fieldWithPath("isFirst").type(BOOLEAN).description("처음 페이지"),
             fieldWithPath("isLast").type(BOOLEAN).description("마지막 페이지")
         );
     }
 
     private List<ParameterDescriptor> pageParam() {
         return List.of(
-            parameterWithName("page").description("페이지"),
-            parameterWithName("size").description("페이지 사이즈"),
-            parameterWithName("sortBy").description("정렬 기준"),
-            parameterWithName("direction").description("정렬 방향")
+            parameterWithName("page").description("페이지").optional(),
+            parameterWithName("size").description("페이지 사이즈").optional(),
+            parameterWithName("sortBy").description("정렬 기준").optional(),
+            parameterWithName("direction").description("정렬 방향").optional()
         );
     }
 }

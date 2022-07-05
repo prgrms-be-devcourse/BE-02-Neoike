@@ -20,7 +20,9 @@ public class SneakerImageController {
     private final SneakerImageService sneakerImageService;
 
     @PostMapping
-    public ResponseEntity<SneakerImageResponse> uploadImages(List<MultipartFile> files) {
+    public ResponseEntity<SneakerImageResponse> uploadImages(
+        List<MultipartFile> files
+    ) {
         SneakerImageResponse imageIdResponses = sneakerImageService.upload(new SneakerImageUploadDto(files));
 
         return ResponseEntity.ok(imageIdResponses);

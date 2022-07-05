@@ -13,3 +13,11 @@ endif::[]
 include::http-status-code.adoc[]
 
 include::member.adoc[]
+
+include::sneaker.adoc[]
+
+include::sneaker-image.adoc[]
+
+include::draw.adoc[]
+
+include::draw-ticket.adoc[]
