@@ -16,7 +16,6 @@ import static java.text.MessageFormat.format;
 public class Password {
 
     private static final String PASSWORD_REGEX = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,16}$";
-
     private String password;
 
     public Password(String password) {

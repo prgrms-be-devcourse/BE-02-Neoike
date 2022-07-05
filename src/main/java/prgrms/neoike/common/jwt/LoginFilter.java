@@ -9,8 +9,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import prgrms.neoike.controller.dto.memberdto.TokenResponse;
-import prgrms.neoike.service.dto.memberdto.LoginDto;
+import prgrms.neoike.controller.dto.member.TokenResponse;
+import prgrms.neoike.service.dto.member.LoginDto;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -23,7 +23,6 @@ import java.util.Objects;
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
-
     private final TokenProvider tokenProvider;
 
     public LoginFilter(AuthenticationManagerBuilder authenticationManagerBuilder, TokenProvider tokenProvider) {
@@ -44,10 +43,10 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         }
         log.info("LoginDto {}", Objects.requireNonNull(loginDto).email());
         UsernamePasswordAuthenticationToken authenticationToken
-                = new UsernamePasswordAuthenticationToken(loginDto.email(), loginDto.password());
+            = new UsernamePasswordAuthenticationToken(loginDto.email(), loginDto.password());
 
         Authentication authentication
-                = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+            = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         return authentication;

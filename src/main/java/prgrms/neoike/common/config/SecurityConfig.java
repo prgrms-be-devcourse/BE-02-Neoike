@@ -5,18 +5,21 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import prgrms.neoike.common.jwt.*;
+import org.springframework.security.web.SecurityFilterChain;
+import prgrms.neoike.common.jwt.JwtAccessDeniedHandler;
+import prgrms.neoike.common.jwt.JwtAuthenticationEntryPoint;
+import prgrms.neoike.common.jwt.JwtSecurityConfig;
+import prgrms.neoike.common.jwt.TokenProvider;
 
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig {
 
     private final TokenProvider tokenProvider;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
@@ -28,40 +31,42 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
-    @Override
-    public void configure(WebSecurity web) throws Exception {
-        web
-                .ignoring()
-                .antMatchers(
-                        "/h2-console/**"
-                );
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return web -> web
+            .ignoring()
+            .antMatchers(
+                "/h2-console/**"
+            );
     }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf().disable()
+            .csrf().disable()
 
-                .exceptionHandling()
-                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-                .accessDeniedHandler(jwtAccessDeniedHandler)
+            .exceptionHandling()
+            .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+            .accessDeniedHandler(jwtAccessDeniedHandler)
 
-                .and()
-                .headers()
-                .frameOptions()
-                .sameOrigin()
+            .and()
+            .headers()
+            .frameOptions()
+            .sameOrigin()
 
-                .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .and()
+            .sessionManagement()
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
-                .and()
-                .authorizeRequests()
-                    .antMatchers("/api/v1/members/history").authenticated()
-                .anyRequest()
-                    .permitAll()
+            .and()
+            .authorizeRequests()
+            .antMatchers("/api/**/members/draw-history").authenticated()
+            .anyRequest()
+            .permitAll()
 
-                .and()
-                .apply(new JwtSecurityConfig(tokenProvider, authenticationManagerBuilder));
+            .and()
+            .apply(new JwtSecurityConfig(tokenProvider, authenticationManagerBuilder));
+
+        return http.build();
     }
 }

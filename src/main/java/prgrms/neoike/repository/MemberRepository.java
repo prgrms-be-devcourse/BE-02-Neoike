@@ -8,6 +8,6 @@ import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
-    @Query("SELECT m FROM Member m WHERE m.email.email = ?1")
+    @Query("SELECT m FROM Member m WHERE m.email.address = ?1")
     Optional<Member> findOneByEmail(String email);
 }

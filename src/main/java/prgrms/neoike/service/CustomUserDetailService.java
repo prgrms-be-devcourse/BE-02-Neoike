@@ -27,11 +27,11 @@ public class CustomUserDetailService implements UserDetailsService {
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
         return memberRepository.findOneByEmail(username)
-                .map(this::createUser)
-                .orElseThrow(() -> new EntityNotFoundException(format("회원을 찾을 수 없습니다. email : {0}", username)));
+            .map(this::createUser)
+            .orElseThrow(() -> new EntityNotFoundException(format("회원을 찾을 수 없습니다. email : {0}", username)));
     }
 
     private User createUser(Member member) {
-        return new User(member.getEmail().getEmail(), member.getPassword().getPassword(), List.of());
+        return new User(member.getEmail().getAddress(), member.getPassword().getPassword(), List.of());
     }
 }

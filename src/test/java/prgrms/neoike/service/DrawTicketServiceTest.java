@@ -11,6 +11,7 @@ import prgrms.neoike.domain.sneaker.*;
 import prgrms.neoike.repository.*;
 import prgrms.neoike.service.dto.drawticketdto.DrawTicketsResponse;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static java.text.MessageFormat.format;

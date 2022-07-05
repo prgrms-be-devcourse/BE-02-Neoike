@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import prgrms.neoike.domain.BaseTimeEntity;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static javax.persistence.EnumType.STRING;
@@ -31,7 +32,7 @@ public class Member extends BaseTimeEntity {
     private PhoneNumber phoneNumber;
 
     @Column(name = "birthday", nullable = false)
-    private LocalDateTime birthDay;
+    private LocalDate birthDay;
 
     @Embedded
     private Email email;
@@ -45,13 +46,13 @@ public class Member extends BaseTimeEntity {
 
     @Builder
     public Member(
-            String name,
-            Password password,
-            PhoneNumber phoneNumber,
-            LocalDateTime birthDay,
-            Email email,
-            Address address,
-            Gender gender
+        String name,
+        Password password,
+        PhoneNumber phoneNumber,
+        LocalDate birthDay,
+        Email email,
+        Address address,
+        Gender gender
     ) {
         this.name = name;
         this.password = password;
