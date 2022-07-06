@@ -2,6 +2,7 @@ package prgrms.neoike.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -157,7 +158,7 @@ class DrawWinnnerServiceTest {
             .password(new Password("123abcAB!!"))
             .phoneNumber(new PhoneNumber(CountryType.KOR, "01012341566"))
             .address(new Address("도시", "거리", "000222"))
-            .birthDay(LocalDateTime.now())
+            .birthDay(LocalDate.now())
             .email(new Email("test@test.com"))
             .gender(Gender.MALE)
             .build();

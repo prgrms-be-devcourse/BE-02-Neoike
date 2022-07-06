@@ -238,7 +238,7 @@ class DrawTicketServiceTest {
             .password(new Password("123abcAB!!"))
             .phoneNumber(new PhoneNumber(CountryType.KOR, "01012341566"))
             .address(new Address("도시", "거리", "000222"))
-            .birthDay(LocalDateTime.now())
+            .birthDay(LocalDate.now())
             .email(new Email("test@test.com"))
             .gender(Gender.MALE)
             .build();
