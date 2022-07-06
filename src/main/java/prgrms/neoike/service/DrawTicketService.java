@@ -1,5 +1,6 @@
 package prgrms.neoike.service;
 
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +45,7 @@ public class DrawTicketService {
 
         Sneaker sneaker = draw.getSneaker();
 
+        validateTime(draw); // 응모 가능 시간에 응모한 사람인지 체크
         validateUniqueTicket(member, draw); // 이미 응모한 사람인지 체크
         validateSizeInput(draw, size); // 응모권의 사이즈가 SneakerItem 의 사이즈 중에 하나인지 체크
         draw.reduceDrawQuantity(); // 응모권 재고가 0 이상인지 체크 + 응모권 차감
@@ -60,6 +62,16 @@ public class DrawTicketService {
         );
 
         return DrawConverter.toDrawTicketResponse(save);
+    }
+
+    private void validateTime(Draw draw) {
+        LocalDateTime startDate = draw.getStartDate();
+        LocalDateTime endDate = draw.getEndDate();
+        LocalDateTime now = LocalDateTime.now();
+
+        if(startDate.isAfter(now) || endDate.isBefore(now)){
+            throw new IllegalArgumentException("응모 가능 시간이 아닙니다.");
+        }
     }
 
     private void validateSizeInput(Draw draw, int size) {
