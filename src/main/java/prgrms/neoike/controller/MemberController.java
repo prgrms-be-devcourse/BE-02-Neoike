@@ -2,13 +2,15 @@ package prgrms.neoike.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import prgrms.neoike.controller.dto.member.MemberSaveRequest;
 import prgrms.neoike.controller.mapper.MemberMapper;
 import prgrms.neoike.service.MemberService;
+import prgrms.neoike.service.dto.drawticketdto.DrawTicketsResponse;
 import prgrms.neoike.service.dto.member.MemberDto;
 import prgrms.neoike.service.dto.member.MemberResponse;
-import prgrms.neoike.service.dto.drawticketdto.DrawTicketsResponse;
 
 import javax.validation.Valid;
 import java.net.URI;
@@ -33,8 +35,10 @@ public class MemberController {
     }
 
     @GetMapping("/draw-history")
-    public ResponseEntity<DrawTicketsResponse> getMyDrawHistory() {
-        DrawTicketsResponse myDrawHistory = memberService.getMyDrawHistory();
+    public ResponseEntity<DrawTicketsResponse> getMyDrawHistory(
+        @AuthenticationPrincipal UsernamePasswordAuthenticationToken authentication
+    ) {
+        DrawTicketsResponse myDrawHistory = memberService.getMyDrawHistory(authentication.getName());
 
         return ResponseEntity
             .ok()

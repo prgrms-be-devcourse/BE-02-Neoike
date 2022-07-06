@@ -3,8 +3,6 @@ package prgrms.neoike.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import prgrms.neoike.common.exception.EntityNotFoundException;
-import prgrms.neoike.common.jwt.SecurityUtil;
 import prgrms.neoike.domain.member.Member;
 import prgrms.neoike.repository.MemberRepository;
 import prgrms.neoike.service.converter.MemberConverter;
@@ -12,6 +10,7 @@ import prgrms.neoike.service.dto.member.MemberDto;
 import prgrms.neoike.service.dto.member.MemberResponse;
 import prgrms.neoike.service.dto.drawticketdto.DrawTicketsResponse;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.Optional;
 
 import static java.text.MessageFormat.format;
@@ -33,10 +32,9 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public DrawTicketsResponse getMyDrawHistory() {
-        Optional<String> username = SecurityUtil.getCurrentUserName();
-        Member member = username.flatMap(memberRepository::findOneByEmail)
-            .orElseThrow(() -> new EntityNotFoundException(format("존재하지 않는 회원입니다. email : {0}", username)));
+    public DrawTicketsResponse getMyDrawHistory(String email) {
+        Member member = memberRepository.findOneByEmail(email)
+            .orElseThrow(() -> new EntityNotFoundException(format("존재하지 않는 회원입니다. email : {0}", email)));
 
         return drawTicketService.findByMemberId(member.getId());
     }

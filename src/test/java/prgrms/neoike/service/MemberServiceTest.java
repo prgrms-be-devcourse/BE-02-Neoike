@@ -83,7 +83,7 @@ class MemberServiceTest {
 
         //when
         when(member.getId()).thenReturn(1L);
-        memberService.getMyDrawHistory();
+        memberService.getMyDrawHistory(authentication.getName());
 
         //then
         then(drawTicketService).should().findByMemberId(member.getId());
