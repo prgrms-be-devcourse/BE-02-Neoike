@@ -48,10 +48,15 @@
 - `Java 17`
 - `Gradle 7.4`
 - `Spring Boot 2.7.0`
-- `H2`, `MySQL`
+- `Spring Security`
+- `Lombok`
+- `H2`, `My SQL`
 - `JPA`
 - `JUnit 5`
 - `Rest Docs`
+- `Jacoco`
+- `Google Code Style`
+- `Cache`
 
 ## 🖇 협업관리
 - `git`
