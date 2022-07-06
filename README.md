@@ -1,6 +1,7 @@
 # 너이키
 
 ##  🏬 프로젝트 소개
+
 나이키 드로우 서비스를 클론 코딩하는 프로젝트입니다.
 
 ## 👬 팀 소개
@@ -47,16 +48,21 @@
 - `Java 17`
 - `Gradle 7.4`
 - `Spring Boot 2.7.0`
-- `H2`, `MySQL`
+- `Spring Security`
+- `Lombok`
+- `H2`, `My SQL`
 - `JPA`
 - `JUnit 5`
 - `Rest Docs`
+- `Jacoco`
+- `Google Code Style`
+- `Cache`
 
 ## 🖇 협업관리
 - `git`
 - `notion`
 
-## 🗃 User story
+## 🗃 User Story
 
 ## 🌀 Event Storming
 ![image](https://user-images.githubusercontent.com/71916223/177475809-d60ac39b-7c20-4b1b-8dd2-554fb0f9fd8f.png)
