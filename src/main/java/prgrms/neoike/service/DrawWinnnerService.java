@@ -92,7 +92,7 @@ public class DrawWinnnerService {
         sneakerItem.reduceQuantity(ticketQuantity);
         SneakerStock sneakerStock = sneakerItem.getSneakerStock();
 //         감소하고 남은 개수는 다시 SneakerStock 재고에 추가한다.
-        sneakerStock.manageStockQuantity(sneakerItem.getQuantity());
+        sneakerStock.updateStockQuantity(sneakerItem.getQuantity());
 //         재고 추가 후 최종 개수는 0이다.
         sneakerItem.changeQuantityZero();
     }

@@ -64,7 +64,7 @@ public class SneakerService {
     @Transactional
     public SneakerStockResponse manageSneakerStock(SneakerStockUpdateDto stockUpdateDto) {
         SneakerStock sneakerStock = getSneakerStock(stockUpdateDto.stockId(), stockUpdateDto.size());
-        sneakerStock.manageStockQuantity(stockUpdateDto.quantity());
+        sneakerStock.updateStockQuantity(stockUpdateDto.quantity());
 
         return toSneakerStockResponse(sneakerStock);
     }
