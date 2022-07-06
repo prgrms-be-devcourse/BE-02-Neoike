@@ -52,3 +52,14 @@
 - `JPA`
 - `JUnit 5`
 - `Rest Docs`
+
+## 🖇 협업관리
+- `git`
+- `notion`
+
+## 🌀 Event Storming
+![image](https://user-images.githubusercontent.com/71916223/177475809-d60ac39b-7c20-4b1b-8dd2-554fb0f9fd8f.png)
+
+## 📑 ERD
+![image](https://user-images.githubusercontent.com/71916223/177475913-938765ed-1c46-4b57-ad08-6802735a10e2.png)
+
