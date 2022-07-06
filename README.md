@@ -62,6 +62,8 @@
 - `git`
 - `notion`
 
+## 🗃 User Story
+
 ## 🌀 Event Storming
 ![image](https://user-images.githubusercontent.com/71916223/177475809-d60ac39b-7c20-4b1b-8dd2-554fb0f9fd8f.png)
 
