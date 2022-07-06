@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import prgrms.neoike.common.exception.EntityNotFoundException;
 import prgrms.neoike.domain.sneaker.Sneaker;
 import prgrms.neoike.domain.sneaker.SneakerImage;
 import prgrms.neoike.domain.sneaker.SneakerStock;
@@ -16,6 +15,7 @@ import prgrms.neoike.service.dto.page.PageableDto;
 import prgrms.neoike.service.dto.sneaker.*;
 
 import javax.persistence.EntityExistsException;
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 import static java.text.MessageFormat.format;

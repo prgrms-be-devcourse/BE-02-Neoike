@@ -11,7 +11,6 @@ import org.springframework.cache.Cache.ValueWrapper;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.interceptor.SimpleKey;
 import org.springframework.transaction.annotation.Transactional;
-import prgrms.neoike.common.exception.EntityNotFoundException;
 import prgrms.neoike.domain.draw.Draw;
 import prgrms.neoike.domain.draw.DrawStatus;
 import prgrms.neoike.domain.member.*;
@@ -21,6 +20,8 @@ import prgrms.neoike.service.dto.drawdto.DrawDto;
 import prgrms.neoike.service.dto.drawdto.DrawResponse;
 import prgrms.neoike.service.dto.drawdto.DrawSaveDto;
 import prgrms.neoike.service.dto.drawdto.StockInfoDto;
+
+import javax.persistence.EntityNotFoundException;
 
 import static java.text.MessageFormat.format;
 import static org.assertj.core.api.Assertions.assertThat;
