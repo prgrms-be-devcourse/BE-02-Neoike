@@ -42,7 +42,13 @@ public class SneakerStock extends BaseTimeEntity {
         this.sneaker = sneaker;
     }
 
-    public void addQuantity(int quantity) {
-        this.stock.increaseQuantityBy(quantity);
+    public void updateStockQuantity(int quantity) {
+        if (quantity < 0) {
+            this.stock.decreaseQuantity(Math.abs(quantity));
+
+            return;
+        }
+
+        this.stock.increaseQuantity(quantity);
     }
 }

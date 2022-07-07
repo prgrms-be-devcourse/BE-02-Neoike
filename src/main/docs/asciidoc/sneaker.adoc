@@ -12,10 +12,23 @@ operation::get-sneaker[snippets='http-request,path-parameters,http-response,resp
 operation::get-sneakers[snippets='http-request,http-response,response-fields']
 '''
 
-=== 재고 증가
-operation::put-sneaker-stock-increase[snippets='http-request,path-parameters,request-fields,http-response,response-fields']
-'''
+=== 재고 증가/감소
 
-=== 재고 감소
-operation::put-sneaker-stock-decrease[snippets='http-request,path-parameters,request-fields,http-response,response-fields']
-''''
+==== HTTP request
+[source]
+----
+PUT /api/v1/sneakers/stocks/1 HTTP/1.1
+Content-Type: application/json
+Content-Length: 37
+Host: neoike.com
+
+{
+  "size" : 250,
+  "quantity" : 10
+}
+
+* quantity 의 값이 음수일 경우 재고를 감소시킵니다. 양수일 경우 재고를 증가시킵니다.
+----
+
+operation::put-sneaker-stock[snippets='path-parameters,request-fields,http-response,response-fields']
+'''

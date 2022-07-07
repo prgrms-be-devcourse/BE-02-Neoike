@@ -143,20 +143,20 @@ class SneakerControllerTest extends SecurityApiTest {
     }
 
     @Test
-    @DisplayName("입력된 신발 재고의 아이디와 사이즈에 맞는 재고를 찾아서 입력된 수량만큼 감소시킨다.")
-    void putSneakerStockDecrease() throws Exception {
-        SneakerStockRequest stockRequest = createTestStockRequest(250, 10);
+    @DisplayName("입력된 신발 재고의 아이디와 사이즈에 맞는 재고를 재고 수량을 빼고 더할 수 있다.")
+    void putSneakerStock() throws Exception {
+        SneakerStockRequest stockRequest = new SneakerStockRequest(250, -10);
         String requestString = objectMapper.writeValueAsString(stockRequest);
         SneakerStockResponse response = new SneakerStockResponse(1L, 250, 0, 2L);
 
         //given
-        given(sneakerService.decreaseSneakerStock(any()))
+        given(sneakerService.manageSneakerStock(any()))
             .willReturn(response);
 
         //when
         ResultActions resultActions = mockMvc
             .perform(
-                put("/api/v1/sneakers/out/stocks/{stockId}", 1L)
+                put("/api/v1/sneakers/stocks/{stockId}", 1L)
                     .content(requestString)
                     .contentType(APPLICATION_JSON));
 
@@ -172,42 +172,6 @@ class SneakerControllerTest extends SecurityApiTest {
                     requestFields(sneakerStock()),
                     responseHeaders(commonHeaders()),
                     responseFields(stockId()).and(sneakerStock()).and(sneakerId())));
-    }
-
-    @Test
-    @DisplayName("입력된 신발 재고의 아이디와 사이즈에 맞는 재고를 찾아서 입력된 수량만큼 증가시킨다.")
-    void putSneakerStockIncrease() throws Exception {
-        SneakerStockRequest stockRequest = createTestStockRequest(270, 100);
-        String requestString = objectMapper.writeValueAsString(stockRequest);
-        SneakerStockResponse response = new SneakerStockResponse(1L, 270, 110, 2L);
-
-        //given
-        given(sneakerService.increaseSneakerStock(any()))
-            .willReturn(response);
-
-        //when
-        ResultActions resultActions = mockMvc
-            .perform(
-                put("/api/v1/sneakers/in/stocks/{stockId}", 1L)
-                    .content(requestString)
-                    .contentType(APPLICATION_JSON));
-
-        //then
-        resultActions
-            .andExpectAll(
-                status().isOk(),
-                content().json(objectMapper.writeValueAsString(response)))
-            .andDo(
-                document(COMMON_DOCS_NAME,
-                    requestHeaders(commonHeaders()).and(host()),
-                    pathParameters(stockIdPath()),
-                    requestFields(sneakerStock()),
-                    responseHeaders(commonHeaders()),
-                    responseFields(stockId()).and(sneakerStock()).and(sneakerId())));
-    }
-
-    private SneakerStockRequest createTestStockRequest(int size, int quantity) {
-        return new SneakerStockRequest(size, quantity);
     }
 
     private PageResponse<SneakerResponse> createPageResponseWithSneakerResponse() {
@@ -261,8 +225,8 @@ class SneakerControllerTest extends SecurityApiTest {
                 .releaseDate(LocalDateTime.of(2022, 10, 10, 10, 0, 0))
                 .build(),
             List.of(
-                createTestStockRequest(250, 10),
-                createTestStockRequest(260, 10))
+                new SneakerStockRequest(250, 10),
+                new SneakerStockRequest(260, 10))
         );
     }
 
