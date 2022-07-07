@@ -2,6 +2,7 @@ package prgrms.neoike.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -64,7 +65,7 @@ class DrawWinnnerServiceTest {
     @Autowired
     SneakerStockRepository sneakerStockRepository;
 
-    LocalDateTime startDate = LocalDateTime.of(2025, 06, 12, 12, 00, 00);
+    LocalDateTime startDate = LocalDateTime.of(2021, 06, 12, 12, 00, 00);
     LocalDateTime endDate = LocalDateTime.of(2025, 06, 13, 12, 00, 00);
     LocalDateTime winningDate = LocalDateTime.of(2025, 06, 14, 12, 00, 00);
 
@@ -157,7 +158,7 @@ class DrawWinnnerServiceTest {
             .password(new Password("123abcAB!!"))
             .phoneNumber(new PhoneNumber(CountryType.KOR, "01012341566"))
             .address(new Address("도시", "거리", "000222"))
-            .birthDay(LocalDateTime.now())
+            .birthDay(LocalDate.now())
             .email(new Email("test@test.com"))
             .gender(Gender.MALE)
             .build();

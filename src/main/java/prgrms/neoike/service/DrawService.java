@@ -39,7 +39,7 @@ public class DrawService {
         Long sneakerId = drawSaveRequest.sneakerId();
         Sneaker sneaker = sneakerRepository.findById(sneakerId)
             .orElseThrow(() -> new EntityNotFoundException(
-                format("Sneaker 엔티티를 찾을 수 없습니다. drawId : {0}", sneakerId)));
+                format("Sneaker 엔티티를 찾을 수 없습니다. sneakerId : {0}", sneakerId)));
 
         Draw draw = DrawConverter.toDraws(drawSaveRequest, sneaker);
         drawRepository.save(draw);
