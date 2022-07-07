@@ -44,7 +44,7 @@ class DrawTicketServiceTest {
     @Autowired
     SneakerItemRepository sneakerItemRepository;
 
-    LocalDateTime startDate = LocalDateTime.of(2025, 06, 12, 12, 00, 00);
+    LocalDateTime startDate = LocalDateTime.of(2021, 06, 12, 12, 00, 00);
     LocalDateTime endDate = LocalDateTime.of(2025, 06, 13, 12, 00, 00);
     LocalDateTime winningDate = LocalDateTime.of(2025, 06, 14, 12, 00, 00);
 
@@ -238,7 +238,7 @@ class DrawTicketServiceTest {
             .password(new Password("123abcAB!!"))
             .phoneNumber(new PhoneNumber(CountryType.KOR, "01012341566"))
             .address(new Address("도시", "거리", "000222"))
-            .birthDay(LocalDateTime.now())
+            .birthDay(LocalDate.now())
             .email(new Email("test@test.com"))
             .gender(Gender.MALE)
             .build();
