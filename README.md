@@ -71,3 +71,4 @@
 ![image](https://user-images.githubusercontent.com/71916223/177475913-938765ed-1c46-4b57-ad08-6802735a10e2.png)
 
 ## 💬 회고
+[팀회고](https://www.notion.so/backend-devcourse/193a789ad2884ac19b829f6e433e7cb1#aa7fc4702066484fbee5a1cc0cc4c7d0)
