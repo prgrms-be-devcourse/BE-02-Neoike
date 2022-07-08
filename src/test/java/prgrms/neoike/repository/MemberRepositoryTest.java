@@ -33,14 +33,14 @@ class MemberRepositoryTest {
             .build();
         Member savedMember = memberRepository.save(member);
 
-        Optional<Member> oneByEmail = memberRepository.findOneByEmail(savedMember.getEmail().getAddress());
+        Optional<Member> oneByEmail = memberRepository.findOneByEmail(savedMember.getEmail());
 
         assertThat(oneByEmail).isNotEmpty();
-        assertThat(oneByEmail.get().getEmail().getAddress()).isEqualTo(member.getEmail().getAddress());
+        assertThat(oneByEmail.get().getEmail()).isEqualTo(member.getEmail());
     }
 
     @Test
-    @DisplayName("유효한 email을 통해 member를 조회할 수 있다.")
+    @DisplayName("유효하지 않은 email로 조회하면 결과가 없다")
     void findOneByInValidEmailTest() {
         Optional<Member> oneByEmail = memberRepository.findOneByEmail("invalidTestEmail@gmail.com");
 

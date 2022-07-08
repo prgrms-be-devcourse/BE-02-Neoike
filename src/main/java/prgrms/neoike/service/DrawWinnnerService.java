@@ -3,7 +3,6 @@ package prgrms.neoike.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import prgrms.neoike.common.exception.EntityNotFoundException;
 import prgrms.neoike.common.util.RandomTicketIdCreator;
 import prgrms.neoike.domain.draw.Draw;
 import prgrms.neoike.domain.draw.DrawTicket;
@@ -15,7 +14,7 @@ import prgrms.neoike.repository.SneakerItemRepository;
 import prgrms.neoike.service.converter.DrawConverter;
 import prgrms.neoike.service.dto.drawticketdto.DrawTicketResponse;
 import prgrms.neoike.service.dto.drawticketdto.DrawTicketsResponse;
-
+import javax.persistence.EntityNotFoundException;
 import java.util.*;
 
 import static java.text.MessageFormat.format;

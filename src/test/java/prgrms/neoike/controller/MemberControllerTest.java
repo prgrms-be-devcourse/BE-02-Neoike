@@ -2,26 +2,21 @@ package prgrms.neoike.controller;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.ResultActions;
-import prgrms.neoike.common.jwt.JwtFilter;
-import prgrms.neoike.common.jwt.TokenProvider;
 import prgrms.neoike.config.SecurityApiTest;
 import prgrms.neoike.controller.dto.member.MemberSaveRequest;
 import prgrms.neoike.domain.draw.DrawStatus;
 import prgrms.neoike.domain.member.CountryType;
 import prgrms.neoike.domain.member.Gender;
-import prgrms.neoike.service.CustomUserDetailService;
 import prgrms.neoike.service.MemberService;
 import prgrms.neoike.service.dto.drawticketdto.DrawTicketResponse;
 import prgrms.neoike.service.dto.drawticketdto.DrawTicketsResponse;
@@ -32,9 +27,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
@@ -50,14 +46,7 @@ class MemberControllerTest extends SecurityApiTest {
     @MockBean
     private MemberService memberService;
 
-    @Autowired
-    private TokenProvider tokenProvider;
-
-    @MockBean
-    private CustomUserDetailService customUserDetailService;
-
     @Test
-    @WithMockUser
     @DisplayName("멤버 회원가입 요청을 테스트한다")
     void postMember() throws Exception {
 
@@ -75,14 +64,15 @@ class MemberControllerTest extends SecurityApiTest {
                 Gender.FEMALE
             ));
 
-        given(memberService.join(any()))
-            .willReturn(new MemberResponse(1L, "test@gmail.com"));
+        when(memberService.join(any()))
+            .thenReturn(new MemberResponse(1L, "test@gmail.com"));
 
 
         ResultActions result = mockMvc
             .perform(
                 post("/api/v1/members")
                     .content(content)
+                    .contentType(APPLICATION_JSON)
                     .accept(APPLICATION_JSON)
                     .with(SecurityMockMvcRequestPostProcessors.csrf()))
             .andExpect(status().isCreated())
@@ -104,6 +94,10 @@ class MemberControllerTest extends SecurityApiTest {
                     fieldWithPath("phoneNumber").type(JsonFieldType.STRING).description("휴대전화번호"),
                     fieldWithPath("gender").type(JsonFieldType.STRING).description("성별: MALE(남성)/FEMALE(여성)")
                 ),
+                responseHeaders(
+                    headerWithName(HttpHeaders.LOCATION).description("로케이션"),
+                    headerWithName(HttpHeaders.CONTENT_TYPE).description("컨텐츠 타입")
+                ),
                 responseFields(
                     fieldWithPath("memberId").type(JsonFieldType.NUMBER).description("아이디"),
                     fieldWithPath("email").type(JsonFieldType.STRING).description("로그인아이디")
@@ -112,39 +106,21 @@ class MemberControllerTest extends SecurityApiTest {
     }
 
     @Test
-    @DisplayName("인증(로그인)이 유효하면 응모정보를 가져온다")
+    @DisplayName("인증정보가 유효하면 응모정보를 가져온다")
     void getDrawHistory() throws Exception {
-        String email = "test@gmail.com";
-        String password = "1234!abcD";
-        UserDetails dummy = new User(email, password, List.of());
-        Authentication authentication = new UsernamePasswordAuthenticationToken(email, password);
-        String token = tokenProvider.createToken(authentication);
+        String username = "test@gmail.com";
+        User user = new User(username, "", List.of());
+        Authentication authentication = new UsernamePasswordAuthenticationToken(user, "");
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(HttpHeaders.AUTHORIZATION, JwtFilter.AUTHORIZATION_TYPE + token);
+        DrawTicketsResponse myDrawHistory = makeDrawTicketsResponse();
 
-        DrawTicketResponse size = DrawTicketResponse.builder()
-            .drawTicketId(1L)
-            .drawStatus(DrawStatus.WAITING)
-            .sneakerName("테스트 신발")
-            .price(100000)
-            .code("TEST_CODE")
-            .size(250)
-            .build();
-
-        List<DrawTicketResponse> drawTicketResponses = new ArrayList<>();
-        drawTicketResponses.add(size);
-        DrawTicketsResponse myDrawHistory = new DrawTicketsResponse(drawTicketResponses);
-
-        when(customUserDetailService.loadUserByUsername(email))
-            .thenReturn(dummy);
-        when(memberService.getMyDrawHistory())
+        when(memberService.getMyDrawHistory(authentication.getName()))
             .thenReturn(myDrawHistory);
 
         ResultActions result = mockMvc
             .perform(
                 get("/api/v1/members/draw-history")
-                    .headers(httpHeaders)
                     .contentType(APPLICATION_JSON))
             .andExpect(status().isOk())
             .andDo(print());
@@ -161,5 +137,21 @@ class MemberControllerTest extends SecurityApiTest {
                     fieldWithPath("drawTicketResponses[].size").type(JsonFieldType.NUMBER).description("응모 신발 사이즈")
                 )
             ));
+    }
+
+    private DrawTicketsResponse makeDrawTicketsResponse() {
+        DrawTicketResponse size = DrawTicketResponse.builder()
+            .drawTicketId(1L)
+            .drawStatus(DrawStatus.WAITING)
+            .sneakerName("테스트 신발")
+            .price(100000)
+            .code("TEST_CODE")
+            .size(250)
+            .build();
+
+        List<DrawTicketResponse> drawTicketResponses = new ArrayList<>();
+        drawTicketResponses.add(size);
+
+        return new DrawTicketsResponse(drawTicketResponses);
     }
 }

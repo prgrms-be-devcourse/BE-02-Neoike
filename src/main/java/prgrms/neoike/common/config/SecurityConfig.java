@@ -61,8 +61,8 @@ public class SecurityConfig {
             .and()
             .authorizeRequests()
             .antMatchers("/api/**/members/draw-history").authenticated()
-            .anyRequest()
-            .permitAll()
+            .antMatchers("/api/**/sneakers").authenticated()
+            .anyRequest().permitAll()
 
             .and()
             .apply(new JwtSecurityConfig(tokenProvider, authenticationManagerBuilder));

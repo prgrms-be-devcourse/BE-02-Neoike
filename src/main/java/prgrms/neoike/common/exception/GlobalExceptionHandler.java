@@ -54,14 +54,6 @@ public class GlobalExceptionHandler {
             .body(ErrorResponse.of(NOT_SUPPORTED_MEDIA_TYPE, ex.getMessage()));
     }
 
-    @ExceptionHandler(InvalidDrawQuantityException.class)
-    protected ResponseEntity<Object> handleInvalidDrawQuantityException (InvalidDrawQuantityException ex) {
-        log.error("당첨에 실패하였습니다. {}", ex.getMessage());
-
-        final ErrorResponse errorResponse = ErrorResponse.of(SERVER_ERROR, ex.getMessage());
-        return ResponseEntity.badRequest().body(errorResponse);
-    }
-
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<ErrorResponse> handleException(final Exception ex) {
         log.error("예상치 못한 예외가 발생했습니다. {} ", ex.getMessage());

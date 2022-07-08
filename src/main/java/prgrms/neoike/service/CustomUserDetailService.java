@@ -6,10 +6,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import prgrms.neoike.common.exception.EntityNotFoundException;
 import prgrms.neoike.domain.member.Member;
 import prgrms.neoike.repository.MemberRepository;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 import static java.text.MessageFormat.format;
@@ -32,6 +32,6 @@ public class CustomUserDetailService implements UserDetailsService {
     }
 
     private User createUser(Member member) {
-        return new User(member.getEmail().getAddress(), member.getPassword().getPassword(), List.of());
+        return new User(member.getEmail(), member.getPassword(), List.of());
     }
 }

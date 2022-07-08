@@ -62,4 +62,16 @@ public class Member extends BaseTimeEntity {
         this.address = address;
         this.gender = gender;
     }
+
+    public String getEmail() {
+        return email.getAddress();
+    }
+
+    public String getPassword() {
+        return password.getPassword();
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber.getPhoneNumber();
+    }
 }
