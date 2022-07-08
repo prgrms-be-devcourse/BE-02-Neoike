@@ -63,6 +63,8 @@
 - `notion`
 
 ## 🗃 User Story
+<img width="887" alt="스크린샷 2022-07-08 오후 1 31 04" src="https://user-images.githubusercontent.com/78140516/177917252-587f6d45-279a-4653-8c85-22a458de31d0.png">
+
 
 ## 🌀 Event Storming
 ![image](https://user-images.githubusercontent.com/71916223/177475809-d60ac39b-7c20-4b1b-8dd2-554fb0f9fd8f.png)
